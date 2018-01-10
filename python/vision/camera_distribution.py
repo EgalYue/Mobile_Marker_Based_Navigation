@@ -126,3 +126,6 @@ def create_cam_distribution(cam = None, plane_size = (0.3,0.3), theta_params = (
     plot3D(cams, planes)
 
   return cams
+
+
+# create_cam_distribution(cam = None, plane_size = (0.3,0.3), theta_params = (0,360,10), phi_params =  (0,70,10), r_params = (0.2,2.0,5), plot=True)

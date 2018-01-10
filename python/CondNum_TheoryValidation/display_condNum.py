@@ -2,7 +2,6 @@ import scipy.io as sio
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 import numpy as np
-
 import scipy.io as sio
 import matplotlib.pyplot as plt
 import numpy as np
@@ -14,6 +13,66 @@ import numpy as np
 
 
 # -------------------------------------------------------------------------------
+def getConNumColor(condNum):
+        color = "white"
+        if condNum > 70000.0:
+            color = 'linen'
+        elif condNum > 60000.0:
+            color = 'antiquewhite'
+        elif condNum > 50000.0:
+            color = 'papayawhip'
+        elif condNum > 40000.0:
+            color = 'oldlace'
+        elif condNum > 30000.0:
+            color = 'cornsilk'
+        elif condNum > 20000.0:
+            color = 'palegoldenrod'
+        elif condNum > 10000.0:
+            color = 'yellow'
+        elif condNum > 8000.0:
+            color = 'lightblue'
+        elif condNum > 6000.0:
+            color = 'deepskyblue'
+        elif condNum > 4000.0:
+            color = 'red'
+        elif condNum > 2000.0:
+            color = 'green'
+        elif condNum > 1000.0:
+            color = 'maroon'
+        else:
+            color = 'black'
+
+        return color
+
+
+def displayCondNumDistribution(m):
+    """"Display distribution of cond num for cam distribution in 3D"""
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    n = 100
+
+
+    for i in range(0,m.shape[1]):
+        x = m[0][i]
+        y = m[1][i]
+        z = m[2][i]
+        condNum = m[3][i]
+        color = getConNumColor(condNum)
+        ax.scatter(x, y, z, s = 100,c = color, marker="o")
+
+    ax.set_xlabel('X Label')
+    ax.set_ylabel('Y Label')
+    ax.set_zlabel('Z Label')
+
+    plt.show()
+    plt.pause(1000)
+
+
+
+
+
 def Detectionplot(m):
 
     # data = sio.loadmat('testpython.mat')
@@ -127,3 +186,5 @@ def anglePlot(m):
 #--------------------------------------------- Test--------------------------------------------------
 # Detectionplot()
 # anglePlot()
+# matrix = np.array([[1,2,3,4],[1,2,3,4],[1,2,3,4],[1000,20000,5000,50000]])
+# displayCondNumDistribution(matrix)

@@ -162,7 +162,8 @@ def heightGetCondNum(cams,new_objectPoints):
 
     print "start to show "
     import display_condNum as dc
-    dc.Detectionplot(display_mat)
+    display_mat = display_mat[:,1:]
+    dc.displayCondNumDistribution(display_mat)
     print "finish!!!"
 
 
@@ -236,7 +237,7 @@ cams_HeightFixed.append(cam_4)
 
 
 # -----------------------------Test-------------------------------------------------------------------
-# heightGetCondNum(cams,new_objectPoints)
+heightGetCondNum(cams,new_objectPoints)
 # heightGetCondNum(cams_HeightFixed,new_objectPoints)
 # heightGetCondNum(cams_Zfixed,new_objectPoints)
-heightGetCondNum(cams_XYfixed,new_objectPoints)
+# heightGetCondNum(cams_XYfixed,new_objectPoints)
