@@ -127,7 +127,7 @@ def Detectionplot(m):
 
     ax.bar3d(x, y, z, dx, dy, dz, color=C, zsort='average')
     plt.show()
-    plt.pause(1000)
+    # plt.pause(1000)
 
 # plot angle
 def anglePlot(m):
@@ -183,8 +183,71 @@ def anglePlot(m):
     ax.bar3d(x, y, z, dx, dy, dz, color=C, zsort='average')
     plt.show()
     plt.pause(1000)
+
+
+
+def displayError3D(x,y,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error):
+     fig1 = plt.figure("Error")
+     # ax = fig.gca(projection='3d')
+     ax1 = fig1.add_subplot(231, projection='3d')
+     ax1.plot(x, y, input_ippe1_t, label='ippe_tvec_error1')
+     ax1.legend()
+     ax1.set_xlabel('X Label')
+     ax1.set_ylabel('Y Label')
+     ax1.set_zlabel('Error')
+
+     ax2 = fig1.add_subplot(234, projection='3d')
+     ax2.plot(x, y, input_ippe1_R, label='ippe_rmat_error1')
+     ax2.legend()
+     ax2.set_xlabel('X Label')
+     ax2.set_ylabel('Y Label')
+     ax2.set_zlabel('Error')
+
+     ax3 = fig1.add_subplot(232, projection='3d')
+     ax3.plot(x, y, input_ippe2_t, label='ippe_tvec_error2')
+     ax3.legend()
+     ax3.set_xlabel('X Label')
+     ax3.set_ylabel('Y Label')
+     ax3.set_zlabel('Error')
+
+     ax2 = fig1.add_subplot(235, projection='3d')
+     ax2.plot(x, y, input_ippe2_R, label='ippe_rmat_error2')
+     ax2.legend()
+     ax2.set_xlabel('X Label')
+     ax2.set_ylabel('Y Label')
+     ax2.set_zlabel('Error')
+
+     ax2 = fig1.add_subplot(233, projection='3d')
+     ax2.plot(x, y, input_pnp_t, label='pnp_tmat_error')
+     ax2.legend()
+     ax2.set_xlabel('X Label')
+     ax2.set_ylabel('Y Label')
+     ax2.set_zlabel('Error')
+
+     ax2 = fig1.add_subplot(236, projection='3d')
+     ax2.plot(x, y, input_pnp_R, label='pnp_rmat_error')
+     ax2.legend()
+     ax2.set_xlabel('X Label')
+     ax2.set_ylabel('Y Label')
+     ax2.set_zlabel('Error')
+
+     # ----------------- Transfer Error ----------------------------------
+     fig2 = plt.figure("Transfer Error ")
+     # ax = fig.gca(projection='3d')
+     ax_transfer_error= fig2.add_subplot(111, projection='3d')
+     ax_transfer_error.plot(x, y, input_transfer_error, label='transfer_error')
+     ax_transfer_error.legend()
+     ax_transfer_error.set_xlabel('X Label')
+     ax_transfer_error.set_ylabel('Y Label')
+     ax_transfer_error.set_zlabel('Transfer Error')
+
+
+     plt.show()
+     plt.pause(1000)
+
 #--------------------------------------------- Test--------------------------------------------------
 # Detectionplot()
 # anglePlot()
 # matrix = np.array([[1,2,3,4],[1,2,3,4],[1,2,3,4],[1000,20000,5000,50000]])
 # displayCondNumDistribution(matrix)
+

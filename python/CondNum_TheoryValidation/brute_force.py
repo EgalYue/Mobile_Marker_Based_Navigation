@@ -16,15 +16,15 @@ from vision.plane import Plane
 from vision.circular_plane import CircularPlane
 import matplotlib.pyplot as plt
 import scipy.io as sio
-# import error_functions as ef
+import error_functions as ef
 # from ippe import homo2d
-# from homographyHarker.homographyHarker import homographyHarker as hh
-# from solve_ippe import pose_ippe_both, pose_ippe_best
-# from solve_pnp import pose_pnp
-# import cv2
+from homographyHarker.homographyHarker import homographyHarker as hh
 # import matplotlib.pyplot as plt
 import hT_gradient as gd
 import Rt_matrix_from_euler_t as Rt_matrix_from_euler_t
+from solve_ippe import pose_ippe_both
+from solve_pnp import pose_pnp
+import cv2
 
 calc_metrics = False
 number_of_points = 4
@@ -33,18 +33,12 @@ number_of_points = 4
 # TODO Change the radius of circular plane
 pl = CircularPlane(origin=np.array([0., 0., 0.]), normal = np.array([0, 0, 1]), radius=0.15, n = 4)
 pl.random(n =number_of_points, r = 0.01, min_sep = 0.01)
-
+plane_size = (0.3,0.3)
 
 ## CREATE A SIMULATED CAMERA
 cam = Camera()
 cam.set_K(fx = 800,fy = 800,cx = 640/2.,cy = 480/2.)
 cam.set_width_heigth(640,480)
-
-#Now we define a distribution of cameras on the space based on this plane
-#An optional paremeter is de possible deviation from uniform points
-plane_size = (0.3,0.3)
-new_objectPoints = pl.get_points()
-print "new_objectPoints",new_objectPoints
 
 ## CREATE A SET OF IMAGE POINTS FOR VALIDATION OF THE HOMOGRAPHY ESTIMATION
 # This will create a grid of 16 points of size = (0.3,0.3) meters
@@ -53,7 +47,6 @@ validation_plane.uniform()
 
 ## we create the gradient for the point distribution
 normalize= False
-
 
 #4 points: An ideal square
 x1  = round(pl.radius*np.cos(np.deg2rad(45)),3)
@@ -65,7 +58,7 @@ objectPoints_square= np.array(
  [ 1., 1., 1., 1.]])
 
 new_objectPoints = np.copy(objectPoints_square)
-
+print "new_objectPoints", new_objectPoints
 
 # ------------------------All cams point straight down: Test Height factor---------------------------------------
 # TODO cam distribution position PARAMETER CHANGE!!!
@@ -73,6 +66,7 @@ cams = create_cam_distribution(cam, plane_size,
                                theta_params = (0,360,30), phi_params =  (0,70,10),
                                r_params = (0.2,2.0,20), plot=False)
 
+homography_iters = 100
 
 
 def heightGetCondNum(cams,new_objectPoints):
@@ -82,24 +76,84 @@ def heightGetCondNum(cams,new_objectPoints):
     mat_cond_list = []
     imagePoints_des = []
     cam_valid = []
-    # imagePoints_gravity_center = []
     display_mat = np.array([[0], [0], [0], [0]])
+    # ------------------------for all cams------------------------------
+    transfer_error_list = []
+    ippe_tvec_error_list1 = []
+    ippe_rmat_error_list1 = []
+    ippe_tvec_error_list2 = []
+    ippe_rmat_error_list2 = []
+    pnp_tvec_error_list = []
+    pnp_rmat_error_list = []
+    # ------------------------------------------------------------------
 
     for cam in cams:
         objectPoints = np.copy(new_objectPoints)
         imagePoints = np.array(cam.project(objectPoints, False))
         if ((imagePoints[0, :] < cam.img_width) & (imagePoints[0, :] > 0) & (imagePoints[1, :] < cam.img_height) & (
             imagePoints[1, :] > 0)).all():
-            # ------------------------imagePoints_gravity_center not work!!!-------------------------
-            # calculate imagePoints_gravity_center of 4 points
-            # sumMetric = np.sqrt(imagePoints[0][0]*imagePoints[0][0] + imagePoints[1][0]*imagePoints[1][0]) + np.sqrt(imagePoints[0][1]*imagePoints[0][1] + imagePoints[1][1]*imagePoints[1][1]) + np.sqrt(imagePoints[0][2]*imagePoints[0][2] + imagePoints[1][2]*imagePoints[1][2])+ np.sqrt(imagePoints[0][3]*imagePoints[0][3] + imagePoints[1][3]*imagePoints[1][3])
-            # sumMetric = np.sqrt((
-            #     imagePoints[0][0] * imagePoints[0][0] + imagePoints[1][0] * imagePoints[1][0] +
-            #     imagePoints[0][1] * imagePoints[0][1] + imagePoints[1][1] * imagePoints[1][1] +
-            #     imagePoints[0][2] * imagePoints[0][2] + imagePoints[1][2] * imagePoints[1][2] +
-            #     imagePoints[0][3] * imagePoints[0][3] + imagePoints[1][3] * imagePoints[1][3])/4)
-            # imagePoints_gravity_center.append(sumMetric )
-            # print "gravity_center", sumMetric
+            # ------------------------Calculate Error------------------------
+            # TODO
+            transfer_error_loop = []
+            ippe_tvec_error_loop1 = []
+            ippe_rmat_error_loop1 = []
+            ippe_tvec_error_loop2 = []
+            ippe_rmat_error_loop2 = []
+            pnp_tvec_error_loop = []
+            pnp_rmat_error_loop = []
+            new_imagePoints = np.copy(imagePoints)
+            for j in range(homography_iters):
+                new_imagePoints_noisy = cam.addnoise_imagePoints(new_imagePoints, mean=0, sd=1)
+                # Calculate the pose using IPPE (solution with least repro error)
+                normalizedimagePoints = cam.get_normalized_pixel_coordinates(new_imagePoints_noisy)
+                ippe_tvec1, ippe_rmat1, ippe_tvec2, ippe_rmat2 = pose_ippe_both(new_objectPoints, normalizedimagePoints,
+                                                                                debug=False)
+                ippeCam1 = cam.clone_withPose(ippe_tvec1, ippe_rmat1)
+                ippeCam2 = cam.clone_withPose(ippe_tvec2, ippe_rmat2)
+
+                # Calculate the pose using solvepnp
+                debug = False
+                pnp_tvec, pnp_rmat = pose_pnp(new_objectPoints, new_imagePoints_noisy, cam.K, debug, cv2.SOLVEPNP_ITERATIVE,
+                                              False)
+                pnpCam = cam.clone_withPose(pnp_tvec, pnp_rmat)
+                # Calculate errors
+                pnp_tvec_error, pnp_rmat_error = ef.calc_estimated_pose_error(cam.get_tvec(), cam.R, pnpCam.get_tvec(),
+                                                                              pnp_rmat)
+                pnp_tvec_error_loop.append(pnp_tvec_error)
+                pnp_rmat_error_loop.append(pnp_rmat_error)
+
+                ippe_tvec_error1, ippe_rmat_error1 = ef.calc_estimated_pose_error(cam.get_tvec(), cam.R,
+                                                                                  ippeCam1.get_tvec(), ippe_rmat1)
+                ippe_tvec_error2, ippe_rmat_error2 = ef.calc_estimated_pose_error(cam.get_tvec(), cam.R,
+                                                                                  ippeCam2.get_tvec(), ippe_rmat2)
+                ippe_tvec_error_loop1.append(ippe_tvec_error1)
+                ippe_rmat_error_loop1.append(ippe_rmat_error1)
+                ippe_tvec_error_loop2.append(ippe_tvec_error2)
+                ippe_rmat_error_loop2.append(ippe_rmat_error2)
+
+                # Homography Estimation from noisy image points
+                Xo = new_objectPoints[[0, 1, 3], :]
+                Xi = new_imagePoints_noisy
+                # Hnoisy,A_t_ref,H_t = homo2d.homography2d(Xo,Xi)
+                # Hnoisy = Hnoisy/Hnoisy[2,2]
+                Hnoisy = hh(Xo, Xi)
+
+                ## ERRORS FOR THE NOISY HOMOGRAPHY
+                ## VALIDATION OBJECT POINTS
+                validation_objectPoints = validation_plane.get_points()
+                validation_imagePoints = np.array(cam.project(validation_objectPoints, False))
+                Xo = np.copy(validation_objectPoints)
+                Xo = np.delete(Xo, 2, axis=0)
+                Xi = np.copy(validation_imagePoints)
+                transfer_error_loop.append(ef.validation_points_error(Xi, Xo, Hnoisy))
+
+            transfer_error_list.append(np.mean(transfer_error_loop))
+            ippe_tvec_error_list1.append(np.mean(ippe_tvec_error_loop1))
+            ippe_rmat_error_list1.append(np.mean(ippe_rmat_error_loop1))
+            ippe_tvec_error_list2.append(np.mean(ippe_tvec_error_loop2))
+            ippe_rmat_error_list2.append(np.mean(ippe_rmat_error_loop2))
+            pnp_tvec_error_list.append(np.mean(pnp_tvec_error_loop))
+            pnp_rmat_error_list.append(np.mean(pnp_rmat_error_loop))
             # ----------------------------------------------------------------------------------------
             imagePoints_des.append(np.array(cam.project(objectPoints, False)))
             input_list = gd.extract_objectpoints_vars(objectPoints)
@@ -131,10 +185,8 @@ def heightGetCondNum(cams,new_objectPoints):
         plt.show()
         plt.pause(0.001)
 
-    # -----------------------Write data into file-----------------------------------
-    # sio.savemat('testpython.mat', {'data': display_mat})
-
-
+    display_mat = display_mat[:,1:]
+    # -----------------For Loop End--------------------------------------------------------
     print "--best image points--", imagePoints_des[mat_cond_list.index(min(mat_cond_list))]
     print "--cond num min--", min(mat_cond_list)
     print "--cam position Best--", cam_valid[mat_cond_list.index(min(mat_cond_list))].get_world_position()
@@ -146,6 +198,7 @@ def heightGetCondNum(cams,new_objectPoints):
     print "--cond num size--", len(mat_cond_list)
     print "--imagePoints_des size--", len(imagePoints_des)
     print "--display_mat--", display_mat.shape
+
 
     # # -----------------------Draw the image points-----------------------------------------------------------------------
     fig1 = plt.figure('Image points')
@@ -160,16 +213,39 @@ def heightGetCondNum(cams,new_objectPoints):
     plt.show()
     # plt.pause(100)
 
-    print "start to show "
-    import display_condNum as dc
-    display_mat = display_mat[:,1:]
-    dc.displayCondNumDistribution(display_mat)
-    print "finish!!!"
 
+    import display_condNum as dc
+    # print "start to show "
+    # display_mat = display_mat[:,1:]
+    # dc.displayCondNumDistribution(display_mat)
+    # print "finish!!!"
+    #-------------Display error---------------------------------
+    inputX = np.copy(display_mat[0,:])
+    inputY = np.copy(display_mat[1,:])
+    input_ippe1_t = np.copy(ippe_tvec_error_list1)
+    input_ippe1_R = np.copy(ippe_rmat_error_list1)
+    input_ippe2_t = np.copy(ippe_tvec_error_list2)
+    input_ippe2_R = np.copy(ippe_rmat_error_list2)
+    input_pnp_t = np.copy(pnp_tvec_error_list)
+    input_pnp_R = np.copy(pnp_rmat_error_list)
+
+    input_transfer_error = np.copy(transfer_error_list)
+
+
+    # ------------------Error-----------------------------
+    print transfer_error_list
+    print ippe_tvec_error_list1
+    print ippe_rmat_error_list1
+    print ippe_tvec_error_list2
+    print ippe_rmat_error_list2
+    print max(pnp_tvec_error_list)
+    print pnp_rmat_error_list
+    # -------------------------------------------------------
+    dc.displayError3D(inputX,inputY,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error)
 
 #------------------------------Z fixed, study X Y-----------------------------------------
 cams_Zfixed = []
-for i in np.linspace(0,1,1000):
+for i in np.linspace(-0.5,0.5,200):
 
     cam1 = Camera()
     cam1.set_K(fx = 800,fy = 800,cx = 640/2.,cy = 480/2.)
@@ -180,7 +256,7 @@ for i in np.linspace(0,1,1000):
 
 
     cam1.set_R_axisAngle(1.0,  0.0,  0.0, np.deg2rad(180.0))
-    cam1.set_t(i, 0.0, 0.5, frame='world')
+    cam1.set_t(i, 0.1, 1.31660688, frame='world')
     # 0.28075725, -0.23558331, 1.31660688
     cams_Zfixed.append(cam1)
 
@@ -237,7 +313,7 @@ cams_HeightFixed.append(cam_4)
 
 
 # -----------------------------Test-------------------------------------------------------------------
-heightGetCondNum(cams,new_objectPoints)
+# heightGetCondNum(cams,new_objectPoints)
 # heightGetCondNum(cams_HeightFixed,new_objectPoints)
-# heightGetCondNum(cams_Zfixed,new_objectPoints)
+heightGetCondNum(cams_Zfixed,new_objectPoints)
 # heightGetCondNum(cams_XYfixed,new_objectPoints)
