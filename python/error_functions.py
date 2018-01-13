@@ -201,11 +201,8 @@ def rot_matrix_error(R0, R1, method = 'unit_quaternion_product'):
         E = R1.dot(R0.T)
         from cv2 import Rodrigues
         rot_vector, J = Rodrigues(E[:3,:3])
-
         angle = np.linalg.norm(rot_vector)
-
         rot_error = np.rad2deg(angle)
-
 
     return rot_error
 
@@ -216,3 +213,8 @@ def calc_estimated_pose_error(tvec_ref, rmat_ref, tvec_est, rmat_est):
     #Rotation matrix error
     rmat_error = rot_matrix_error(rmat_ref,rmat_est, method = 'angle')
     return tvec_error, rmat_error
+
+# ------------------------------Test------------------------------------------------
+# r1 = np.array([[1,0,0],[0,1,0],[0,0,1]])
+# r2 = np.array([[1.1,0,0],[0,1.2,0],[0,0,1.3]])
+# rot_matrix_error(r1,r2,method = 'angle')

@@ -65,8 +65,8 @@ print "new_objectPoints", new_objectPoints
 cams = create_cam_distribution(cam, plane_size,
                                theta_params = (0,360,30), phi_params =  (0,70,10),
                                r_params = (0.2,2.0,20), plot=False)
+homography_iters = 1000
 
-homography_iters = 100
 
 
 def heightGetCondNum(cams,new_objectPoints):
@@ -113,7 +113,8 @@ def heightGetCondNum(cams,new_objectPoints):
 
                 # Calculate the pose using solvepnp
                 debug = False
-                pnp_tvec, pnp_rmat = pose_pnp(new_objectPoints, new_imagePoints_noisy, cam.K, debug, cv2.SOLVEPNP_ITERATIVE,
+                # TODO
+                pnp_tvec, pnp_rmat = pose_pnp(new_objectPoints, new_imagePoints_noisy, cam.K, debug, cv2.SOLVEPNP_DLS,
                                               False)
                 pnpCam = cam.clone_withPose(pnp_tvec, pnp_rmat)
                 # Calculate errors
@@ -222,6 +223,7 @@ def heightGetCondNum(cams,new_objectPoints):
     #-------------Display error---------------------------------
     inputX = np.copy(display_mat[0,:])
     inputY = np.copy(display_mat[1,:])
+    inputZ = np.copy(display_mat[2,:])
     input_ippe1_t = np.copy(ippe_tvec_error_list1)
     input_ippe1_R = np.copy(ippe_rmat_error_list1)
     input_ippe2_t = np.copy(ippe_tvec_error_list2)
@@ -240,9 +242,9 @@ def heightGetCondNum(cams,new_objectPoints):
     print ippe_rmat_error_list2
     print max(pnp_tvec_error_list)
     print pnp_rmat_error_list
-    # -------------------------------------------------------
-    dc.displayError3D(inputX,inputY,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error)
-
+    # -----------------TODO--------------------------------------
+    # dc.displayError3D(inputX,inputY,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error)
+    dc.displayError_XYfixed3D(inputZ,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error)
 #------------------------------Z fixed, study X Y-----------------------------------------
 cams_Zfixed = []
 for i in np.linspace(-0.5,0.5,200):
@@ -256,13 +258,13 @@ for i in np.linspace(-0.5,0.5,200):
 
 
     cam1.set_R_axisAngle(1.0,  0.0,  0.0, np.deg2rad(180.0))
-    cam1.set_t(i, 0.1, 1.31660688, frame='world')
+    cam1.set_t(i, -0.1, 0.8, frame='world')
     # 0.28075725, -0.23558331, 1.31660688
     cams_Zfixed.append(cam1)
 
 #------------------------------X Y fixed, study Z-----------------------------------------
 cams_XYfixed = []
-for i in np.linspace(0,2,1000):
+for i in np.linspace(0.5,2,100):
 
     cam1 = Camera()
     cam1.set_K(fx = 800,fy = 800,cx = 640/2.,cy = 480/2.)
@@ -273,7 +275,7 @@ for i in np.linspace(0,2,1000):
 
 
     cam1.set_R_axisAngle(1.0,  0.0,  0.0, np.deg2rad(180.0))
-    cam1.set_t(0.0, 0.0, i, frame='world')
+    cam1.set_t(0.1, -0.1, i, frame='world')
     # 0.28075725, -0.23558331, 1.31660688
     cams_XYfixed.append(cam1)
 
@@ -315,5 +317,5 @@ cams_HeightFixed.append(cam_4)
 # -----------------------------Test-------------------------------------------------------------------
 # heightGetCondNum(cams,new_objectPoints)
 # heightGetCondNum(cams_HeightFixed,new_objectPoints)
-heightGetCondNum(cams_Zfixed,new_objectPoints)
-# heightGetCondNum(cams_XYfixed,new_objectPoints)
+# heightGetCondNum(cams_Zfixed,new_objectPoints)
+heightGetCondNum(cams_XYfixed,new_objectPoints)

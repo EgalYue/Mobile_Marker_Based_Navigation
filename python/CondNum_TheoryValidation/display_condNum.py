@@ -245,6 +245,60 @@ def displayError3D(x,y,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,i
      plt.show()
      plt.pause(1000)
 
+
+
+def displayError_XYfixed3D(z,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error):
+    fig1 = plt.figure("Error")
+    # ax = fig.gca(projection='3d')
+    ax1 = fig1.add_subplot(231)
+    ax1.plot(z, input_ippe1_t, label='ippe_tvec_error1')
+    ax1.legend()
+    ax1.set_xlabel('Z Label')
+    ax1.set_ylabel('Error')
+
+    ax2 = fig1.add_subplot(234)
+    ax2.plot(z, input_ippe1_R, label='ippe_rmat_error1')
+    ax2.legend()
+    ax2.set_xlabel('Z Label')
+    ax2.set_ylabel('Error')
+
+    ax3 = fig1.add_subplot(232)
+    ax3.plot(z, input_ippe2_t, label='ippe_tvec_error2')
+    ax3.legend()
+    ax3.set_xlabel('Z Label')
+    ax3.set_ylabel('Error')
+
+    ax2 = fig1.add_subplot(235)
+    ax2.plot(z, input_ippe2_R, label='ippe_rmat_error2')
+    ax2.legend()
+    ax2.set_xlabel('Z Label')
+    ax2.set_ylabel('Error')
+
+    ax2 = fig1.add_subplot(233)
+    ax2.plot(z, input_pnp_t, label='pnp_tmat_error')
+    ax2.legend()
+    ax2.set_xlabel('Z Label')
+    ax2.set_ylabel('Error')
+
+    ax2 = fig1.add_subplot(236)
+    ax2.plot(z, input_pnp_R, label='pnp_rmat_error')
+    ax2.legend()
+    ax2.set_xlabel('Z Label')
+    ax2.set_ylabel('Error')
+
+    # ----------------- Transfer Error ----------------------------------
+    fig2 = plt.figure("Transfer Error ")
+    # ax = fig.gca(projection='3d')
+    ax_transfer_error = fig2.add_subplot(111)
+    ax_transfer_error.plot(z, input_transfer_error, label='transfer_error')
+    ax_transfer_error.legend()
+    ax_transfer_error.set_xlabel('Z Label')
+    ax_transfer_error.set_ylabel('Transfer Error')
+
+
+    plt.show()
+    plt.pause(1000)
+
 #--------------------------------------------- Test--------------------------------------------------
 # Detectionplot()
 # anglePlot()
