@@ -93,7 +93,6 @@ def heightGetCondNum(cams,new_objectPoints):
         if ((imagePoints[0, :] < cam.img_width) & (imagePoints[0, :] > 0) & (imagePoints[1, :] < cam.img_height) & (
             imagePoints[1, :] > 0)).all():
             # ------------------------Calculate Error------------------------
-            # TODO
             transfer_error_loop = []
             ippe_tvec_error_loop1 = []
             ippe_rmat_error_loop1 = []
@@ -103,7 +102,8 @@ def heightGetCondNum(cams,new_objectPoints):
             pnp_rmat_error_loop = []
             new_imagePoints = np.copy(imagePoints)
             for j in range(homography_iters):
-                new_imagePoints_noisy = cam.addnoise_imagePoints(new_imagePoints, mean=0, sd=1)
+                # TODO change sd
+                new_imagePoints_noisy = cam.addnoise_imagePoints(new_imagePoints, mean=0, sd=4)
                 # Calculate the pose using IPPE (solution with least repro error)
                 normalizedimagePoints = cam.get_normalized_pixel_coordinates(new_imagePoints_noisy)
                 ippe_tvec1, ippe_rmat1, ippe_tvec2, ippe_rmat2 = pose_ippe_both(new_objectPoints, normalizedimagePoints,
@@ -113,8 +113,8 @@ def heightGetCondNum(cams,new_objectPoints):
 
                 # Calculate the pose using solvepnp
                 debug = False
-                # TODO
-                pnp_tvec, pnp_rmat = pose_pnp(new_objectPoints, new_imagePoints_noisy, cam.K, debug, cv2.SOLVEPNP_DLS,
+                # TODO  cv2.SOLVEPNP_DLS, cv2.SOLVEPNP_EPNP, cv2.SOLVEPNP_ITERATIVE
+                pnp_tvec, pnp_rmat = pose_pnp(new_objectPoints, new_imagePoints_noisy, cam.K, debug, cv2.SOLVEPNP_ITERATIVE,
                                               False)
                 pnpCam = cam.clone_withPose(pnp_tvec, pnp_rmat)
                 # Calculate errors
@@ -175,16 +175,16 @@ def heightGetCondNum(cams,new_objectPoints):
             display_array[3] = np.copy(mat_cond)
             display_mat = np.hstack((display_mat, display_array))
 
-        ax_image.cla()
-        plt.sca(ax_image)
-        plt.ion()
-        ax_image.plot(imagePoints[0], imagePoints[1], '.', color='blue', )
-        ax_image.set_xlim(0, 1280)
-        ax_image.set_ylim(0, 960)
-        ax_image.invert_yaxis()
-        ax_image.set_title('Image Points')
-        plt.show()
-        plt.pause(0.001)
+        # ax_image.cla()
+        # plt.sca(ax_image)
+        # plt.ion()
+        # ax_image.plot(imagePoints[0], imagePoints[1], '.', color='blue', )
+        # ax_image.set_xlim(0, 1280)
+        # ax_image.set_ylim(0, 960)
+        # ax_image.invert_yaxis()
+        # ax_image.set_title('Image Points')
+        # plt.show()
+        # plt.pause(0.001)
 
     display_mat = display_mat[:,1:]
     # -----------------For Loop End--------------------------------------------------------
@@ -202,17 +202,18 @@ def heightGetCondNum(cams,new_objectPoints):
 
 
     # # -----------------------Draw the image points-----------------------------------------------------------------------
-    fig1 = plt.figure('Image points')
-    ax_image_best = fig1.add_subplot(212)
-    plt.sca(ax_image_best)
-    ax_image_best.plot(imagePoints_des[mat_cond_list.index(min(mat_cond_list))][0],
-                       imagePoints_des[mat_cond_list.index(min(mat_cond_list))][1], '.', color='blue', )
-    ax_image_best.set_xlim(0, 1280)
-    ax_image_best.set_ylim(0, 960)
-    ax_image_best.invert_yaxis()
-    ax_image_best.set_title('Image Points')
-    plt.show()
-    # plt.pause(100)
+    # fig1 = plt.figure('Image points')
+    # ax_image_best = fig1.add_subplot(212)
+    # plt.sca(ax_image_best)
+    # ax_image_best.plot(imagePoints_des[mat_cond_list.index(min(mat_cond_list))][0],
+    #                    imagePoints_des[mat_cond_list.index(min(mat_cond_list))][1], '.', color='blue', )
+    # ax_image_best.set_xlim(0, 1280)
+    # ax_image_best.set_ylim(0, 960)
+    # ax_image_best.invert_yaxis()
+    # ax_image_best.set_title('Image Points')
+    # plt.show()
+
+    ## plt.pause(100)
 
 
     import display_condNum as dc
@@ -240,27 +241,28 @@ def heightGetCondNum(cams,new_objectPoints):
     print ippe_rmat_error_list1
     print ippe_tvec_error_list2
     print ippe_rmat_error_list2
-    print max(pnp_tvec_error_list)
     print pnp_rmat_error_list
     # -----------------TODO--------------------------------------
     # dc.displayError3D(inputX,inputY,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error)
     dc.displayError_XYfixed3D(inputZ,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error)
+    # dc.displayError_Zfixed3D(inputX,inputY,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error)
 #------------------------------Z fixed, study X Y-----------------------------------------
 cams_Zfixed = []
-for i in np.linspace(-0.5,0.5,200):
+for x in np.linspace(-0.5,0.5,50):
+    for y in np.linspace(-0.5,0.5,50):
+        cam1 = Camera()
+        cam1.set_K(fx = 800,fy = 800,cx = 640/2.,cy = 480/2.)
+        cam1.set_width_heigth(640,480)
 
-    cam1 = Camera()
-    cam1.set_K(fx = 800,fy = 800,cx = 640/2.,cy = 480/2.)
-    cam1.set_width_heigth(640,480)
+        ## DEFINE A SET OF CAMERA POSES IN DIFFERENT POSITIONS BUT ALWAYS LOOKING
+        # TO THE CENTER OF THE PLANE MODEL
 
-    ## DEFINE A SET OF CAMERA POSES IN DIFFERENT POSITIONS BUT ALWAYS LOOKING
-    # TO THE CENTER OF THE PLANE MODEL
-
-
-    cam1.set_R_axisAngle(1.0,  0.0,  0.0, np.deg2rad(180.0))
-    cam1.set_t(i, -0.1, 0.8, frame='world')
-    # 0.28075725, -0.23558331, 1.31660688
-    cams_Zfixed.append(cam1)
+        cam1.set_R_axisAngle(1.0,  0.0,  0.0, np.deg2rad(180.0))
+        # TODO  cv2.SOLVEPNP_DLS, cv2.SOLVEPNP_EPNP, cv2.SOLVEPNP_ITERATIVE
+        # cam1.set_t(x, -0.01, 1.31660688, frame='world')
+        cam1.set_t(x, y, 1.3, frame='world')
+        # 0.28075725, -0.23558331, 1.31660688
+        cams_Zfixed.append(cam1)
 
 #------------------------------X Y fixed, study Z-----------------------------------------
 cams_XYfixed = []

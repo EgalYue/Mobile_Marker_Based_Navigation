@@ -299,9 +299,93 @@ def displayError_XYfixed3D(z,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ipp
     plt.show()
     plt.pause(1000)
 
+def displayError_Zfixed3D(x,y,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error):
+    # fig = plt.figure()
+    # # ax = Axes3D(fig)
+    # # X = np.arange(-X_range, X_range, 0.25)
+    # # Y = np.arange(-Y_range, Y_range, 0.25)
+    # # X, Y = np.meshgrid(X, Y)
+    # X = inputX
+    # Y = inputY
+    # Z = input_ippe1_t
+    #
+    # # ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap='rainbow')
+    #
+    # ax = plt.subplot(111, projection='3d')
+    # ax.scatter(X[:1000], Y[:1000], Z[:1000], c='y')
+    # ax.scatter(X[1000:4000], Y[1000:4000], Z[1000:4000], c='r')
+    # ax.scatter(X[4000:], Y[4000:], Z[4000:], c='g')
+    # ax.set_zlabel('Z')
+    # ax.set_ylabel('Y')
+    # ax.set_xlabel('X')
+    # plt.show()
+
+
+    fig1 = plt.figure("Error")
+    # ax = fig.gca(projection='3d')
+    ax1 = fig1.add_subplot(231, projection='3d')
+    ax1.scatter(x, y, input_ippe1_t, marker = ".")
+    ax1.legend()
+    ax1.set_xlabel('X Label')
+    ax1.set_ylabel('Y Label')
+    ax1.set_zlabel('ippe_tvec_error1')
+
+    ax2 = fig1.add_subplot(234, projection='3d')
+    ax2.scatter(x, y, input_ippe1_R, marker = ".")
+    ax2.legend()
+    ax2.set_xlabel('X Label')
+    ax2.set_ylabel('Y Label')
+    ax2.set_zlabel('ippe_rmat_error1')
+
+    ax3 = fig1.add_subplot(232, projection='3d')
+    ax3.scatter(x, y, input_ippe2_t, marker = ".")
+    ax3.legend()
+    ax3.set_xlabel('X Label')
+    ax3.set_ylabel('Y Label')
+    ax3.set_zlabel('ippe_tvec_error2')
+
+    ax4 = fig1.add_subplot(235, projection='3d')
+    ax4.scatter(x, y, input_ippe2_R, marker = ".")
+    ax4.legend()
+    ax4.set_xlabel('X Label')
+    ax4.set_ylabel('Y Label')
+    ax4.set_zlabel('ippe_rmat_error2')
+
+    ax5 = fig1.add_subplot(233, projection='3d')
+    ax5.scatter(x, y, input_pnp_t, marker = ".")
+    ax5.legend()
+    ax5.set_xlabel('X Label')
+    ax5.set_ylabel('Y Label')
+    ax5.set_zlabel('pnp_tmat_error')
+
+    ax6 = fig1.add_subplot(236, projection='3d')
+    ax6.scatter(x, y, input_pnp_R, marker = ".")
+    ax6.legend()
+    ax6.set_xlabel('X Label')
+    ax6.set_ylabel('Y Label')
+    ax6.set_zlabel('pnp_rmat_error')
+
+    plt.savefig("Error.png")
+
+
+    # ----------------- Transfer Error ----------------------------------
+    fig2 = plt.figure("Transfer Error ")
+    # ax = fig.gca(projection='3d')
+    ax_transfer_error = fig2.add_subplot(111, projection='3d')
+    ax_transfer_error.scatter(x, y, input_transfer_error, marker = ".")
+    ax_transfer_error.legend()
+    ax_transfer_error.set_xlabel('X Label')
+    ax_transfer_error.set_ylabel('Y Label')
+    ax_transfer_error.set_zlabel('Transfer Error')
+
+    plt.savefig("Transfer Error.png")
+    plt.show()
+    plt.pause(1000)
+
 #--------------------------------------------- Test--------------------------------------------------
 # Detectionplot()
 # anglePlot()
 # matrix = np.array([[1,2,3,4],[1,2,3,4],[1,2,3,4],[1000,20000,5000,50000]])
 # displayCondNumDistribution(matrix)
+# displayError_Zfixed3D(matrix)
 

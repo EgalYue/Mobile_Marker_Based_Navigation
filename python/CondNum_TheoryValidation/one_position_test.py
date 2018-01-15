@@ -80,7 +80,7 @@ ax_image = fig1.add_subplot(211)
 # set camera again
 # TODO
 cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0, np.deg2rad(180), 0))
-cam.set_t( 0.28075725, -0.23558331, 1.6, frame='world')
+cam.set_t( -0.07, -0.1, 1.3, frame='world')
 # cam.look_at([0,0,0])
 
 imagePoints_des = []
@@ -121,6 +121,7 @@ if ((imagePoint[0, :] < cam.img_width) & (imagePoint[0, :] > 0) & (imagePoint[1,
     pnp_tvec_error_loop = []
     pnp_rmat_error_loop = []
     new_imagePoints = np.copy(imagePoint)
+    print "new_imagePoints", new_imagePoints
     for j in range(homography_iters):
         new_imagePoints_noisy = cam.addnoise_imagePoints(new_imagePoints, mean=0, sd=1)
         # Calculate the pose using IPPE (solution with least repro error)
