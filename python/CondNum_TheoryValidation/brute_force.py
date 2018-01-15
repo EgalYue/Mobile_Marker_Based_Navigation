@@ -134,7 +134,9 @@ def heightGetCondNum(cams,new_objectPoints):
 
                 # Homography Estimation from noisy image points
                 Xo = new_objectPoints[[0, 1, 3], :]
-                Xi = new_imagePoints_noisy
+                # TODO replace Xi = new_imagePoints_noisy with Xi = normalizedimagePoints
+                # Xi = new_imagePoints_noisy
+                Xi = normalizedimagePoints
                 # Hnoisy,A_t_ref,H_t = homo2d.homography2d(Xo,Xi)
                 # Hnoisy = Hnoisy/Hnoisy[2,2]
                 Hnoisy = hh(Xo, Xi)
@@ -216,7 +218,7 @@ def heightGetCondNum(cams,new_objectPoints):
     ## plt.pause(100)
 
     ##------------Display cond num distribution-------------------
-    # import display_condNum as dc
+    import display_condNum as dc
     # print "start to show "
     # display_mat = display_mat[:,1:]
     # dc.displayCondNumDistribution(display_mat)
@@ -245,7 +247,7 @@ def heightGetCondNum(cams,new_objectPoints):
     # -----------------TODO--------------------------------------
     # dc.displayError3D(inputX,inputY,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error)
     # dc.displayError_XYfixed3D(inputZ,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error)
-    # dc.displayError_Zfixed3D(inputX,inputY,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error)
+    dc.displayError_Zfixed3D(inputX,inputY,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error)
 #------------------------------Z fixed, study X Y-----------------------------------------
 cams_Zfixed = []
 for x in np.linspace(-0.5,0.5,50):
