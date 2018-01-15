@@ -215,8 +215,8 @@ def heightGetCondNum(cams,new_objectPoints):
 
     ## plt.pause(100)
 
-
-    import display_condNum as dc
+    ##------------Display cond num distribution-------------------
+    # import display_condNum as dc
     # print "start to show "
     # display_mat = display_mat[:,1:]
     # dc.displayCondNumDistribution(display_mat)
@@ -244,7 +244,7 @@ def heightGetCondNum(cams,new_objectPoints):
     print pnp_rmat_error_list
     # -----------------TODO--------------------------------------
     # dc.displayError3D(inputX,inputY,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error)
-    dc.displayError_XYfixed3D(inputZ,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error)
+    # dc.displayError_XYfixed3D(inputZ,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error)
     # dc.displayError_Zfixed3D(inputX,inputY,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error)
 #------------------------------Z fixed, study X Y-----------------------------------------
 cams_Zfixed = []
@@ -319,5 +319,5 @@ cams_HeightFixed.append(cam_4)
 # -----------------------------Test-------------------------------------------------------------------
 # heightGetCondNum(cams,new_objectPoints)
 # heightGetCondNum(cams_HeightFixed,new_objectPoints)
-# heightGetCondNum(cams_Zfixed,new_objectPoints)
-heightGetCondNum(cams_XYfixed,new_objectPoints)
+heightGetCondNum(cams_Zfixed,new_objectPoints)
+# heightGetCondNum(cams_XYfixed,new_objectPoints)
