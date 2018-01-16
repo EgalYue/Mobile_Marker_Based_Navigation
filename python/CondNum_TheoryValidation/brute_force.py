@@ -17,7 +17,7 @@ from vision.circular_plane import CircularPlane
 import matplotlib.pyplot as plt
 import scipy.io as sio
 import error_functions as ef
-# from ippe import homo2d
+from ippe import homo2d
 from homographyHarker.homographyHarker import homographyHarker as hh
 # import matplotlib.pyplot as plt
 import hT_gradient as gd
@@ -114,7 +114,7 @@ def heightGetCondNum(cams,new_objectPoints):
                 # Calculate the pose using solvepnp
                 debug = False
                 # TODO  cv2.SOLVEPNP_DLS, cv2.SOLVEPNP_EPNP, cv2.SOLVEPNP_ITERATIVE
-                pnp_tvec, pnp_rmat = pose_pnp(new_objectPoints, new_imagePoints_noisy, cam.K, debug, cv2.SOLVEPNP_ITERATIVE,
+                pnp_tvec, pnp_rmat = pose_pnp(new_objectPoints, new_imagePoints_noisy, cam.K, debug, cv2.SOLVEPNP_DLS,
                                               False)
                 pnpCam = cam.clone_withPose(pnp_tvec, pnp_rmat)
                 # Calculate errors
@@ -139,8 +139,11 @@ def heightGetCondNum(cams,new_objectPoints):
                 Xi = normalizedimagePoints
                 # Hnoisy,A_t_ref,H_t = homo2d.homography2d(Xo,Xi)
                 # Hnoisy = Hnoisy/Hnoisy[2,2]
-                Hnoisy = hh(Xo, Xi)
-
+                # TODO Change H
+                # HO Method
+                # Hnoisy = hh(Xo, Xi)
+                # OpenCV Method
+                Hnoisy_OpenCV, _ = cv2.findHomography(Xo[:2].T.reshape(1, -1, 2), Xi[:2].T.reshape(1, -1, 2))
                 ## ERRORS FOR THE NOISY HOMOGRAPHY
                 ## VALIDATION OBJECT POINTS
                 validation_objectPoints = validation_plane.get_points()
@@ -148,7 +151,7 @@ def heightGetCondNum(cams,new_objectPoints):
                 Xo = np.copy(validation_objectPoints)
                 Xo = np.delete(Xo, 2, axis=0)
                 Xi = np.copy(validation_imagePoints)
-                transfer_error_loop.append(ef.validation_points_error(Xi, Xo, Hnoisy))
+                transfer_error_loop.append(ef.validation_points_error(Xi, Xo, Hnoisy_OpenCV))
 
             transfer_error_list.append(np.mean(transfer_error_loop))
             ippe_tvec_error_list1.append(np.mean(ippe_tvec_error_loop1))
