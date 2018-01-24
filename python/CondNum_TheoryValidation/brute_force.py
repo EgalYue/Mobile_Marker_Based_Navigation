@@ -101,57 +101,58 @@ def heightGetCondNum(cams,new_objectPoints):
             pnp_tvec_error_loop = []
             pnp_rmat_error_loop = []
             new_imagePoints = np.copy(imagePoints)
-            for j in range(homography_iters):
-                # TODO change sd
-                new_imagePoints_noisy = cam.addnoise_imagePoints(new_imagePoints, mean=0, sd=4)
-                # Calculate the pose using IPPE (solution with least repro error)
-                normalizedimagePoints = cam.get_normalized_pixel_coordinates(new_imagePoints_noisy)
-                ippe_tvec1, ippe_rmat1, ippe_tvec2, ippe_rmat2 = pose_ippe_both(new_objectPoints, normalizedimagePoints,
-                                                                                debug=False)
-                ippeCam1 = cam.clone_withPose(ippe_tvec1, ippe_rmat1)
-                ippeCam2 = cam.clone_withPose(ippe_tvec2, ippe_rmat2)
-
-                # Calculate the pose using solvepnp
-                debug = False
-                # TODO  cv2.SOLVEPNP_DLS, cv2.SOLVEPNP_EPNP, cv2.SOLVEPNP_ITERATIVE
-                pnp_tvec, pnp_rmat = pose_pnp(new_objectPoints, new_imagePoints_noisy, cam.K, debug, cv2.SOLVEPNP_DLS,
-                                              False)
-                pnpCam = cam.clone_withPose(pnp_tvec, pnp_rmat)
-                # Calculate errors
-                pnp_tvec_error, pnp_rmat_error = ef.calc_estimated_pose_error(cam.get_tvec(), cam.R, pnpCam.get_tvec(),
-                                                                              pnp_rmat)
-                pnp_tvec_error_loop.append(pnp_tvec_error)
-                pnp_rmat_error_loop.append(pnp_rmat_error)
-
-                ippe_tvec_error1, ippe_rmat_error1 = ef.calc_estimated_pose_error(cam.get_tvec(), cam.R,
-                                                                                  ippeCam1.get_tvec(), ippe_rmat1)
-                ippe_tvec_error2, ippe_rmat_error2 = ef.calc_estimated_pose_error(cam.get_tvec(), cam.R,
-                                                                                  ippeCam2.get_tvec(), ippe_rmat2)
-                ippe_tvec_error_loop1.append(ippe_tvec_error1)
-                ippe_rmat_error_loop1.append(ippe_rmat_error1)
-                ippe_tvec_error_loop2.append(ippe_tvec_error2)
-                ippe_rmat_error_loop2.append(ippe_rmat_error2)
-
-                # Homography Estimation from noisy image points
-                Xo = new_objectPoints[[0, 1, 3], :]
-                # TODO replace Xi = new_imagePoints_noisy with Xi = normalizedimagePoints
-                # Xi = new_imagePoints_noisy
-                Xi = normalizedimagePoints
-                # Hnoisy,A_t_ref,H_t = homo2d.homography2d(Xo,Xi)
-                # Hnoisy = Hnoisy/Hnoisy[2,2]
-                # TODO Change H
-                # HO Method
-                # Hnoisy = hh(Xo, Xi)
-                # OpenCV Method
-                Hnoisy_OpenCV, _ = cv2.findHomography(Xo[:2].T.reshape(1, -1, 2), Xi[:2].T.reshape(1, -1, 2))
-                ## ERRORS FOR THE NOISY HOMOGRAPHY
-                ## VALIDATION OBJECT POINTS
-                validation_objectPoints = validation_plane.get_points()
-                validation_imagePoints = np.array(cam.project(validation_objectPoints, False))
-                Xo = np.copy(validation_objectPoints)
-                Xo = np.delete(Xo, 2, axis=0)
-                Xi = np.copy(validation_imagePoints)
-                transfer_error_loop.append(ef.validation_points_error(Xi, Xo, Hnoisy_OpenCV))
+            # for j in range(homography_iters):
+            #     # TODO change sd
+            #     new_imagePoints_noisy = cam.addnoise_imagePoints(new_imagePoints, mean=0, sd=4)
+            #     # Calculate the pose using IPPE (solution with least repro error)
+            #     normalizedimagePoints = cam.get_normalized_pixel_coordinates(new_imagePoints_noisy)
+            #     ippe_tvec1, ippe_rmat1, ippe_tvec2, ippe_rmat2 = pose_ippe_both(new_objectPoints, normalizedimagePoints,
+            #                                                                     debug=False)
+            #     ippeCam1 = cam.clone_withPose(ippe_tvec1, ippe_rmat1)
+            #     ippeCam2 = cam.clone_withPose(ippe_tvec2, ippe_rmat2)
+            #
+            #     # Calculate the pose using solvepnp
+            #     debug = False
+            #     # TODO  cv2.SOLVEPNP_DLS, cv2.SOLVEPNP_EPNP, cv2.SOLVEPNP_ITERATIVE
+            #     pnp_tvec, pnp_rmat = pose_pnp(new_objectPoints, new_imagePoints_noisy, cam.K, debug, cv2.SOLVEPNP_DLS,
+            #                                   False)
+            #     pnpCam = cam.clone_withPose(pnp_tvec, pnp_rmat)
+            #     # Calculate errors
+            #     pnp_tvec_error, pnp_rmat_error = ef.calc_estimated_pose_error(cam.get_tvec(), cam.R, pnpCam.get_tvec(),
+            #                                                                   pnp_rmat)
+            #     pnp_tvec_error_loop.append(pnp_tvec_error)
+            #     pnp_rmat_error_loop.append(pnp_rmat_error)
+            #
+            #     ippe_tvec_error1, ippe_rmat_error1 = ef.calc_estimated_pose_error(cam.get_tvec(), cam.R,
+            #                                                                       ippeCam1.get_tvec(), ippe_rmat1)
+            #     ippe_tvec_error2, ippe_rmat_error2 = ef.calc_estimated_pose_error(cam.get_tvec(), cam.R,
+            #                                                                       ippeCam2.get_tvec(), ippe_rmat2)
+            #     ippe_tvec_error_loop1.append(ippe_tvec_error1)
+            #     ippe_rmat_error_loop1.append(ippe_rmat_error1)
+            #     ippe_tvec_error_loop2.append(ippe_tvec_error2)
+            #     ippe_rmat_error_loop2.append(ippe_rmat_error2)
+            #
+            #     # Homography Estimation from noisy image points
+            #     Xo = new_objectPoints[[0, 1, 3], :]
+            #     # TODO replace Xi = new_imagePoints_noisy with Xi = normalizedimagePoints
+            #     # Xi = new_imagePoints_noisy
+            #
+            #     Xi = normalizedimagePoints
+            #     # Hnoisy,A_t_ref,H_t = homo2d.homography2d(Xo,Xi)
+            #     # Hnoisy = Hnoisy/Hnoisy[2,2]
+            #     # TODO Change H
+            #     # HO Method
+            #     # Hnoisy = hh(Xo, Xi)
+            #     # OpenCV Method
+            #     Hnoisy_OpenCV, _ = cv2.findHomography(Xo[:2].T.reshape(1, -1, 2), Xi[:2].T.reshape(1, -1, 2))
+            #     ## ERRORS FOR THE NOISY HOMOGRAPHY
+            #     ## VALIDATION OBJECT POINTS
+            #     validation_objectPoints = validation_plane.get_points()
+            #     validation_imagePoints = np.array(cam.project(validation_objectPoints, False))
+            #     Xo = np.copy(validation_objectPoints)
+            #     Xo = np.delete(Xo, 2, axis=0)
+            #     Xi = np.copy(validation_imagePoints)
+            #     transfer_error_loop.append(ef.validation_points_error(Xi, Xo, Hnoisy_OpenCV))
 
             transfer_error_list.append(np.mean(transfer_error_loop))
             ippe_tvec_error_list1.append(np.mean(ippe_tvec_error_loop1))
@@ -225,6 +226,7 @@ def heightGetCondNum(cams,new_objectPoints):
     # print "start to show "
     # display_mat = display_mat[:,1:]
     # dc.displayCondNumDistribution(display_mat)
+    # dc.displayCondNumDistriMayavi(display_mat)
     # print "finish!!!"
     #-------------Display error---------------------------------
     inputX = np.copy(display_mat[0,:])
@@ -250,7 +252,10 @@ def heightGetCondNum(cams,new_objectPoints):
     # -----------------TODO--------------------------------------
     # dc.displayError3D(inputX,inputY,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error)
     # dc.displayError_XYfixed3D(inputZ,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error)
-    dc.displayError_Zfixed3D(inputX,inputY,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error)
+    # dc.displayError_Zfixed3D(inputX,inputY,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error)
+
+
+
 #------------------------------Z fixed, study X Y-----------------------------------------
 cams_Zfixed = []
 for x in np.linspace(-0.5,0.5,50):

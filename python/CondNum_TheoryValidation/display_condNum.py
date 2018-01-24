@@ -5,11 +5,34 @@ import numpy as np
 import scipy.io as sio
 import matplotlib.pyplot as plt
 import numpy as np
-
+from mayavi import mlab
+from vision.camera import Camera
+import Rt_matrix_from_euler_t as Rt_matrix_from_euler_t
 
 # sio.savemat('testpython.mat', {'data': [[1, 2, 3], [1, 2, 3], [9, 19, 29],[80000,60000,3000]]})
 # data = sio.loadmat('testpython.mat')
 # sio.whosmat('testpython.mat')
+
+def plot3D_cam(cam, axis_scale=0.2):
+    # Coordinate Frame of real camera
+    # Camera axis
+    axis_scale = 0.05
+    cam_axis_x = np.array([1, 0, 0, 1]).T
+    cam_axis_y = np.array([0, 1, 0, 1]).T
+    cam_axis_z = np.array([0, 0, 1, 1]).T
+
+    cam_axis_x = np.dot(cam.R.T, cam_axis_x)
+    cam_axis_y = np.dot(cam.R.T, cam_axis_y)
+    cam_axis_z = np.dot(cam.R.T, cam_axis_z)
+
+    cam_world = cam.get_world_position()
+
+    mlab.quiver3d(cam_world[0], cam_world[1], cam_world[2], cam_axis_x[0], cam_axis_x[1], cam_axis_x[2], line_width=3,
+                  scale_factor=axis_scale, color=(1 - axis_scale, 0, 0))
+    mlab.quiver3d(cam_world[0], cam_world[1], cam_world[2], cam_axis_y[0], cam_axis_y[1], cam_axis_y[2], line_width=3,
+                  scale_factor=axis_scale, color=(0, 1 - axis_scale, 0))
+    mlab.quiver3d(cam_world[0], cam_world[1], cam_world[2], cam_axis_z[0], cam_axis_z[1], cam_axis_z[2], line_width=3,
+                  scale_factor=axis_scale, color=(0, 0, 1 - axis_scale))
 
 
 # -------------------------------------------------------------------------------
@@ -44,15 +67,70 @@ def getConNumColor(condNum):
 
         return color
 
+def getColorMayavi(condNum):
+    color = (1,1,1)
+    if condNum > 70000.0:
+        color = (0.9,0.9,0.9)
+    elif condNum > 60000.0:
+        color = (0.8,0.8,0.8)
+    elif condNum > 50000.0:
+        color = (0.7,0.7,0.7)
+    elif condNum > 40000.0:
+        color = (0.6,0.6,0.6)
+    elif condNum > 30000.0:
+        color = (0.5,0.5,0.5)
+    elif condNum > 20000.0:
+        color = (0.4,0.4,0.4)
+    elif condNum > 10000.0:
+        color = (0.3,0.3,0.3)
+    elif condNum > 8000.0:
+        color = (0.2,0.2,0.2)
+    elif condNum > 6000.0:
+        color = (0.1,0.1,0.1)
+    elif condNum > 4000.0:
+        color = (0,0,1)
+    elif condNum > 2000.0:
+        color = (0,1,0)
+    elif condNum > 1000.0:
+        color = (1,0,0)
+    else:
+        color = (0,0,0)
+
+    return color
+
+def displayCondNumDistriMayavi(m):
+    """"Display distribution of cond num for cam distribution in 3D"""
+    cam = Camera()
+    cam.set_K(fx=800, fy=800, cx=640 / 2., cy=480 / 2.)
+    cam.set_width_heigth(640, 480)
+    cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0,np.deg2rad(180),0))
+    cam.set_t(0, 0,2,'world')
+
+    plot3D_cam(cam)
+
+    for i in range(0,m.shape[1]):
+        x = m[0][i]
+        y = m[1][i]
+        z = m[2][i]
+        condNum = m[3][i]
+        color = getColorMayavi(condNum)
+        mlab.points3d(x,y,z,color=color,mode='point',line_width=1)
+        mlab.colorbar()
+        # mlab.show()
+    mlab.show()
 
 def displayCondNumDistribution(m):
     """"Display distribution of cond num for cam distribution in 3D"""
+    cam = Camera()
+    cam.set_K(fx=800, fy=800, cx=640 / 2., cy=480 / 2.)
+    cam.set_width_heigth(640, 480)
+    cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0,np.deg2rad(180),0))
+    cam.set_t(0, 0,5,'world')
+
+    plot3D_cam(cam)
 
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-
-    n = 100
-
 
     for i in range(0,m.shape[1]):
         x = m[0][i]
