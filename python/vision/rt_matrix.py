@@ -7,7 +7,7 @@ Created on Thu Jun 29 17:08:12 2017
 """
 from scipy.linalg import expm
 import numpy as np
-from math import cos, sin
+from math import cos, sin,pi
 
 def rotation_matrix(a, alpha):
     """  Creates a 3D [R|t] matrix for rotation
@@ -136,6 +136,9 @@ def R_matrix_from_euler_t(alpha,beta,gamma):
   R[2,2]=cos(beta)
 
   return R
+
+# ================================Test===============================
+# print rotation_matrix([1,0,0],pi)
 
 
 

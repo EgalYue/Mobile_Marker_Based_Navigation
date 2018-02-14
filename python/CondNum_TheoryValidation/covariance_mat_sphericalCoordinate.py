@@ -13,6 +13,8 @@ from scipy.linalg import expm, rq, det, inv,pinv
 from vision.camera import Camera
 import Rt_matrix_from_euler_t as Rt_matrix_from_euler_t
 from vision.circular_plane import CircularPlane
+import vision.rt_matrix as rt
+from math import pi
 
 def covariance_alpha_belt_r(cam,new_objectPoints):
     """
@@ -57,25 +59,24 @@ def covariance_alpha_belt_r(cam,new_objectPoints):
                     [np.zeros((2, 2)), cov_mat_p2, np.zeros((2, 2)), np.zeros((2, 2))],
                     [np.zeros((2, 2)), np.zeros((2, 2)), cov_mat_p3, np.zeros((2, 2))],
                     [np.zeros((2, 2)), np.zeros((2, 2)), np.zeros((2, 2)), cov_mat_p4]])
-    print "block_mat_image4points",block_mat_image4points
-
+    # print "block_mat_image4points",block_mat_image4points
     # TODO Pinv inv
-    print "j_f:\n",j_f
-    cov_mat = pinv(np.dot(np.dot(j_f.T, pinv(block_mat_image4points)), j_f))
+    # print "j_f:\n",j_f
+    cov_mat = inv(np.dot(np.dot(j_f.T, inv(block_mat_image4points)), j_f))
     return cov_mat
 
 
-def jacobian_function(inp, K, obj_point):
+def jacobian_function(input, K, obj_point):
     """
     Use your Jacobian function at any point you want.
     """
     f_jacob = nd.Jacobian(f)
 
     # 2*4(points) equations
-    matrix_point1 = f_jacob(inp, K, obj_point[:,0])
-    matrix_point2 = f_jacob(inp, K, obj_point[:,1])
-    matrix_point3 = f_jacob(inp, K, obj_point[:,2])
-    matrix_point4 = f_jacob(inp, K, obj_point[:,3])
+    matrix_point1 = f_jacob(input, K, obj_point[:,0])
+    matrix_point2 = f_jacob(input, K, obj_point[:,1])
+    matrix_point3 = f_jacob(input, K, obj_point[:,2])
+    matrix_point4 = f_jacob(input, K, obj_point[:,3])
     jacobian_funs = np.vstack((matrix_point1,matrix_point2,matrix_point3,matrix_point4))
     return jacobian_funs
 
@@ -112,6 +113,8 @@ def f(input, K,obj_point):
     R = np.array([[np.cos(belt)*np.cos(alpha), -np.sin(belt), np.cos(belt)*np.sin(alpha)],
                   [np.sin(belt)*np.cos(alpha), np.cos(belt), np.sin(belt)*np.sin(alpha)],
                   [-np.sin(alpha), 0, np.cos(alpha)],])
+    Rx = rt.rotation_matrix([1,0,0],pi)
+    R = np.dot(Rx[:3,:3],R) # Z-axis points to origin
     # ---------------------------------------
     # R = np.array([[input[0], input[0], input[0]],
     #               [input[1], input[1], input[1]],
@@ -148,7 +151,7 @@ cam = Camera()
 cam.set_K(fx = 800,fy = 800,cx = 640/2.,cy = 480/2.)
 cam.set_width_heigth(640,480)
 cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0, np.deg2rad(180), 0))
-cam.set_t(0, 0, 1, 'world')
+cam.set_t(0, 0, 5, 'world')
 
 calc_metrics = False
 number_of_points = 4
