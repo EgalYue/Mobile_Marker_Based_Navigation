@@ -8,6 +8,7 @@
 import sys
 sys.path.append("..")
 import numpy as np
+from numpy import random, cos, sin, sqrt, pi, linspace, deg2rad, meshgrid
 import numdifftools as nd
 from scipy.linalg import expm, rq, det, inv,pinv
 from vision.camera import Camera
@@ -15,6 +16,8 @@ import Rt_matrix_from_euler_t as Rt_matrix_from_euler_t
 from vision.circular_plane import CircularPlane
 import vision.rt_matrix as rt
 from math import pi
+import ellipsoid as ellipsoid
+import display_cov_mat as dvm
 
 def covariance_alpha_belt_r(cam,new_objectPoints):
     """
@@ -26,7 +29,7 @@ def covariance_alpha_belt_r(cam,new_objectPoints):
     K = cam.K
     objectPoints = np.copy(new_objectPoints)
     imagePoint = np.array(cam.project(objectPoints, False))
-    print "imagePoint",imagePoint
+    # print "imagePoint",imagePoint
 
     # j_f should be 8*3 for 4 ponits
     # objectPoints = np.array(
@@ -140,6 +143,58 @@ def f(input, K,obj_point):
     return np.array([u, v])
 
 
+def draw_Covar_Ellipsoid_CamDist():
+    """
+    Draw the covariance ellipsoids for each camera distribution
+    :return:
+    """
+    # TODO
+    # belt_params = (0,360,10)
+    # alpha_params = (0,90,10)
+    # r = 1.
+    # space_belt = linspace(deg2rad(belt_params[0]), deg2rad(belt_params[1]), belt_params[2])
+    # space_alpha = linspace(deg2rad(alpha_params[0]), deg2rad(alpha_params[1]), alpha_params[2])
+    # belt, alpha = meshgrid(space_belt, space_alpha)
+
+
+def test1(objectPoints_square):
+    # ------------------------------Z fixed, study X Y-----------------------------------------
+    cams_Zfixed = []
+    for x in np.linspace(-0.5, 0.5, 10):
+        for y in np.linspace(-0.5, 0.5, 10):
+            cam1 = Camera()
+            cam1.set_K(fx=800, fy=800, cx=640 / 2., cy=480 / 2.)
+            cam1.set_width_heigth(640, 480)
+
+            ## DEFINE A SET OF CAMERA POSES IN DIFFERENT POSITIONS BUT ALWAYS LOOKING
+            # TO THE CENTER OF THE PLANE MODEL
+            # TODO LOOK AT
+            cam1.set_R_axisAngle(1.0, 0.0, 0.0, np.deg2rad(180.0))
+            # TODO  cv2.SOLVEPNP_DLS, cv2.SOLVEPNP_EPNP, cv2.SOLVEPNP_ITERATIVE
+            # cam1.set_t(x, -0.01, 1.31660688, frame='world')
+            cam1.set_t(x, y, 1.3, frame='world')
+            # 0.28075725, -0.23558331, 1.31660688
+            cams_Zfixed.append(cam1)
+
+    new_objectPoints = np.copy(objectPoints_square)
+    xInputs = []
+    yInputs = []
+    volumes = []
+    for cam in cams_Zfixed:
+        t = cam.get_world_position()
+        xInputs.append(t[0])
+        yInputs.append(t[1])
+
+        cov_mat = covariance_alpha_belt_r(cam, new_objectPoints)
+        a, b, c = ellipsoid.get_semi_axes_abc(cov_mat, 0.95)
+        v = ellipsoid.ellipsoid_Volume(a, b, c)
+        volumes.append(v)
+
+    dvm.displayCovVolume_Zfixed3D(xInputs,yInputs,volumes)
+
+
+
+#-----------------------------Code End------------------------------------------------------------
 
 
 # ============================================Test=================================================
@@ -151,7 +206,7 @@ cam = Camera()
 cam.set_K(fx = 800,fy = 800,cx = 640/2.,cy = 480/2.)
 cam.set_width_heigth(640,480)
 cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0, np.deg2rad(180), 0))
-cam.set_t(0, 0, 5, 'world')
+cam.set_t(0., 0., 0.5, 'world')
 
 calc_metrics = False
 number_of_points = 4
@@ -168,4 +223,10 @@ objectPoints_square= np.array(
 new_objectPoints = np.copy(objectPoints_square)
 print "new_objectPoints",new_objectPoints
 result = covariance_alpha_belt_r(cam,new_objectPoints)
+a,b,c = ellipsoid.get_semi_axes_abc(result,0.95)
+v1 = ellipsoid.ellipsoid_Volume(a,b,c)
 print "covariance_alpha_belt_r : \n",result
+print "v1: \n", v1
+
+
+test1(new_objectPoints)
