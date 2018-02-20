@@ -113,7 +113,6 @@ def drawAllEllipsoid(inputMatrix):
     # Cartesian coordinates that correspond to the spherical angles:
     # (this is the equation of an ellipsoid):
     for i in range(0,inputMatrix.shape[1]):
-        print "i",i
         a = inputMatrix[0, i]
         b = inputMatrix[1, i]
         c = inputMatrix[2, i]
