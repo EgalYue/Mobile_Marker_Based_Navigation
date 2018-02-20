@@ -254,9 +254,9 @@ class Camera(object):
       xaxis = (np.cross(up,zaxis))/np.linalg.norm(np.cross(up,zaxis))
       yaxis = np.cross(zaxis, xaxis)
 
-      print "xaxis",xaxis
-      print "yaxis",yaxis
-      print "zaxis",zaxis
+      # print "xaxis",xaxis
+      # print "yaxis",yaxis
+      # print "zaxis",zaxis
       R = np.eye(4)
       # TODO should use this R
       R = np.array([[xaxis[0], yaxis[0], zaxis[0], 0],
@@ -270,10 +270,10 @@ class Camera(object):
       #              [zaxis[0], zaxis[1], zaxis[2], 0],
       #              [       0,        0,        0, 1]])
 
-      print (xaxis.T).dot(xaxis)
-      print (zaxis.T).dot(zaxis)
-      print (yaxis.T).dot(yaxis)
-      print "R",R
+      # print (xaxis.T).dot(xaxis)
+      # print (zaxis.T).dot(zaxis)
+      # print (yaxis.T).dot(yaxis)
+      # print "R",R
       t = np.eye(4, dtype=np.float32) # translation
       t[:3,3] = -eye
 

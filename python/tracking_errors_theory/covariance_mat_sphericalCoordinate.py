@@ -29,7 +29,6 @@ def covariance_alpha_belt_r(cam,new_objectPoints):
     K = cam.K
     objectPoints = np.copy(new_objectPoints)
     imagePoint = np.array(cam.project(objectPoints, False))
-    # print "imagePoint",imagePoint
 
     # j_f should be 8*3 for 4 ponits
     # objectPoints = np.array(
@@ -118,10 +117,8 @@ def f(input, K,obj_point):
                   [-np.sin(alpha), 0, np.cos(alpha)],])
     Rx = rt.rotation_matrix([1,0,0],pi)
     R = np.dot(Rx[:3,:3],R) # Z-axis points to origin
-    # ---------------------------------------
-    # R = np.array([[input[0], input[0], input[0]],
-    #               [input[1], input[1], input[1]],
-    #               [input[2], input[2], input[1]],]) # Test
+    # print "R\n",R
+
 
     T_R = R
     cam_world = np.array([[x, y, z]]).T
@@ -129,12 +126,13 @@ def f(input, K,obj_point):
     # T_t = np.array([[alpha],[belt],[r]]) # Test
 
     T = np.hstack((T_R,T_t)) # 3*4
+    print "T\n", T
     P = np.dot(K, T) # 3*4
+    print "P\n",P
     image_point = np.dot(P, obj_point)
+    print "image_point\n",image_point
 
 
-    # u = (P[0, 0] * x + P[0, 1] * y + P[0, 2] * z) / (P[2, 0] * x + P[2, 1] * y + P[2, 2] * z)
-    # v = (P[1, 0] * x + P[1, 1] * y + P[1, 2] * z) / (P[2, 0] * x + P[2, 1] * y + P[2, 2] * z)
     # u = image_point[0,0]/image_point[0,2]
     # v = image_point[0,1]/image_point[0,2]
     # TODO u v ??
@@ -202,31 +200,31 @@ def test1(objectPoints_square):
 # T = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
 # print jacobian_function([1, 2, 3],K,T)
 
-cam = Camera()
-cam.set_K(fx = 800,fy = 800,cx = 640/2.,cy = 480/2.)
-cam.set_width_heigth(640,480)
-cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0, np.deg2rad(180), 0))
-cam.set_t(0., 0., 0.5, 'world')
-
-calc_metrics = False
-number_of_points = 4
-
-pl = CircularPlane(origin=np.array([0., 0., 0.]), normal = np.array([0, 0, 1]), radius=0.15, n = 4)
-x1  = round(pl.radius*np.cos(np.deg2rad(45)),3)
-y1  = round(pl.radius*np.sin(np.deg2rad(45)),3)
-objectPoints_square= np.array(
-[[ x1, -x1, -x1, x1],
- [ y1, y1, -y1, -y1],
- [ 0., 0., 0., 0.],
- [ 1., 1., 1., 1.]])
-
-new_objectPoints = np.copy(objectPoints_square)
-print "new_objectPoints",new_objectPoints
-result = covariance_alpha_belt_r(cam,new_objectPoints)
-a,b,c = ellipsoid.get_semi_axes_abc(result,0.95)
-v1 = ellipsoid.ellipsoid_Volume(a,b,c)
-print "covariance_alpha_belt_r : \n",result
-print "v1: \n", v1
-
-
-test1(new_objectPoints)
+# cam = Camera()
+# cam.set_K(fx = 800,fy = 800,cx = 640/2.,cy = 480/2.)
+# cam.set_width_heigth(640,480)
+# cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0, np.deg2rad(180), 0))
+# cam.set_t(0., 0., 0.5, 'world')
+#
+# calc_metrics = False
+# number_of_points = 4
+#
+# pl = CircularPlane(origin=np.array([0., 0., 0.]), normal = np.array([0, 0, 1]), radius=0.15, n = 4)
+# x1  = round(pl.radius*np.cos(np.deg2rad(45)),3)
+# y1  = round(pl.radius*np.sin(np.deg2rad(45)),3)
+# objectPoints_square= np.array(
+# [[ x1, -x1, -x1, x1],
+#  [ y1, y1, -y1, -y1],
+#  [ 0., 0., 0., 0.],
+#  [ 1., 1., 1., 1.]])
+#
+# new_objectPoints = np.copy(objectPoints_square)
+# print "new_objectPoints",new_objectPoints
+# result = covariance_alpha_belt_r(cam,new_objectPoints)
+# a,b,c = ellipsoid.get_semi_axes_abc(result,0.95)
+# v1 = ellipsoid.ellipsoid_Volume(a,b,c)
+# print "covariance_alpha_belt_r : \n",result
+# print "v1: \n", v1
+#
+#
+# test1(new_objectPoints)
