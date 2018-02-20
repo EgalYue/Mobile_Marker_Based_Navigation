@@ -89,10 +89,19 @@ def drawEllipsoid(a,b,c,xp,yp,zp):
 
     plt.show()
 
-def drawAllEllipsoid(a, b, c):
+
+def drawAllEllipsoid(inputMatrix):
     """
-    Here is how you can do it via spherical coordinates
-    because a,b,c are []
+    Draw all ellipsoid from cam distribution
+    inputMatrix = [a_1, ..., a_n]
+                  [b_1, ..., b_n]
+                  [c_1, ..., c_n]
+                  [xp_1, ..., xp_n]
+                  [yp_1, ..., yp_n]
+                  [zp_1, ..., zp_n]
+
+    a,b,c are half the length of the principal axes.
+    xp,yp,zp are the center of ellipsoid.
     """
     fig = plt.figure(figsize=plt.figaspect(1))  # Square figure
     ax = fig.add_subplot(111, projection='3d')
@@ -103,34 +112,42 @@ def drawAllEllipsoid(a, b, c):
 
     # Cartesian coordinates that correspond to the spherical angles:
     # (this is the equation of an ellipsoid):
-    for i in range(0,len(a)):
-        x = a[i] * np.outer(np.cos(u), np.sin(v))
-        y = b[i] * np.outer(np.sin(u), np.sin(v))
-        z = c[i] * np.outer(np.ones_like(u), np.cos(v))
+    for i in range(0,inputMatrix.shape[1]):
+        print "i",i
+        a = inputMatrix[0, i]
+        b = inputMatrix[1, i]
+        c = inputMatrix[2, i]
+        xp = inputMatrix[3,i]
+        yp = inputMatrix[4, i]
+        zp = inputMatrix[5, i]
+
+        x = a * np.outer(np.cos(u), np.sin(v)) + xp
+        y = b * np.outer(np.sin(u), np.sin(v)) + yp
+        z = c * np.outer(np.ones_like(u), np.cos(v)) + zp
 
         # Plot:
-        # TODO set color
-        if i == 1:
-            color = "b"
-        elif i == 2:
-            color = "r"
-        else:
-            color = "g"
-        ax.plot_surface(x, y, z, rstride=4, cstride=4, color=color)
+        ax.contour(x, y, z, [xp], zdir='x', offset=xp, cmap=cm.coolwarm)
+        ax.contour(x, y, z, [yp], zdir='y', offset=yp, cmap=cm.coolwarm)
+        ax.contour(x, y, z, [zp], zdir='z', offset=zp, cmap=cm.coolwarm)
 
         # Adjustment of the axes, so that they all have the same span:
-        max_radius = max(a[i], b[i], c[i])
+        max_radius = max(a, b, c)
         for axis in 'xyz':
             getattr(ax, 'set_{}lim'.format(axis))((-max_radius, max_radius))
 
-    plt.show()
 
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+    plt.savefig("Test_drawAllEllipsoid.png")
+    plt.show()
 
 #=============================Test=========================================
 
-drawEllipsoid(4,9,16,2,5,3)
-# drawAllEllipsoid([4,0],[9,9],[0,16])
+# drawEllipsoid(4,4,9,5,5,5)
+# inputMatrix = np.array([[4,4],[4,4],[9,9],[0,5],[0,5],[0,5]])
+# drawAllEllipsoid(inputMatrix)
 # print ellipsoid_Volume(3,4,5)
-cov = np.array([[2.70877234e-03,4.02577695e-04,1.07777226e-06],[4.02577695e-04, 3.36981672e-04, -1.08499644e-06],[1.07777226e-06, -1.08499644e-06, 2.50353898e-05]])
-cov = np.array([[1,0,0],[0,2,0],[0,0,3]])
-get_semi_axes_abc(cov,0.95)
+# cov = np.array([[2.70877234e-03,4.02577695e-04,1.07777226e-06],[4.02577695e-04, 3.36981672e-04, -1.08499644e-06],[1.07777226e-06, -1.08499644e-06, 2.50353898e-05]])
+# cov = np.array([[1,0,0],[0,2,0],[0,0,3]])
+# get_semi_axes_abc(cov,0.95)
