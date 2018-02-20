@@ -4,14 +4,15 @@ Spyder Editor
 
 This is a temporary script file.
 """
-
+import sys
+sys.path.append("..")
 from scipy.linalg import expm, rq, det, inv
 import matplotlib.pyplot as plt
 
 from math import atan
 from rt_matrix import rotation_matrix
 import autograd.numpy as np
-
+import Rt_matrix_from_euler_t as Rt_matrix_from_euler_t
 
 class Camera(object):
     """ Class for representing pin-hole cameras. """
@@ -150,6 +151,7 @@ class Camera(object):
         """  Project points in X (4*n array) and normalize coordinates. """
         self.set_P()
         x = np.dot(self.P,X)
+        print "project x ",x
         for i in range(x.shape[1]):
           x[:,i] /= x[2,i]
         if(quant_error):
@@ -253,6 +255,9 @@ class Camera(object):
       xaxis = (np.cross(up,zaxis))/np.linalg.norm(np.cross(up,zaxis))
       yaxis = np.cross(zaxis, xaxis)
 
+      print "xaxis",xaxis
+      print "yaxis",yaxis
+      print "zaxis",zaxis
       R = np.eye(4)
       R = np.array([[xaxis[0], yaxis[0], zaxis[0], 0],
                    [xaxis[1], yaxis[1], zaxis[1], 0],
@@ -260,15 +265,15 @@ class Camera(object):
                    [       0,        0,        0, 1]]
           )
 
-      R = np.array([[xaxis[0], xaxis[1], xaxis[2], 0],
-                   [yaxis[0], yaxis[1], yaxis[2], 0],
-                   [zaxis[0], zaxis[1], zaxis[2], 0],
-                   [       0,        0,        0, 1]])
-      # print (xaxis.T).dot(yaxis)
-      # print (xaxis.T).dot(zaxis)
-      # print (yaxis.T).dot(zaxis)
-      # print np.cross(xaxis,yaxis)
-      # print R
+      # R = np.array([[xaxis[0], xaxis[1], xaxis[2], 0],
+      #              [yaxis[0], yaxis[1], yaxis[2], 0],
+      #              [zaxis[0], zaxis[1], zaxis[2], 0],
+      #              [       0,        0,        0, 1]])
+
+      print (xaxis.T).dot(yaxis)
+      print (xaxis.T).dot(zaxis)
+      print (yaxis.T).dot(zaxis)
+      print R
       t = np.eye(4, dtype=np.float32) # translation
       t[:3,3] = -eye
 
@@ -335,4 +340,8 @@ class Camera(object):
 # cam.img_width = 320*2
 # cam.img_height = 240*2
 # cam.set_t(1,1,2.5)
+# cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0,0,0))
 # cam.look_at([0,0,0])
+# print "cam.R",cam.R
+# print "cam.Rt",cam.Rt
+# print "cam.P",cam.P

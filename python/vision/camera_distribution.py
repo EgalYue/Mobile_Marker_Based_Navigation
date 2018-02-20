@@ -102,11 +102,12 @@ def create_cam_distribution(cam = None, plane_size = (0.3,0.3), theta_params = (
   cams = []
   for t in t_space.T:
     cam = cam.clone()
-    # cam.set_t(-t[0], -t[1],-t[2])
-    # cam.look_at([0,0,0])
+    cam.set_t(-t[0], -t[1],-t[2])
+    cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0.0,0,0))
+    cam.look_at([0,0,0])
     # TODO all Z-axis of cam point to straight down
-    cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0,deg2rad(180),0))
-    cam.set_t(t[0], t[1],t[2],'world')
+    # cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0,deg2rad(180),0))
+    # cam.set_t(t[0], t[1],t[2],'world')
 
     plane.set_origin(np.array([0, 0, 0]))
     plane.uniform()
@@ -128,4 +129,4 @@ def create_cam_distribution(cam = None, plane_size = (0.3,0.3), theta_params = (
   return cams
 
 # ==============================Test=================================================
-create_cam_distribution(cam = None, plane_size = (0.3,0.3), theta_params = (0,360,10), phi_params =  (0,70,10), r_params = (0.2,2.0,5), plot=True)
+create_cam_distribution(cam = None, plane_size = (0.3,0.3), theta_params = (0,360,10), phi_params =  (0,70,10), r_params = (0.2,2.0,4), plot=True)
