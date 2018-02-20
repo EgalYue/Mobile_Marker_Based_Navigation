@@ -151,7 +151,6 @@ class Camera(object):
         """  Project points in X (4*n array) and normalize coordinates. """
         self.set_P()
         x = np.dot(self.P,X)
-        print "project x ",x
         for i in range(x.shape[1]):
           x[:,i] /= x[2,i]
         if(quant_error):
@@ -248,7 +247,6 @@ class Camera(object):
       #%%
       world_position = self.get_world_position()[:3]
       eye = world_position
-      print "eye ",eye
       target = np.array([0,0,0])
       up = np.array([0,1,0])
 
@@ -272,10 +270,10 @@ class Camera(object):
       #              [zaxis[0], zaxis[1], zaxis[2], 0],
       #              [       0,        0,        0, 1]])
 
-      print (xaxis.T).dot(yaxis)
-      print (xaxis.T).dot(zaxis)
-      print (yaxis.T).dot(zaxis)
-      print R
+      print (xaxis.T).dot(xaxis)
+      print (zaxis.T).dot(zaxis)
+      print (yaxis.T).dot(yaxis)
+      print "R",R
       t = np.eye(4, dtype=np.float32) # translation
       t[:3,3] = -eye
 
@@ -336,14 +334,14 @@ class Camera(object):
 #print t1 - t2
 #print Rt1 - Rt2
 # ======================Test===================================
-cam = Camera()
-f = 800
-cam.set_K(fx = f, fy = f, cx = 320, cy = 240)  #Camera Matrix
-cam.img_width = 320*2
-cam.img_height = 240*2
-cam.set_t(1,0,0,"world")
-cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0,np.deg2rad(0),0))
-cam.look_at([0,0,0])
-print "cam.R",cam.R
-print "cam.Rt",cam.Rt
-print "cam.P",cam.P
+# cam = Camera()
+# f = 800
+# cam.set_K(fx = f, fy = f, cx = 320, cy = 240)  #Camera Matrix
+# cam.img_width = 320*2
+# cam.img_height = 240*2
+# cam.set_t(1,0,0,"world")
+# cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0,np.deg2rad(0),0))
+# cam.look_at([0,0,0])
+# print "cam.R",cam.R
+# print "cam.Rt",cam.Rt
+# print "cam.P",cam.P

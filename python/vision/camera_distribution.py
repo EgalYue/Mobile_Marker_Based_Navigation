@@ -129,4 +129,28 @@ def create_cam_distribution(cam = None, plane_size = (0.3,0.3), theta_params = (
   return cams
 
 # ==============================Test=================================================
-create_cam_distribution(cam = None, plane_size = (0.3,0.3), theta_params = (0,360,10), phi_params =  (0,70,10), r_params = (0.2,2.0,4), plot=True)
+# create_cam_distribution(cam = None, plane_size = (0.3,0.3), theta_params = (0,360,10), phi_params =  (0,70,10), r_params = (0.2,2.0,4), plot=True)
+
+# -----------------------------Test for cam look at method------------------------------
+# cam = Camera()
+# f = 800
+# cam.set_K(fx = f, fy = f, cx = 320, cy = 240)  #Camera Matrix
+# cam.img_width = 320*2
+# cam.img_height = 240*2
+# cam.set_t(1,0,0,"world")
+# cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0,np.deg2rad(0),0))
+# cam.look_at([0,0,0])
+# plane_size = (0.3,0.3)
+# plane =  Plane(origin=np.array([0, 0, 0] ), normal = np.array([0, 0, 1]), size=plane_size, n = (2,2))
+# plane.set_origin(np.array([0, 0, 0]))
+# plane.uniform()
+# planes = []
+# planes.append(plane)
+# cams = []
+# cams.append(cam)
+# plot3D(cams,planes)
+#
+# print "cam.R",cam.R
+# print "cam.Rt",cam.Rt
+# print "cam.P",cam.P
+# ------------------Code End-----------Test for cam look at method------------------------------
