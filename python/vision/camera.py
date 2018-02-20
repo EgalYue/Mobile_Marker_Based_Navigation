@@ -264,8 +264,11 @@ class Camera(object):
                    [yaxis[0], yaxis[1], yaxis[2], 0],
                    [zaxis[0], zaxis[1], zaxis[2], 0],
                    [       0,        0,        0, 1]])
-
-
+      # print (xaxis.T).dot(yaxis)
+      # print (xaxis.T).dot(zaxis)
+      # print (yaxis.T).dot(zaxis)
+      # print np.cross(xaxis,yaxis)
+      # print R
       t = np.eye(4, dtype=np.float32) # translation
       t[:3,3] = -eye
 
@@ -325,3 +328,11 @@ class Camera(object):
 #print R1 - R2
 #print t1 - t2
 #print Rt1 - Rt2
+# ======================Test===================================
+# cam = Camera()
+# f = 800
+# cam.set_K(fx = f, fy = f, cx = 320, cy = 240)  #Camera Matrix
+# cam.img_width = 320*2
+# cam.img_height = 240*2
+# cam.set_t(1,1,2.5)
+# cam.look_at([0,0,0])
