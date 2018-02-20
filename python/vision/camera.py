@@ -248,6 +248,7 @@ class Camera(object):
       #%%
       world_position = self.get_world_position()[:3]
       eye = world_position
+      print "eye ",eye
       target = np.array([0,0,0])
       up = np.array([0,1,0])
 
@@ -259,9 +260,10 @@ class Camera(object):
       print "yaxis",yaxis
       print "zaxis",zaxis
       R = np.eye(4)
+      # TODO should use this R
       R = np.array([[xaxis[0], yaxis[0], zaxis[0], 0],
                    [xaxis[1], yaxis[1], zaxis[1], 0],
-                   [xaxis[2], yaxis[2], zaxis[1], 0],
+                   [xaxis[2], yaxis[2], zaxis[2], 0],
                    [       0,        0,        0, 1]]
           )
 
@@ -334,14 +336,14 @@ class Camera(object):
 #print t1 - t2
 #print Rt1 - Rt2
 # ======================Test===================================
-# cam = Camera()
-# f = 800
-# cam.set_K(fx = f, fy = f, cx = 320, cy = 240)  #Camera Matrix
-# cam.img_width = 320*2
-# cam.img_height = 240*2
-# cam.set_t(1,1,2.5)
-# cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0,0,0))
-# cam.look_at([0,0,0])
-# print "cam.R",cam.R
-# print "cam.Rt",cam.Rt
-# print "cam.P",cam.P
+cam = Camera()
+f = 800
+cam.set_K(fx = f, fy = f, cx = 320, cy = 240)  #Camera Matrix
+cam.img_width = 320*2
+cam.img_height = 240*2
+cam.set_t(1,0,0,"world")
+cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0,np.deg2rad(0),0))
+cam.look_at([0,0,0])
+print "cam.R",cam.R
+print "cam.Rt",cam.Rt
+print "cam.P",cam.P

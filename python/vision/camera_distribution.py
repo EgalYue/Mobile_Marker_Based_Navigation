@@ -50,10 +50,10 @@ def plot3D_cam(cam, axis_scale = 0.2):
     cam_axis_x = np.array([1,0,0,1]).T
     cam_axis_y = np.array([0,1,0,1]).T
     cam_axis_z = np.array([0,0,1,1]).T
-
-    cam_axis_x = np.dot(cam.R.T, cam_axis_x)
-    cam_axis_y = np.dot(cam.R.T, cam_axis_y)
-    cam_axis_z = np.dot(cam.R.T, cam_axis_z)
+    # TODO This place should use cam.R not cam.R.T
+    cam_axis_x = np.dot(cam.R, cam_axis_x)
+    cam_axis_y = np.dot(cam.R, cam_axis_y)
+    cam_axis_z = np.dot(cam.R, cam_axis_z)
 
     cam_world = cam.get_world_position()
 
