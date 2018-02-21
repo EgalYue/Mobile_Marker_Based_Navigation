@@ -10,7 +10,7 @@ sys.path.append("..")
 import numpy as np
 from numpy import random, cos, sin, sqrt, pi, linspace, deg2rad, meshgrid
 import numdifftools as nd
-from scipy.linalg import expm, rq, det, inv,pinv
+from scipy.linalg import expm, rq, det, inv, pinv
 from vision.camera import Camera
 import Rt_matrix_from_euler_t as Rt_matrix_from_euler_t
 from vision.circular_plane import CircularPlane
@@ -19,14 +19,20 @@ from math import pi
 import ellipsoid as ellipsoid
 import display_cov_mat as dvm
 
-def covariance_alpha_belt_r(cam,new_objectPoints):
+
+def covariance_alpha_belt_r(cam, new_objectPoints):
     """
     Covariance matrix of the spherical angles α, β and the distance r
 
     """
 
     cam = cam.clone()
+    # Get the world position of cam
+    world_position = cam.get_world_position()  #[x,y,z,1]
+    # TODO set R of cam
+
     K = cam.K
+    print "K",K
     objectPoints = np.copy(new_objectPoints)
     imagePoint = np.array(cam.project(objectPoints, False))
 
@@ -36,33 +42,41 @@ def covariance_alpha_belt_r(cam,new_objectPoints):
     #      [1, 1, 1, 1],
     #      [0., 0., 0., 0.],
     #      [1., 1., 1., 1.]]) # TEST
-    j_f = jacobian_function([0,0,0],K,objectPoints)
 
-    gaussian_noise_px1 = np.random.normal(0, 4, 10000) + imagePoint[0,0]
-    gaussian_noise_py1 = np.random.normal(0, 4, 10000) + imagePoint[1,0]
+    # derivation value
+    d_alpha = 0.0
+    d_belt = 0.0
+    d_r = 0.0
+    # Jacobian function at (0,0,0)
+    j_f = jacobian_function([d_alpha, d_belt, d_r], K, objectPoints)
 
+    mean = 0.0
+    scale = 8.0  # TODO set Standard deviation to get bigger ellipsoid
+    size = 10000
+    # Point 1
+    gaussian_noise_px1 = np.random.normal(mean, scale, size) + imagePoint[0, 0]
+    gaussian_noise_py1 = np.random.normal(mean, scale, size) + imagePoint[1, 0]
+    # Point 2
+    gaussian_noise_px2 = np.random.normal(mean, scale, size) + imagePoint[0, 1]
+    gaussian_noise_py2 = np.random.normal(mean, scale, size) + imagePoint[1, 1]
+    # Point 3
+    gaussian_noise_px3 = np.random.normal(mean, scale, size) + imagePoint[0, 2]
+    gaussian_noise_py3 = np.random.normal(mean, scale, size) + imagePoint[1, 2]
+    # Point 4
+    gaussian_noise_px4 = np.random.normal(mean, scale, size) + imagePoint[0, 3]
+    gaussian_noise_py4 = np.random.normal(mean, scale, size) + imagePoint[1, 3]
 
-    gaussian_noise_px2 = np.random.normal(0, 4, 10000) + imagePoint[0,1]
-    gaussian_noise_py2 = np.random.normal(0, 4, 10000) + imagePoint[1,1]
+    cov_mat_p1 = np.cov(gaussian_noise_px1, gaussian_noise_py1)
+    cov_mat_p2 = np.cov(gaussian_noise_px2, gaussian_noise_py2)
+    cov_mat_p3 = np.cov(gaussian_noise_px3, gaussian_noise_py3)
+    cov_mat_p4 = np.cov(gaussian_noise_px4, gaussian_noise_py4)
 
-    gaussian_noise_px3 = np.random.normal(0, 4, 10000) + imagePoint[0,2]
-    gaussian_noise_py3 = np.random.normal(0, 4, 10000) + imagePoint[1,2]
-
-    gaussian_noise_px4 = np.random.normal(0, 4, 10000) + imagePoint[0,3]
-    gaussian_noise_py4 = np.random.normal(0, 4, 10000) + imagePoint[1,3]
-
-    cov_mat_p1 = np.cov(gaussian_noise_px1,gaussian_noise_py1)
-    cov_mat_p2 = np.cov(gaussian_noise_px2,gaussian_noise_py2)
-    cov_mat_p3 = np.cov(gaussian_noise_px3,gaussian_noise_py3)
-    cov_mat_p4 = np.cov(gaussian_noise_px4,gaussian_noise_py4)
-
-
+    # block_mat_image4points : 2n * 2n      n = 4
     block_mat_image4points = np.block([[cov_mat_p1, np.zeros((2, 2)), np.zeros((2, 2)), np.zeros((2, 2))],
-                    [np.zeros((2, 2)), cov_mat_p2, np.zeros((2, 2)), np.zeros((2, 2))],
-                    [np.zeros((2, 2)), np.zeros((2, 2)), cov_mat_p3, np.zeros((2, 2))],
-                    [np.zeros((2, 2)), np.zeros((2, 2)), np.zeros((2, 2)), cov_mat_p4]])
+                                       [np.zeros((2, 2)), cov_mat_p2, np.zeros((2, 2)), np.zeros((2, 2))],
+                                       [np.zeros((2, 2)), np.zeros((2, 2)), cov_mat_p3, np.zeros((2, 2))],
+                                       [np.zeros((2, 2)), np.zeros((2, 2)), np.zeros((2, 2)), cov_mat_p4]])
     # print "block_mat_image4points",block_mat_image4points
-    # TODO Pinv inv
     # print "j_f:\n",j_f
     cov_mat = inv(np.dot(np.dot(j_f.T, inv(block_mat_image4points)), j_f))
     return cov_mat
@@ -75,16 +89,15 @@ def jacobian_function(input, K, obj_point):
     f_jacob = nd.Jacobian(f)
 
     # 2*4(points) equations
-    matrix_point1 = f_jacob(input, K, obj_point[:,0])
-    matrix_point2 = f_jacob(input, K, obj_point[:,1])
-    matrix_point3 = f_jacob(input, K, obj_point[:,2])
-    matrix_point4 = f_jacob(input, K, obj_point[:,3])
-    jacobian_funs = np.vstack((matrix_point1,matrix_point2,matrix_point3,matrix_point4))
+    matrix_point1 = f_jacob(input, K, obj_point[:, 0])
+    matrix_point2 = f_jacob(input, K, obj_point[:, 1])
+    matrix_point3 = f_jacob(input, K, obj_point[:, 2])
+    matrix_point4 = f_jacob(input, K, obj_point[:, 3])
+    jacobian_funs = np.vstack((matrix_point1, matrix_point2, matrix_point3, matrix_point4))
     return jacobian_funs
 
 
-
-def f(input, K,obj_point):
+def f(input, K, obj_point):
     """
     Define your function
     Can be R^n -> R^n as long as you use numpy arrays as output
@@ -112,47 +125,32 @@ def f(input, K,obj_point):
     #               [xaxis[1], yaxis[1], zaxis[1]],
     #               [xaxis[2], yaxis[2], zaxis[1]],])
 
-    R = np.array([[np.cos(belt)*np.cos(alpha), -np.sin(belt), np.cos(belt)*np.sin(alpha)],
-                  [np.sin(belt)*np.cos(alpha), np.cos(belt), np.sin(belt)*np.sin(alpha)],
-                  [-np.sin(alpha), 0, np.cos(alpha)],])
-    Rx = rt.rotation_matrix([1,0,0],pi)
-    R = np.dot(Rx[:3,:3],R) # Z-axis points to origin
+    R = np.array([[np.cos(belt) * np.cos(alpha), -np.sin(belt), np.cos(belt) * np.sin(alpha)],
+                  [np.sin(belt) * np.cos(alpha), np.cos(belt), np.sin(belt) * np.sin(alpha)],
+                  [-np.sin(alpha), 0, np.cos(alpha)], ])
+    Rx = rt.rotation_matrix([1, 0, 0], pi)
+    R = np.dot(Rx[:3, :3], R)  # Z-axis points to origin
     # print "R\n",R
 
 
     T_R = R
     cam_world = np.array([[x, y, z]]).T
     T_t = np.dot(R, -cam_world)
-    # T_t = np.array([[alpha],[belt],[r]]) # Test
 
-    T = np.hstack((T_R,T_t)) # 3*4
-    print "T\n", T
-    P = np.dot(K, T) # 3*4
-    print "P\n",P
+    T = np.hstack((T_R, T_t))  # 3*4
+    # print "T\n", T
+    P = np.dot(K, T)  # 3*4
+    # print "P\n", P
     image_point = np.dot(P, obj_point)
-    print "image_point\n",image_point
-
+    # print "image_point\n", image_point
 
     # u = image_point[0,0]/image_point[0,2]
     # v = image_point[0,1]/image_point[0,2]
     # TODO u v ??
-    u = image_point[0,0]
-    v = image_point[0,1]
+    u = image_point[0, 0]
+    v = image_point[0, 1]
     return np.array([u, v])
 
-
-def draw_Covar_Ellipsoid_CamDist():
-    """
-    Draw the covariance ellipsoids for each camera distribution
-    :return:
-    """
-    # TODO
-    # belt_params = (0,360,10)
-    # alpha_params = (0,90,10)
-    # r = 1.
-    # space_belt = linspace(deg2rad(belt_params[0]), deg2rad(belt_params[1]), belt_params[2])
-    # space_alpha = linspace(deg2rad(alpha_params[0]), deg2rad(alpha_params[1]), alpha_params[2])
-    # belt, alpha = meshgrid(space_belt, space_alpha)
 
 
 def test1(objectPoints_square):
@@ -188,11 +186,9 @@ def test1(objectPoints_square):
         v = ellipsoid.ellipsoid_Volume(a, b, c)
         volumes.append(v)
 
-    dvm.displayCovVolume_Zfixed3D(xInputs,yInputs,volumes)
+    dvm.displayCovVolume_Zfixed3D(xInputs, yInputs, volumes)
 
-
-
-#-----------------------------Code End------------------------------------------------------------
+# -----------------------------Code End------------------------------------------------------------
 
 
 # ============================================Test=================================================
