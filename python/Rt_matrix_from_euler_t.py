@@ -35,6 +35,8 @@ def R_matrix_from_euler_t(alpha,beta,gamma):
   return R
 
 
+# ======================Test==========================================
+# print R_matrix_from_euler_t(0.0,np.deg2rad(180.0),0.0)
 
 
 

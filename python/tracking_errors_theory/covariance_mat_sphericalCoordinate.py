@@ -5,8 +5,10 @@
 @File    : covariance_mat_sphericalCoordinate.py
 @author: Yue Hu
 """
+from __future__ import division # set / as float!!!!
 import sys
 sys.path.append("..")
+
 import numpy as np
 from numpy import random, cos, sin, sqrt, pi, linspace, deg2rad, meshgrid
 import numdifftools as nd
@@ -20,6 +22,29 @@ import ellipsoid as ellipsoid
 import display_cov_mat as dvm
 
 
+def validCam(cam,new_objectPoints):
+    cam = cam.clone()
+    # Get the world position of cam
+    world_position = cam.get_world_position()  #[x,y,z,1]
+    # TODO set R of cam
+    alpha, belt, r = convert_Cartesian_To_Spherical(cam)
+    newR = calculate_camRt_from_alpha_belt_r(alpha, belt, r)
+    cam.set_R_mat(newR)
+    K = cam.K
+    objectPoints = np.copy(new_objectPoints)
+    imagePoints = np.array(cam.project(objectPoints, False))
+    # print "cam img_width\n",cam.img_width
+    # print "cam img_height\n", cam.img_height
+    print "imagePoint\n",imagePoints
+    if ((imagePoints[0,:]<cam.img_width) & (imagePoints[0,:]>0)).all():
+      if ((imagePoints[1,:]<cam.img_height) & (imagePoints[1,:]>0)).all():
+        return True
+      else:
+          return False
+    else:
+        return False
+
+
 def covariance_alpha_belt_r(cam, new_objectPoints):
     """
     Covariance matrix of the spherical angles α, β and the distance r
@@ -30,12 +55,15 @@ def covariance_alpha_belt_r(cam, new_objectPoints):
     # Get the world position of cam
     world_position = cam.get_world_position()  #[x,y,z,1]
     # TODO set R of cam
-
+    alpha, belt, r = convert_Cartesian_To_Spherical(cam)
+    newR = calculate_camRt_from_alpha_belt_r(alpha, belt, r)
+    cam.set_R_mat(newR)
     K = cam.K
-    print "K",K
     objectPoints = np.copy(new_objectPoints)
-    imagePoint = np.array(cam.project(objectPoints, False))
-
+    imagePoints = np.array(cam.project(objectPoints, False))
+    # print "cam img_width\n",cam.img_width
+    # print "cam img_height\n", cam.img_height
+    print "imagePoint\n",imagePoints
     # j_f should be 8*3 for 4 ponits
     # objectPoints = np.array(
     #     [[1, 1, 1, 1],
@@ -51,20 +79,20 @@ def covariance_alpha_belt_r(cam, new_objectPoints):
     j_f = jacobian_function([d_alpha, d_belt, d_r], K, objectPoints)
 
     mean = 0.0
-    scale = 8.0  # TODO set Standard deviation to get bigger ellipsoid
+    scale = 24.0  # TODO set Standard deviation to get bigger ellipsoid
     size = 10000
     # Point 1
-    gaussian_noise_px1 = np.random.normal(mean, scale, size) + imagePoint[0, 0]
-    gaussian_noise_py1 = np.random.normal(mean, scale, size) + imagePoint[1, 0]
+    gaussian_noise_px1 = np.random.normal(mean, scale, size) + imagePoints[0, 0]
+    gaussian_noise_py1 = np.random.normal(mean, scale, size) + imagePoints[1, 0]
     # Point 2
-    gaussian_noise_px2 = np.random.normal(mean, scale, size) + imagePoint[0, 1]
-    gaussian_noise_py2 = np.random.normal(mean, scale, size) + imagePoint[1, 1]
+    gaussian_noise_px2 = np.random.normal(mean, scale, size) + imagePoints[0, 1]
+    gaussian_noise_py2 = np.random.normal(mean, scale, size) + imagePoints[1, 1]
     # Point 3
-    gaussian_noise_px3 = np.random.normal(mean, scale, size) + imagePoint[0, 2]
-    gaussian_noise_py3 = np.random.normal(mean, scale, size) + imagePoint[1, 2]
+    gaussian_noise_px3 = np.random.normal(mean, scale, size) + imagePoints[0, 2]
+    gaussian_noise_py3 = np.random.normal(mean, scale, size) + imagePoints[1, 2]
     # Point 4
-    gaussian_noise_px4 = np.random.normal(mean, scale, size) + imagePoint[0, 3]
-    gaussian_noise_py4 = np.random.normal(mean, scale, size) + imagePoint[1, 3]
+    gaussian_noise_px4 = np.random.normal(mean, scale, size) + imagePoints[0, 3]
+    gaussian_noise_py4 = np.random.normal(mean, scale, size) + imagePoints[1, 3]
 
     cov_mat_p1 = np.cov(gaussian_noise_px1, gaussian_noise_py1)
     cov_mat_p2 = np.cov(gaussian_noise_px2, gaussian_noise_py2)
@@ -188,6 +216,69 @@ def test1(objectPoints_square):
 
     dvm.displayCovVolume_Zfixed3D(xInputs, yInputs, volumes)
 
+
+def convert_Cartesian_To_Spherical(cam):
+    """
+    convert Cartesian coordinate system of camera to Spherical coordinate system
+    :param cam:
+    :return: rad
+    """
+    # Get the world position of cam
+    world_position = cam.get_world_position()  #[x,y,z,1]
+    x = world_position[0]
+    y = world_position[1]
+    z = world_position[2]
+
+    r = np.sqrt(x * x + y * y + z * z,dtype=np.float32)
+    if r ==0:
+        alpha = np.deg2rad(0.0)
+    else:
+        alpha = np.arccos(y / r, dtype=np.float32)
+
+
+    if x == 0:
+        belt = np.deg2rad(90.0)
+    else:
+        belt = np.arctan(y / x, dtype=np.float32)
+    # print "r",np.rad2deg(r)
+    # print "alpha",np.rad2deg(alpha)
+    # print "belt",np.rad2deg(belt)
+    return alpha,belt,r
+
+
+def calculate_camRt_from_alpha_belt_r(alpha,belt,r):
+    """
+    calculate T of camera  from spherical coordinate system
+    Z axis always point to [0,0,0]!!!
+    :param alpha:
+    :param belt:
+    :param r:
+    :return:
+    """
+    # x = r * np.cos(belt) * np.sin(alpha)
+    # y = r * np.sin(belt) * np.sin(alpha)
+    # z = r * np.cos(alpha)
+    # print x,y,z
+    R = np.array([[np.cos(belt) * np.cos(alpha), -np.sin(belt), np.cos(belt) * np.sin(alpha)],
+                  [np.sin(belt) * np.cos(alpha), np.cos(belt), np.sin(belt) * np.sin(alpha)],
+                  [-np.sin(alpha), 0, np.cos(alpha)], ])
+    Rx = Rt_matrix_from_euler_t.R_matrix_from_euler_t(0.0,np.deg2rad(180.0),0.0)
+    R = np.dot(R, Rx[:3, :3])  # Z-axis points to origin
+
+    camR = np.eye(4, dtype=np.float32)
+    camR[0,0] =R[0,0]
+    camR[0,1] =R[0,1]
+    camR[0,2] =R[0,2]
+
+    camR[1,0] =R[1,0]
+    camR[1,1] =R[1,1]
+    camR[1,2] =R[1,2]
+
+    camR[2,0] =R[2,0]
+    camR[2,1] =R[2,1]
+    camR[2,2] =R[2,2]
+
+    return camR
 # -----------------------------Code End------------------------------------------------------------
 
 
