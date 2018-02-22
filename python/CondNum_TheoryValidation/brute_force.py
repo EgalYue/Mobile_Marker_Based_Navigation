@@ -76,7 +76,7 @@ def heightGetCondNum(cams,new_objectPoints):
     mat_cond_list = []
     imagePoints_des = []
     cam_valid = []
-    display_mat = np.array([[0], [0], [0], [0]])
+    display_mat = np.array([[0.0], [0.0], [0.0], [0.0]])
     # ------------------------for all cams------------------------------
     transfer_error_list = []
     ippe_tvec_error_list1 = []

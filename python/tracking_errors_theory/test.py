@@ -120,7 +120,7 @@ def test2_covariance_alpha_belt_r():
 
     # -----------------------------X Y fixed, Z changed-----------------------------
     cams_XYfixed = []
-    for i in np.linspace(0.5, 2, 50):
+    for i in np.linspace(0.5, 2, 5):
         cam1 = Camera()
         cam1.set_K(fx=800, fy=800, cx=640 / 2., cy=480 / 2.)
         cam1.set_width_heigth(640, 480)
@@ -131,6 +131,7 @@ def test2_covariance_alpha_belt_r():
 
     zInputs = []
     volumes = []
+    ellipsoid_paras = np.array([[0], [0], [0], [0], [0], [0]])
     for cam in cams_XYfixed:
         cam_tem = cam.clone()
         valid = cms.validCam(cam_tem,new_objectPoints)
@@ -140,11 +141,17 @@ def test2_covariance_alpha_belt_r():
 
             cov_mat = cms.covariance_alpha_belt_r(cam, new_objectPoints)
             a, b, c = ellipsoid.get_semi_axes_abc(cov_mat, 0.95)
-            v = ellipsoid.ellipsoid_Volume(a, b, c)
-            volumes.append(v)
+            display_array = np.array([[0.0], [0.0], [0.0], [0.0], [0.0], [0.0]],dtype=float)
+            display_array[0:3,0] = a, b, c
+            display_array[3:6,0] = np.copy(t[0:3])
+            ellipsoid_paras = np.hstack((ellipsoid_paras, display_array))
 
-    dvm.displayCovVolume_XYfixed3D(zInputs, volumes)
+            # v = ellipsoid.ellipsoid_Volume(a, b, c)
+            # volumes.append(v)
 
+    # dvm.displayCovVolume_XYfixed3D(zInputs, volumes)
+    print "ellipsoid_paras\n",ellipsoid_paras
+    ellipsoid.drawAllEllipsoid(ellipsoid_paras)
 
 
 def test_calculate_camRt_from_alpha_belt_r():
