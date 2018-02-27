@@ -9,6 +9,7 @@ This class is used to verify forward propagation from object points to image poi
 @author: Yue Hu
 """
 from __future__ import division # set / as float!!!!
+from __future__ import division # set / as float!!!!
 import sys
 sys.path.append("..")
 
@@ -55,34 +56,35 @@ def nonlinear_covariance_f_obj_to_image(cam,covariance_alpha_belt_r):
 
     new_objectPoints = np.copy(objectPoints_square)
 
-    P = cam.P
+    K = cam.K
+    R = cam.R
     # derivation value
     d_alpha = 0.0
     d_belt = 0.0
     d_r = 0.0
     # Jacobian function at (0,0,0)
-    j_f = jacobian_function([d_alpha, d_belt, d_r], P, new_objectPoints)
+    j_f = jacobian_function([d_alpha, d_belt, d_r], K, R, new_objectPoints)
     cov_f = nonlinear_covariance_f(covariance_alpha_belt_r, j_f)
     return cov_f
 
 
 
-def jacobian_function(input, P, obj_point):
+def jacobian_function(input, K,R, obj_point):
     """
     Use your Jacobian function at any point you want.
     """
     f_jacob = nd.Jacobian(f)
 
     # 2*4(points) equations
-    matrix_point1 = f_jacob(input, P, obj_point[:, 0])
-    matrix_point2 = f_jacob(input, P, obj_point[:, 1])
-    matrix_point3 = f_jacob(input, P, obj_point[:, 2])
-    matrix_point4 = f_jacob(input, P, obj_point[:, 3])
+    matrix_point1 = f_jacob(input, K, R, obj_point[:, 0])
+    matrix_point2 = f_jacob(input, K, R, obj_point[:, 1])
+    matrix_point3 = f_jacob(input, K, R, obj_point[:, 2])
+    matrix_point4 = f_jacob(input, K, R, obj_point[:, 3])
     jacobian_funs = np.vstack((matrix_point1, matrix_point2, matrix_point3, matrix_point4))
     return jacobian_funs
 
 
-def f(input, P, obj_point):
+def f(input, K,R, obj_point):
     """
     Define your function
     Can be R^n -> R^n as long as you use numpy arrays as output
@@ -96,8 +98,15 @@ def f(input, P, obj_point):
     y = r * np.sin(belt) * np.sin(alpha)
     z = r * np.cos(alpha)
 
+    cam_world = np.array([[x, y, z]]).T
+    T_R = np.copy(R)
+    cam_world = np.array([[x, y, z]]).T
+    T_t = np.dot(T_R[:3,:3], -cam_world)
+
+    T = np.hstack((T_R[:3,:3], T_t))  # 3*4
+    # print "T\n", T
+    P = np.dot(K, T)  # 3*4
     image_point = np.dot(P, obj_point)
-    # print "image_point\n", image_point
 
     # u = image_point[0,0]/image_point[0,2]
     # v = image_point[0,1]/image_point[0,2]
@@ -123,5 +132,7 @@ cam.set_K(fx = 800,fy = 800,cx = 640/2.,cy = 480/2.)
 cam.set_width_heigth(640,480)
 cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0, np.deg2rad(180), 0))
 cam.set_t(0., 0., 0.5, 'world')
-covariance_alpha_belt_r = np.array([[1,0,0],[0,2,0],[0,0,3]])
+covariance_alpha_belt_r = np.array([[4,0,0],[0,5,0],[0,0,5]])
+theta,vec= np.linalg.eig(covariance_alpha_belt_r) # eigenvalues of covariance matrix
+print "theta",theta
 print nonlinear_covariance_f_obj_to_image(cam,covariance_alpha_belt_r)
