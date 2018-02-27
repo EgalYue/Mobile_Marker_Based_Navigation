@@ -22,29 +22,6 @@ import ellipsoid as ellipsoid
 import display_cov_mat as dvm
 
 
-def validCam(cam,new_objectPoints):
-    cam = cam.clone()
-    # Get the world position of cam
-    world_position = cam.get_world_position()  #[x,y,z,1]
-    # TODO set R of cam
-    alpha, belt, r = convert_Cartesian_To_Spherical(cam)
-    newR = calculate_camRt_from_alpha_belt_r(alpha, belt, r)
-    cam.set_R_mat(newR)
-    K = cam.K
-    objectPoints = np.copy(new_objectPoints)
-    imagePoints = np.array(cam.project(objectPoints, False))
-    # print "cam img_width\n",cam.img_width
-    # print "cam img_height\n", cam.img_height
-    print "imagePoint\n",imagePoints
-    if ((imagePoints[0,:]<cam.img_width) & (imagePoints[0,:]>0)).all():
-      if ((imagePoints[1,:]<cam.img_height) & (imagePoints[1,:]>0)).all():
-        return True
-      else:
-          return False
-    else:
-        return False
-
-
 def covariance_alpha_belt_r(cam, new_objectPoints):
     """
     Covariance matrix of the spherical angles α, β and the distance r
@@ -279,6 +256,30 @@ def calculate_camRt_from_alpha_belt_r(alpha,belt,r):
     camR[2,2] =R[2,2]
 
     return camR
+
+
+def validCam(cam,new_objectPoints):
+    cam = cam.clone()
+    # Get the world position of cam
+    world_position = cam.get_world_position()  #[x,y,z,1]
+    # TODO set R of cam
+    alpha, belt, r = convert_Cartesian_To_Spherical(cam)
+    newR = calculate_camRt_from_alpha_belt_r(alpha, belt, r)
+    cam.set_R_mat(newR)
+    K = cam.K
+    objectPoints = np.copy(new_objectPoints)
+    imagePoints = np.array(cam.project(objectPoints, False))
+    # print "cam img_width\n",cam.img_width
+    # print "cam img_height\n", cam.img_height
+    print "imagePoint\n",imagePoints
+    if ((imagePoints[0,:]<cam.img_width) & (imagePoints[0,:]>0)).all():
+      if ((imagePoints[1,:]<cam.img_height) & (imagePoints[1,:]>0)).all():
+        return True
+      else:
+          return False
+    else:
+        return False
+
 # -----------------------------Code End------------------------------------------------------------
 
 
