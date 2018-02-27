@@ -14,10 +14,12 @@ import sys
 sys.path.append("..")
 
 import numpy as np
+from numpy import random, cos, sin, sqrt, pi, linspace, deg2rad, meshgrid
 from vision.circular_plane import CircularPlane
 import numdifftools as nd
 from vision.camera import Camera
 import Rt_matrix_from_euler_t as Rt_matrix_from_euler_t
+import vision.rt_matrix as rt
 
 
 
@@ -98,21 +100,34 @@ def f(input, K,R, obj_point):
     y = r * np.sin(belt) * np.sin(alpha)
     z = r * np.cos(alpha)
 
-    cam_world = np.array([[x, y, z]]).T
-    T_R = np.copy(R)
-    cam_world = np.array([[x, y, z]]).T
-    T_t = np.dot(T_R[:3,:3], -cam_world)
+    # T_R = np.copy(R)
+    # cam_world = np.array([[x, y, z]]).T
+    # T_t = np.dot(T_R[:3,:3], -cam_world)
+    #
+    # T = np.hstack((T_R[:3,:3], T_t))  # 3*4
+    # # print "T\n", T
+    # P = np.dot(K, T)  # 3*4
 
-    T = np.hstack((T_R[:3,:3], T_t))  # 3*4
+    R = np.array([[np.cos(belt) * np.cos(alpha), -np.sin(belt), np.cos(belt) * np.sin(alpha)],
+                  [np.sin(belt) * np.cos(alpha), np.cos(belt), np.sin(belt) * np.sin(alpha)],
+                  [-np.sin(alpha), 0, np.cos(alpha)], ])
+    Rx = rt.rotation_matrix([1, 0, 0], pi)
+    R = np.dot(Rx[:3, :3], R)  # Z-axis points to origin
+    # print "R\n",R
+    T_R = R
+    cam_world = np.array([[x, y, z]]).T
+    T_t = np.dot(R, -cam_world)
+    T = np.hstack((T_R, T_t))  # 3*4
     # print "T\n", T
     P = np.dot(K, T)  # 3*4
+
     image_point = np.dot(P, obj_point)
 
-    # u = image_point[0,0]/image_point[0,2]
-    # v = image_point[0,1]/image_point[0,2]
     # TODO u v ??
     u = image_point[0, 0]
     v = image_point[0, 1]
+    # u = image_point[0,0]/image_point[0,2]
+    # v = image_point[0,1]/image_point[0,2]
     return np.array([u, v])
 
 #=============================Code End=========================================
@@ -131,8 +146,14 @@ cam = Camera()
 cam.set_K(fx = 800,fy = 800,cx = 640/2.,cy = 480/2.)
 cam.set_width_heigth(640,480)
 cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0, np.deg2rad(180), 0))
-cam.set_t(0., 0., 0.5, 'world')
-covariance_alpha_belt_r = np.array([[4,0,0],[0,5,0],[0,0,5]])
-theta,vec= np.linalg.eig(covariance_alpha_belt_r) # eigenvalues of covariance matrix
-print "theta",theta
+cam.set_t(0., 0., 1., 'world')
+print "P",cam.P
+covariance_alpha_belt_r = np.array([[1,0,0],[0,2,0],[0,0,3]])
+# theta,vec= np.linalg.eig(covariance_alpha_belt_r) # eigenvalues of covariance matrix
+# print "theta",theta
 print nonlinear_covariance_f_obj_to_image(cam,covariance_alpha_belt_r)
+A = np.array([[322732.6464 ,245645.0048],[245645.0048 ,187829.2736]])# [[1,0,0],[0,2,0],[0,0,3]]
+A = np.array([[544215.8592 ,415352.9344],[415352.9344 ,318705.7408]])# [[3,0,0],[0,4,0],[0,0,5]]
+theta,vec= np.linalg.eig(A) # eigenvalues of covariance matrix
+print theta
+# We can find that, bigger eigenvalue of covariance_alpha_belt_r -> bigger eigenvalue of nonlinear_covariance_f_obj_to_image
