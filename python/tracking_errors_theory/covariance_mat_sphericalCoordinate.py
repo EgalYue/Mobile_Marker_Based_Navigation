@@ -33,9 +33,12 @@ def covariance_alpha_belt_r(cam, new_objectPoints):
     world_position = cam.get_world_position()  #[x,y,z,1]
     # TODO set R of cam
     alpha, belt, r = convert_Cartesian_To_Spherical(cam)
+    # print "alpha, belt, r",alpha, belt, r
     newR = calculate_camRt_from_alpha_belt_r(alpha, belt, r)
     cam.set_R_mat(newR)
+    # print "cam.R", cam.R
     K = cam.K
+    R = cam.R
     objectPoints = np.copy(new_objectPoints)
     imagePoints = np.array(cam.project(objectPoints, False))
     # print "cam img_width\n",cam.img_width
@@ -49,14 +52,18 @@ def covariance_alpha_belt_r(cam, new_objectPoints):
     #      [1., 1., 1., 1.]]) # TEST
 
     # derivation value
+    # TODO
     d_alpha = 0.0
     d_belt = 0.0
     d_r = 0.0
+    d_alpha = alpha
+    d_belt = belt
+    d_r = r
     # Jacobian function at (0,0,0)
     j_f = jacobian_function([d_alpha, d_belt, d_r], K, objectPoints)
 
     mean = 0.0
-    scale = 24.0  # TODO set Standard deviation to get bigger ellipsoid
+    scale = 4.0  # TODO set Standard deviation to get bigger ellipsoid
     size = 10000
     # Point 1
     gaussian_noise_px1 = np.random.normal(mean, scale, size) + imagePoints[0, 0]
@@ -76,12 +83,18 @@ def covariance_alpha_belt_r(cam, new_objectPoints):
     cov_mat_p3 = np.cov(gaussian_noise_px3, gaussian_noise_py3)
     cov_mat_p4 = np.cov(gaussian_noise_px4, gaussian_noise_py4)
 
+    # TODO R.T * cov_mat_pn * R
+    cov_mat_p1 = np.dot(R[0:2,0:2].T,np.dot(cov_mat_p1,R[0:2,0:2]))
+    cov_mat_p2 = np.dot(R[0:2,0:2].T,np.dot(cov_mat_p2,R[0:2,0:2]))
+    cov_mat_p3 = np.dot(R[0:2,0:2].T,np.dot(cov_mat_p3,R[0:2,0:2]))
+    cov_mat_p4 = np.dot(R[0:2,0:2].T,np.dot(cov_mat_p4,R[0:2,0:2]))
+
     # block_mat_image4points : 2n * 2n      n = 4
     block_mat_image4points = np.block([[cov_mat_p1, np.zeros((2, 2)), np.zeros((2, 2)), np.zeros((2, 2))],
                                        [np.zeros((2, 2)), cov_mat_p2, np.zeros((2, 2)), np.zeros((2, 2))],
                                        [np.zeros((2, 2)), np.zeros((2, 2)), cov_mat_p3, np.zeros((2, 2))],
                                        [np.zeros((2, 2)), np.zeros((2, 2)), np.zeros((2, 2)), cov_mat_p4]])
-    # print "block_mat_image4points",block_mat_image4points
+    print "block_mat_image4points",block_mat_image4points
     # print "j_f:\n",j_f
     cov_mat = inv(np.dot(np.dot(j_f.T, inv(block_mat_image4points)), j_f))
     return cov_mat
@@ -133,8 +146,8 @@ def f(input, K, obj_point):
     R = np.array([[np.cos(belt) * np.cos(alpha), -np.sin(belt), np.cos(belt) * np.sin(alpha)],
                   [np.sin(belt) * np.cos(alpha), np.cos(belt), np.sin(belt) * np.sin(alpha)],
                   [-np.sin(alpha), 0, np.cos(alpha)], ])
-    Rx = rt.rotation_matrix([1, 0, 0], pi)
-    R = np.dot(Rx[:3, :3], R)  # Z-axis points to origin
+    Rx = Rt_matrix_from_euler_t.R_matrix_from_euler_t(0.0,np.deg2rad(180.0),0.0)
+    R = np.dot(R, Rx[:3, :3])  # Z-axis points to origin
     # print "R\n",R
 
 
@@ -205,19 +218,23 @@ def convert_Cartesian_To_Spherical(cam):
     x = world_position[0]
     y = world_position[1]
     z = world_position[2]
+    # print "x",x
+    # print "y",y
+    # print "z",z
+
 
     r = np.sqrt(x * x + y * y + z * z,dtype=np.float32)
     if r ==0:
         alpha = np.deg2rad(0.0)
     else:
-        alpha = np.arccos(y / r, dtype=np.float32)
+        alpha = np.arccos(z / r, dtype=np.float32)
 
 
     if x == 0:
         belt = np.deg2rad(90.0)
     else:
         belt = np.arctan(y / x, dtype=np.float32)
-    # print "r",np.rad2deg(r)
+    # print "r",r
     # print "alpha",np.rad2deg(alpha)
     # print "belt",np.rad2deg(belt)
     return alpha,belt,r
@@ -240,7 +257,10 @@ def calculate_camRt_from_alpha_belt_r(alpha,belt,r):
                   [np.sin(belt) * np.cos(alpha), np.cos(belt), np.sin(belt) * np.sin(alpha)],
                   [-np.sin(alpha), 0, np.cos(alpha)], ])
     Rx = Rt_matrix_from_euler_t.R_matrix_from_euler_t(0.0,np.deg2rad(180.0),0.0)
+    # print "R",R
+    # print "Rx",Rx
     R = np.dot(R, Rx[:3, :3])  # Z-axis points to origin
+    # print "R",R
 
     camR = np.eye(4, dtype=np.float32)
     camR[0,0] =R[0,0]
@@ -271,7 +291,7 @@ def validCam(cam,new_objectPoints):
     imagePoints = np.array(cam.project(objectPoints, False))
     # print "cam img_width\n",cam.img_width
     # print "cam img_height\n", cam.img_height
-    print "imagePoint\n",imagePoints
+    # print "imagePoint\n",imagePoints
     if ((imagePoints[0,:]<cam.img_width) & (imagePoints[0,:]>0)).all():
       if ((imagePoints[1,:]<cam.img_height) & (imagePoints[1,:]>0)).all():
         return True
