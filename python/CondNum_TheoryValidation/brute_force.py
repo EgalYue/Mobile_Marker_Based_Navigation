@@ -24,53 +24,51 @@ import Rt_matrix_from_euler_t as Rt_matrix_from_euler_t
 from solve_ippe import pose_ippe_both
 from solve_pnp import pose_pnp
 import cv2
+import display_condNum as dc
 
 calc_metrics = False
 number_of_points = 4
 
 ## Define a Display plane with random initial points
 # TODO Change the radius of circular plane
-pl = CircularPlane(origin=np.array([0., 0., 0.]), normal = np.array([0, 0, 1]), radius=0.15, n = 4)
-pl.random(n =number_of_points, r = 0.01, min_sep = 0.01)
-plane_size = (0.3,0.3)
+pl = CircularPlane(origin=np.array([0., 0., 0.]), normal=np.array([0, 0, 1]), radius=0.15, n=4)
+pl.random(n=number_of_points, r=0.01, min_sep=0.01)
+plane_size = (0.3, 0.3)
 
 ## CREATE A SIMULATED CAMERA
 cam = Camera()
-cam.set_K(fx = 800,fy = 800,cx = 640/2.,cy = 480/2.)
-cam.set_width_heigth(640,480)
+cam.set_K(fx=800, fy=800, cx=640 / 2., cy=480 / 2.)
+cam.set_width_heigth(640, 480)
 
 ## CREATE A SET OF IMAGE POINTS FOR VALIDATION OF THE HOMOGRAPHY ESTIMATION
 # This will create a grid of 16 points of size = (0.3,0.3) meters
-validation_plane =  Plane(origin=np.array([0, 0, 0]), normal = np.array([0, 0, 1]), size=(0.3,0.3), n = (4,4))
+validation_plane = Plane(origin=np.array([0, 0, 0]), normal=np.array([0, 0, 1]), size=(0.3, 0.3), n=(4, 4))
 validation_plane.uniform()
 
 ## we create the gradient for the point distribution
-normalize= False
+normalize = False
 
-#4 points: An ideal square
-x1  = round(pl.radius*np.cos(np.deg2rad(45)),3)
-y1  = round(pl.radius*np.sin(np.deg2rad(45)),3)
-objectPoints_square= np.array(
-[[ x1, -x1, -x1, x1],
- [ y1, y1, -y1, -y1],
- [ 0., 0., 0., 0.],
- [ 1., 1., 1., 1.]])
+# 4 points: An ideal square
+x1 = round(pl.radius * np.cos(np.deg2rad(45)), 3)
+y1 = round(pl.radius * np.sin(np.deg2rad(45)), 3)
+objectPoints_square = np.array(
+    [[x1, -x1, -x1, x1],
+     [y1, y1, -y1, -y1],
+     [0., 0., 0., 0.],
+     [1., 1., 1., 1.]])
 
 new_objectPoints = np.copy(objectPoints_square)
-print "new_objectPoints", new_objectPoints
-
+# print "new_objectPoints", new_objectPoints
 # ------------------------All cams point straight down: Test Height factor---------------------------------------
 # TODO cam distribution position PARAMETER CHANGE!!!
 cams = create_cam_distribution(cam, plane_size,
-                               theta_params = (0,360,30), phi_params =  (0,70,10),
-                               r_params = (0.2,2.0,20), plot=False)
-homography_iters = 1000
+                               theta_params=(0, 360, 30), phi_params=(0, 70, 10),
+                               r_params=(0.2, 2.0, 20), plot=False)
+homography_iters = 1000     # TODO homography_iters changed
 
-
-
-def heightGetCondNum(cams,new_objectPoints):
-    fig1 = plt.figure('Image points')
-    ax_image = fig1.add_subplot(211)
+def heightGetCondNum(cams):
+    # fig1 = plt.figure('Image points')
+    # ax_image = fig1.add_subplot(211)
 
     mat_cond_list = []
     imagePoints_des = []
@@ -85,7 +83,6 @@ def heightGetCondNum(cams,new_objectPoints):
     pnp_tvec_error_list = []
     pnp_rmat_error_list = []
     # ------------------------------------------------------------------
-
     for cam in cams:
         objectPoints = np.copy(new_objectPoints)
         imagePoints = np.array(cam.project(objectPoints, False))
@@ -134,9 +131,8 @@ def heightGetCondNum(cams,new_objectPoints):
                 # Homography Estimation from noisy image points
                 Xo = new_objectPoints[[0, 1, 3], :]
                 # TODO replace Xi = new_imagePoints_noisy with Xi = normalizedimagePoints
-                # Xi = new_imagePoints_noisy
-
-                Xi = normalizedimagePoints
+                Xi = new_imagePoints_noisy
+                # Xi = normalizedimagePoints
                 # Hnoisy,A_t_ref,H_t = homo2d.homography2d(Xo,Xi)
                 # Hnoisy = Hnoisy/Hnoisy[2,2]
                 # TODO Change H
@@ -221,7 +217,6 @@ def heightGetCondNum(cams,new_objectPoints):
     ## plt.pause(100)
 
     ##------------Display cond num distribution-------------------
-    import display_condNum as dc
     # print "start to show "
     # display_mat = display_mat[:,1:]
     # dc.displayCondNumDistribution(display_mat)
@@ -237,10 +232,7 @@ def heightGetCondNum(cams,new_objectPoints):
     input_ippe2_R = np.copy(ippe_rmat_error_list2)
     input_pnp_t = np.copy(pnp_tvec_error_list)
     input_pnp_R = np.copy(pnp_rmat_error_list)
-
     input_transfer_error = np.copy(transfer_error_list)
-
-
     # ------------------Error-----------------------------
     print transfer_error_list
     print ippe_tvec_error_list1
@@ -248,85 +240,8 @@ def heightGetCondNum(cams,new_objectPoints):
     print ippe_tvec_error_list2
     print ippe_rmat_error_list2
     print pnp_rmat_error_list
-    # -----------------TODO--------------------------------------
+    # TODO
     # dc.displayError3D(inputX,inputY,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error)
-    dc.displayError_XYfixed3D(inputZ,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error)
+    # dc.displayError_XYfixed3D(inputZ,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error)
     # dc.displayError_Zfixed3D(inputX,inputY,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error)
-
-
-# =============================Test==============================================================
-#------------------------------Z fixed, study X Y-----------------------------------------
-cams_Zfixed = []
-for x in np.linspace(-0.5,0.5,50):
-    for y in np.linspace(-0.5,0.5,50):
-        cam1 = Camera()
-        cam1.set_K(fx = 800,fy = 800,cx = 640/2.,cy = 480/2.)
-        cam1.set_width_heigth(640,480)
-
-        ## DEFINE A SET OF CAMERA POSES IN DIFFERENT POSITIONS BUT ALWAYS LOOKING
-        # TO THE CENTER OF THE PLANE MODEL
-
-        cam1.set_R_axisAngle(1.0,  0.0,  0.0, np.deg2rad(180.0))
-        # TODO  cv2.SOLVEPNP_DLS, cv2.SOLVEPNP_EPNP, cv2.SOLVEPNP_ITERATIVE
-        # cam1.set_t(x, -0.01, 1.31660688, frame='world')
-        cam1.set_t(x, y, 1.3, frame='world')
-        # 0.28075725, -0.23558331, 1.31660688
-        cams_Zfixed.append(cam1)
-
-#------------------------------X Y fixed, study Z-----------------------------------------
-cams_XYfixed = []
-for i in np.linspace(0.5,2,100):
-
-    cam1 = Camera()
-    cam1.set_K(fx = 800,fy = 800,cx = 640/2.,cy = 480/2.)
-    cam1.set_width_heigth(640,480)
-
-    ## DEFINE A SET OF CAMERA POSES IN DIFFERENT POSITIONS BUT ALWAYS LOOKING
-    # TO THE CENTER OF THE PLANE MODEL
-
-
-    cam1.set_R_axisAngle(1.0,  0.0,  0.0, np.deg2rad(180.0))
-    cam1.set_t(0.1, -0.1, i, frame='world')
-    # 0.28075725, -0.23558331, 1.31660688
-    cams_XYfixed.append(cam1)
-
-# ------------------------------------------------------
-cams_HeightFixed = []
-
-cam_1 = Camera()
-cam_1.set_K(fx = 800,fy = 800,cx = 640/2.,cy = 480/2.)
-cam_1.set_width_heigth(640,480)
-cam_1.set_R_axisAngle(1.0,  0.0,  0.0, np.deg2rad(180.0))
-cam_1.set_t(0.1, 0.1, 1, frame='world')
-cams_HeightFixed.append(cam_1)
-
-cam_2 = Camera()
-cam_2.set_K(fx = 800,fy = 800,cx = 640/2.,cy = 480/2.)
-cam_2.set_width_heigth(640,480)
-cam_2.set_R_axisAngle(1.0,  0.0,  0.0, np.deg2rad(180.0))
-cam_2.set_t(-0.1, 0.1, 1, frame='world')
-# 0.28075725, -0.23558331, 1.31660688
-cams_HeightFixed.append(cam_2)
-
-cam_3 = Camera()
-cam_3.set_K(fx = 800,fy = 800,cx = 640/2.,cy = 480/2.)
-cam_3.set_width_heigth(640,480)
-cam_3.set_R_axisAngle(1.0,  0.0,  0.0, np.deg2rad(180.0))
-cam_3.set_t(-0.1, -0.1, 1, frame='world')
-# 0.28075725, -0.23558331, 1.31660688
-cams_HeightFixed.append(cam_3)
-
-cam_4 = Camera()
-cam_4.set_K(fx = 800,fy = 800,cx = 640/2.,cy = 480/2.)
-cam_4.set_width_heigth(640,480)
-cam_4.set_R_axisAngle(1.0,  0.0,  0.0, np.deg2rad(180.0))
-cam_4.set_t(0.1, -0.1, 1, frame='world')
-# 0.28075725, -0.23558331, 1.31660688
-cams_HeightFixed.append(cam_4)
-
-
-# -----------------------------Test-------------------------------------------------------------------
-# heightGetCondNum(cams,new_objectPoints)
-# heightGetCondNum(cams_HeightFixed,new_objectPoints)
-# heightGetCondNum(cams_Zfixed,new_objectPoints)
-heightGetCondNum(cams_XYfixed,new_objectPoints)
+    return inputX,inputY,inputZ,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error

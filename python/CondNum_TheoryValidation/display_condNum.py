@@ -148,9 +148,6 @@ def getColorMayavi(condNum):
 #     plt.pause(1000)
 
 
-
-
-
 def Detectionplot(m):
 
     # data = sio.loadmat('testpython.mat')
@@ -261,7 +258,6 @@ def anglePlot(m):
     ax.bar3d(x, y, z, dx, dy, dz, color=C, zsort='average')
     plt.show()
     plt.pause(1000)
-
 
 
 def displayError3D(x,y,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error):

@@ -74,7 +74,9 @@ def geometric_distance(Xo,Xi,H):
   Xo = np.copy(Xo)
   Xi = np.copy(Xi)
   H = np.copy(H)
+  # print "H",H
   Xio = np.dot(H,Xo)
+  # print "XIO", Xio
   return np.sqrt((Xi[0]/Xi[2] - Xio[0]/Xio[2])**2+(Xi[1]/Xi[2] - Xio[1]/Xio[2])**2)
 
 def geometric_distance_points(Xo,Xi,H):

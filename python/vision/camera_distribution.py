@@ -105,7 +105,7 @@ def create_cam_distribution(cam = None, plane_size = (0.3,0.3), theta_params = (
     cam.set_t(-t[0], -t[1],-t[2])
     cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0.0,0,0))
     cam.look_at([0,0,0])
-    # TODO all Z-axis of cam point to straight down
+
     # cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0,deg2rad(180),0))
     # cam.set_t(t[0], t[1],t[2],'world')
 
@@ -138,7 +138,7 @@ def create_cam_distribution(cam = None, plane_size = (0.3,0.3), theta_params = (
 # cam.set_K(fx = f, fy = f, cx = 320, cy = 240)  #Camera Matrix
 # cam.img_width = 320*2
 # cam.img_height = 240*2
-# cam.set_t(1,0,0,"world")
+# cam.set_t(1,1,1,"world")
 # cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0,np.deg2rad(0),0))
 # cam.look_at([0,0,0])
 # plane_size = (0.3,0.3)
