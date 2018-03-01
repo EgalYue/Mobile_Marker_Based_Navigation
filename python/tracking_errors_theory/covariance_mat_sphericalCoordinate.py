@@ -20,11 +20,17 @@ import vision.rt_matrix as rt
 from math import pi
 import ellipsoid as ellipsoid
 import display_cov_mat as dvm
+from solve_ippe import pose_ippe_both
+from solve_pnp import pose_pnp
+import cv2
 
 
 def covariance_alpha_belt_r(cam, new_objectPoints):
     """
     Covariance matrix of the spherical angles α, β and the distance r
+    Implementation of equation (5.8)
+    J_f is evaluated at (0,0,0) which means j_f is constant for any pose
+    Bigger cov mat of v_i  -> bigger cov mat of alpha_belt_r
 
     """
 
@@ -43,25 +49,31 @@ def covariance_alpha_belt_r(cam, new_objectPoints):
     imagePoints = np.array(cam.project(objectPoints, False))
     # print "cam img_width\n",cam.img_width
     # print "cam img_height\n", cam.img_height
-    print "imagePoint\n",imagePoints
+    # print "imagePoint\n",imagePoints
     # j_f should be 8*3 for 4 ponits
-    # objectPoints = np.array(
-    #     [[1, 1, 1, 1],
-    #      [1, 1, 1, 1],
-    #      [0., 0., 0., 0.],
-    #      [1., 1., 1., 1.]]) # TEST
-
-    # derivation value
-    # TODO
+    # ----------------------------------------------------------------------------------------------------
+    new_imagePoints = np.copy(imagePoints)
+    new_imagePoints_noisy = cam.addnoise_imagePoints(new_imagePoints, mean=0, sd=4)
+    # Calculate the pose using IPPE (solution with least repro error)
+    normalizedimagePoints = cam.get_normalized_pixel_coordinates(new_imagePoints_noisy)
+    ippe_tvec1, ippe_rmat1, ippe_tvec2, ippe_rmat2 = pose_ippe_both(new_objectPoints, normalizedimagePoints,
+                                                                    debug=False)
+    # Calculate the pose using solvepnp
+    debug = False
+    pnp_tvec, pnp_rmat = pose_pnp(new_objectPoints, new_imagePoints_noisy, cam.K, debug, cv2.SOLVEPNP_ITERATIVE,
+                                  False)
+    # print "pnp_rmat",pnp_rmat
+    # ---------------------------------------------------------------------------------------------------
+    # TODO derivation value
     d_alpha = 0.0
     d_belt = 0.0
     d_r = 0.0
-    d_alpha = alpha
-    d_belt = belt
-    d_r = r
+    # d_alpha = alpha
+    # d_belt = belt
+    # d_r = r
     # Jacobian function at (0,0,0)
     j_f = jacobian_function([d_alpha, d_belt, d_r], K, objectPoints)
-
+    # print "j_f",j_f
     mean = 0.0
     scale = 4.0  # TODO set Standard deviation to get bigger ellipsoid
     size = 10000
@@ -77,26 +89,40 @@ def covariance_alpha_belt_r(cam, new_objectPoints):
     # Point 4
     gaussian_noise_px4 = np.random.normal(mean, scale, size) + imagePoints[0, 3]
     gaussian_noise_py4 = np.random.normal(mean, scale, size) + imagePoints[1, 3]
+    # Point 1
+    # gaussian_noise_px1 = np.random.normal(mean, scale, size)
+    # gaussian_noise_py1 = np.random.normal(mean, scale, size)
+    # # Point 2
+    # gaussian_noise_px2 = np.random.normal(mean, scale, size)
+    # gaussian_noise_py2 = np.random.normal(mean, scale, size)
+    # # Point 3
+    # gaussian_noise_px3 = np.random.normal(mean, scale, size)
+    # gaussian_noise_py3 = np.random.normal(mean, scale, size)
+    # # Point 4
+    # gaussian_noise_px4 = np.random.normal(mean, scale, size)
+    # gaussian_noise_py4 = np.random.normal(mean, scale, size)
+
 
     cov_mat_p1 = np.cov(gaussian_noise_px1, gaussian_noise_py1)
     cov_mat_p2 = np.cov(gaussian_noise_px2, gaussian_noise_py2)
     cov_mat_p3 = np.cov(gaussian_noise_px3, gaussian_noise_py3)
     cov_mat_p4 = np.cov(gaussian_noise_px4, gaussian_noise_py4)
-
     # TODO R.T * cov_mat_pn * R
-    cov_mat_p1 = np.dot(R[0:2,0:2].T,np.dot(cov_mat_p1,R[0:2,0:2]))
-    cov_mat_p2 = np.dot(R[0:2,0:2].T,np.dot(cov_mat_p2,R[0:2,0:2]))
-    cov_mat_p3 = np.dot(R[0:2,0:2].T,np.dot(cov_mat_p3,R[0:2,0:2]))
-    cov_mat_p4 = np.dot(R[0:2,0:2].T,np.dot(cov_mat_p4,R[0:2,0:2]))
+    # cov_mat_p1 = np.dot(pnp_rmat[0:2,0:2].T,np.dot(cov_mat_p1,pnp_rmat[0:2,0:2]))
+    # cov_mat_p2 = np.dot(pnp_rmat[0:2,0:2].T,np.dot(cov_mat_p2,pnp_rmat[0:2,0:2]))
+    # cov_mat_p3 = np.dot(pnp_rmat[0:2,0:2].T,np.dot(cov_mat_p3,pnp_rmat[0:2,0:2]))
+    # cov_mat_p4 = np.dot(pnp_rmat[0:2,0:2].T,np.dot(cov_mat_p4,pnp_rmat[0:2,0:2]))
 
     # block_mat_image4points : 2n * 2n      n = 4
     block_mat_image4points = np.block([[cov_mat_p1, np.zeros((2, 2)), np.zeros((2, 2)), np.zeros((2, 2))],
                                        [np.zeros((2, 2)), cov_mat_p2, np.zeros((2, 2)), np.zeros((2, 2))],
                                        [np.zeros((2, 2)), np.zeros((2, 2)), cov_mat_p3, np.zeros((2, 2))],
                                        [np.zeros((2, 2)), np.zeros((2, 2)), np.zeros((2, 2)), cov_mat_p4]])
-    print "block_mat_image4points",block_mat_image4points
+    # print "block_mat_image4points",block_mat_image4points
     # print "j_f:\n",j_f
     cov_mat = inv(np.dot(np.dot(j_f.T, inv(block_mat_image4points)), j_f))
+    # TODO Eqution 4.9 visualize this error covariance in the original world cordinate system
+    # cov_mat = np.dot(R[0:3,0:3],np.dot(cov_mat,R[0:3,0:3].T))
     return cov_mat
 
 

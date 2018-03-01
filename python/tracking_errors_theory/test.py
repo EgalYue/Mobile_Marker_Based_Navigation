@@ -133,7 +133,7 @@ def test2_covariance_alpha_belt_r():
 
     zInputs = []
     volumes = []
-    ellipsoid_paras = np.array([[0], [0], [0], [0], [0], [0]])
+    ellipsoid_paras = np.array([[0], [0], [0], [0], [0], [0]]) # a,b,c,x,y,z
     for cam in cams_XYfixed:
         cam_tem = cam.clone()
         valid = cms.validCam(cam_tem,new_objectPoints)
@@ -154,12 +154,12 @@ def test2_covariance_alpha_belt_r():
             volumes.append(v)
 
     dvm.displayCovVolume_XYfixed3D(zInputs, volumes)
-    print "ellipsoid_paras\n",ellipsoid_paras
-    # ellipsoid.drawAllEllipsoid(ellipsoid_paras)
+    # print "ellipsoid_paras\n",ellipsoid_paras
+    # ellipsoid.drawAllEllipsoid(ellipsoid_paras) # Draw the 3D ellipsoid
 
 def test3_covariance_alpha_belt_r():
     """
-
+    Y fixed, study X Z  like a half circle above the marker
     :return:
     """
     pl = CircularPlane(origin=np.array([0., 0., 0.]), normal=np.array([0, 0, 1]), radius=0.15, n=4)
@@ -172,7 +172,7 @@ def test3_covariance_alpha_belt_r():
          [1., 1., 1., 1.]])
 
     new_objectPoints = np.copy(objectPoints_square)
-    # ------------------------------Z fixed, study X Y-----------------------------------------
+    # ------------------------------Y fixed, study X Z  like a half circle -----------------------------------------
     cams_Yfixed = []
     for angle in np.linspace(np.deg2rad(0), np.deg2rad(180), 20):
         x = np.cos(angle)
