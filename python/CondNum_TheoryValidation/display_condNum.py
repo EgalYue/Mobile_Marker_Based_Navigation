@@ -1,3 +1,14 @@
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
+"""
+@Time    : 19.12.17 12:45
+@File    : display_condNum.py
+@author: Yue Hu
+
+This class is used to draw figure for condition number (served for brute_force.py)
+"""
+import sys
+sys.path.append("..")
 import scipy.io as sio
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
@@ -5,7 +16,7 @@ import numpy as np
 import scipy.io as sio
 import matplotlib.pyplot as plt
 import numpy as np
-# from mayavi import mlab
+from mayavi import mlab
 from vision.camera import Camera
 import Rt_matrix_from_euler_t as Rt_matrix_from_euler_t
 
@@ -13,26 +24,26 @@ import Rt_matrix_from_euler_t as Rt_matrix_from_euler_t
 # data = sio.loadmat('testpython.mat')
 # sio.whosmat('testpython.mat')
 
-# def plot3D_cam(cam, axis_scale=0.2):
-#     # Coordinate Frame of real camera
-#     # Camera axis
-#     axis_scale = 0.05
-#     cam_axis_x = np.array([1, 0, 0, 1]).T
-#     cam_axis_y = np.array([0, 1, 0, 1]).T
-#     cam_axis_z = np.array([0, 0, 1, 1]).T
-#
-#     cam_axis_x = np.dot(cam.R.T, cam_axis_x)
-#     cam_axis_y = np.dot(cam.R.T, cam_axis_y)
-#     cam_axis_z = np.dot(cam.R.T, cam_axis_z)
-#
-#     cam_world = cam.get_world_position()
-#
-#     mlab.quiver3d(cam_world[0], cam_world[1], cam_world[2], cam_axis_x[0], cam_axis_x[1], cam_axis_x[2], line_width=3,
-#                   scale_factor=axis_scale, color=(1 - axis_scale, 0, 0))
-#     mlab.quiver3d(cam_world[0], cam_world[1], cam_world[2], cam_axis_y[0], cam_axis_y[1], cam_axis_y[2], line_width=3,
-#                   scale_factor=axis_scale, color=(0, 1 - axis_scale, 0))
-#     mlab.quiver3d(cam_world[0], cam_world[1], cam_world[2], cam_axis_z[0], cam_axis_z[1], cam_axis_z[2], line_width=3,
-#                   scale_factor=axis_scale, color=(0, 0, 1 - axis_scale))
+def plot3D_cam(cam, axis_scale=0.2):
+    # Coordinate Frame of real camera
+    # Camera axis
+    axis_scale = 0.05
+    cam_axis_x = np.array([1, 0, 0, 1]).T
+    cam_axis_y = np.array([0, 1, 0, 1]).T
+    cam_axis_z = np.array([0, 0, 1, 1]).T
+
+    cam_axis_x = np.dot(cam.R.T, cam_axis_x)
+    cam_axis_y = np.dot(cam.R.T, cam_axis_y)
+    cam_axis_z = np.dot(cam.R.T, cam_axis_z)
+
+    cam_world = cam.get_world_position()
+
+    mlab.quiver3d(cam_world[0], cam_world[1], cam_world[2], cam_axis_x[0], cam_axis_x[1], cam_axis_x[2], line_width=3,
+                  scale_factor=axis_scale, color=(1 - axis_scale, 0, 0))
+    mlab.quiver3d(cam_world[0], cam_world[1], cam_world[2], cam_axis_y[0], cam_axis_y[1], cam_axis_y[2], line_width=3,
+                  scale_factor=axis_scale, color=(0, 1 - axis_scale, 0))
+    mlab.quiver3d(cam_world[0], cam_world[1], cam_world[2], cam_axis_z[0], cam_axis_z[1], cam_axis_z[2], line_width=3,
+                  scale_factor=axis_scale, color=(0, 0, 1 - axis_scale))
 
 
 # -------------------------------------------------------------------------------
@@ -118,34 +129,39 @@ def getColorMayavi(condNum):
 #         mlab.colorbar()
 #         # mlab.show()
 #     mlab.show()
-#
-# def displayCondNumDistribution(m):
-#     """"Display distribution of cond num for cam distribution in 3D"""
-#     cam = Camera()
-#     cam.set_K(fx=800, fy=800, cx=640 / 2., cy=480 / 2.)
-#     cam.set_width_heigth(640, 480)
-#     cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0,np.deg2rad(180),0))
-#     cam.set_t(0, 0,5,'world')
-#
-#     plot3D_cam(cam)
-#
-#     fig = plt.figure()
-#     ax = fig.add_subplot(111, projection='3d')
-#
-#     for i in range(0,m.shape[1]):
-#         x = m[0][i]
-#         y = m[1][i]
-#         z = m[2][i]
-#         condNum = m[3][i]
-#         color = getConNumColor(condNum)
-#         ax.scatter(x, y, z, s = 100,c = color, marker="o")
-#
-#     ax.set_xlabel('X Label')
-#     ax.set_ylabel('Y Label')
-#     ax.set_zlabel('Z Label')
-#
-#     plt.show()
-#     plt.pause(1000)
+
+
+def displayCondNumDistribution(m):
+    """
+    Display distribution of cond num for cam distribution in 3D
+    :param m: 4 * n,  each column vector is position x y z + cond num
+    :return: 
+    """
+    cam = Camera()
+    cam.set_K(fx=800, fy=800, cx=640 / 2., cy=480 / 2.)
+    cam.set_width_heigth(640, 480)
+    cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0,np.deg2rad(180),0))
+    cam.set_t(0, 0,5,'world')
+
+    # plot3D_cam(cam)
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    for i in range(0,m.shape[1]):
+        x = m[0][i]
+        y = m[1][i]
+        z = m[2][i]
+        condNum = m[3][i]
+        color = getConNumColor(condNum)
+        ax.scatter(x, y, z, s = 100,c = color, marker="o")
+
+    ax.set_xlabel('X Label')
+    ax.set_ylabel('Y Label')
+    ax.set_zlabel('Z Label')
+
+    plt.show()
+    plt.pause(1000)
 
 
 def Detectionplot(m):
@@ -260,68 +276,20 @@ def anglePlot(m):
     plt.pause(1000)
 
 
-def displayError3D(x,y,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error):
-     fig1 = plt.figure("Error")
-     # ax = fig.gca(projection='3d')
-     ax1 = fig1.add_subplot(231, projection='3d')
-     ax1.plot(x, y, input_ippe1_t, label='ippe_tvec_error1')
-     ax1.legend()
-     ax1.set_xlabel('X Label')
-     ax1.set_ylabel('Y Label')
-     ax1.set_zlabel('Error')
-
-     ax2 = fig1.add_subplot(234, projection='3d')
-     ax2.plot(x, y, input_ippe1_R, label='ippe_rmat_error1')
-     ax2.legend()
-     ax2.set_xlabel('X Label')
-     ax2.set_ylabel('Y Label')
-     ax2.set_zlabel('Error')
-
-     ax3 = fig1.add_subplot(232, projection='3d')
-     ax3.plot(x, y, input_ippe2_t, label='ippe_tvec_error2')
-     ax3.legend()
-     ax3.set_xlabel('X Label')
-     ax3.set_ylabel('Y Label')
-     ax3.set_zlabel('Error')
-
-     ax2 = fig1.add_subplot(235, projection='3d')
-     ax2.plot(x, y, input_ippe2_R, label='ippe_rmat_error2')
-     ax2.legend()
-     ax2.set_xlabel('X Label')
-     ax2.set_ylabel('Y Label')
-     ax2.set_zlabel('Error')
-
-     ax2 = fig1.add_subplot(233, projection='3d')
-     ax2.plot(x, y, input_pnp_t, label='pnp_tmat_error')
-     ax2.legend()
-     ax2.set_xlabel('X Label')
-     ax2.set_ylabel('Y Label')
-     ax2.set_zlabel('Error')
-
-     ax2 = fig1.add_subplot(236, projection='3d')
-     ax2.plot(x, y, input_pnp_R, label='pnp_rmat_error')
-     ax2.legend()
-     ax2.set_xlabel('X Label')
-     ax2.set_ylabel('Y Label')
-     ax2.set_zlabel('Error')
-
-     # ----------------- Transfer Error ----------------------------------
-     fig2 = plt.figure("Transfer Error ")
-     # ax = fig.gca(projection='3d')
-     ax_transfer_error= fig2.add_subplot(111, projection='3d')
-     ax_transfer_error.plot(x, y, input_transfer_error, label='transfer_error')
-     ax_transfer_error.legend()
-     ax_transfer_error.set_xlabel('X Label')
-     ax_transfer_error.set_ylabel('Y Label')
-     ax_transfer_error.set_zlabel('Transfer Error')
-
-
-     plt.show()
-     plt.pause(1000)
-
-
-
 def displayError_XYfixed3D(z,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error):
+    """
+    Fix X Y, only study Z 
+    Display R_error and t_error for ippe and pnp method 
+    :param z: 
+    :param input_ippe1_t: 
+    :param input_ippe1_R: 
+    :param input_ippe2_t: 
+    :param input_ippe2_R: 
+    :param input_pnp_t: 
+    :param input_pnp_R: 
+    :param input_transfer_error: 
+    :return: 
+    """
     fig1 = plt.figure("Error")
     # ax = fig.gca(projection='3d')
     ax1 = fig1.add_subplot(231)
@@ -374,6 +342,10 @@ def displayError_XYfixed3D(z,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ipp
     plt.pause(1000)
 
 def displayError_Zfixed3D(x,y,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error):
+    """
+     Fix Z, study X Y
+     Display R_error and t_error for ippe and pnp method 
+    """
     # fig = plt.figure()
     # # ax = Axes3D(fig)
     # # X = np.arange(-X_range, X_range, 0.25)

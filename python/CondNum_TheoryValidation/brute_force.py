@@ -218,7 +218,7 @@ def heightGetCondNum(cams):
 
     ##------------Display cond num distribution-------------------
     # print "start to show "
-    # display_mat = display_mat[:,1:]
+    display_mat = display_mat[:,1:]
     # dc.displayCondNumDistribution(display_mat)
     # dc.displayCondNumDistriMayavi(display_mat)
     # print "finish!!!"
@@ -244,4 +244,4 @@ def heightGetCondNum(cams):
     # dc.displayError3D(inputX,inputY,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error)
     # dc.displayError_XYfixed3D(inputZ,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error)
     # dc.displayError_Zfixed3D(inputX,inputY,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error)
-    return inputX,inputY,inputZ,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error
+    return inputX,inputY,inputZ,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error,display_mat
