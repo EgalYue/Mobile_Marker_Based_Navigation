@@ -42,6 +42,45 @@ def uniform_sphere(theta_params = (0,360,10), phi_params = (0,90,10), r = 1., pl
     plt.show()
 
   return x, y, z
+
+
+def uniform_halfCircle_in_XZ(theta_params = (0,180,10), r = 1., plot = False):
+  """
+  n points distributed evenly on the half circle in XZ plane
+  theta_params: tuple (min = 0,max = 360, N divisions = 10)
+  r: radius of the half circle
+  """
+  theta = linspace(deg2rad(theta_params[0]), deg2rad(theta_params[1]), theta_params[2])
+
+  x = r*cos(theta)
+  y = 0 * theta # 0
+  z = r*sin(theta)
+
+  if plot:
+    fig, ax = plt.subplots()
+    ax.scatter(x,z)
+    plt.show()
+
+  return x,y,z
+
+def uniform_halfCircle_in_YZ(theta_params = (0,180,10), r = 1., plot = False):
+  """
+  n points distributed evenly on the half circle in XZ plane
+  theta_params: tuple (min = 0,max = 360, N divisions = 10)
+  r: radius of the half circle
+  """
+  theta = linspace(deg2rad(theta_params[0]), deg2rad(theta_params[1]), theta_params[2])
+  x = 0 * theta # 0
+  y = r*cos(theta)
+  z = r*sin(theta)
+
+  if plot:
+    fig, ax = plt.subplots()
+    ax.scatter(y,z)
+    plt.show()
+
+  return x,y,z
+
   
 def plot3D_cam(cam, axis_scale = 0.2):
     
@@ -78,55 +117,176 @@ def plot3D(cams, planes):
     mlab.show()
 
 def create_cam_distribution(cam = None, plane_size = (0.3,0.3), theta_params = (0,360,10), phi_params =  (0,70,5), r_params = (0.25,1.0,4), plot=False):
-  if cam == None:
-    # Create an initial camera on the center of the world
-    cam = Camera()
-    f = 800
-    cam.set_K(fx = f, fy = f, cx = 320, cy = 240)  #Camera Matrix
-    cam.img_width = 320*2
-    cam.img_height = 240*2
+    if cam == None:
+        # Create an initial camera on the center of the world
+        cam = Camera()
+        f = 800
+        cam.set_K(fx=f, fy=f, cx=320, cy=240)  # Camera Matrix
+        cam.img_width = 320 * 2
+        cam.img_height = 240 * 2
 
-  # we create a default plane with 4 points with a side lenght of w (meters)
-  plane =  Plane(origin=np.array([0, 0, 0] ), normal = np.array([0, 0, 1]), size=plane_size, n = (2,2))
-  #We extend the size of this plane to account for the deviation from a uniform pattern
-  #plane.size = (plane.size[0] + deviation, plane.size[1] + deviation)
+    # we create a default plane with 4 points with a side lenght of w (meters)
+    plane = Plane(origin=np.array([0, 0, 0]), normal=np.array([0, 0, 1]), size=plane_size, n=(2, 2))
+    # We extend the size of this plane to account for the deviation from a uniform pattern
+    # plane.size = (plane.size[0] + deviation, plane.size[1] + deviation)
 
-  d_space = np.linspace(r_params[0],r_params[1],r_params[2])
-  t_list = []
-  for d in d_space:
-      xx, yy, zz = uniform_sphere(theta_params, phi_params, d, False)
-      sphere_points = np.array([xx.ravel(),yy.ravel(), zz.ravel()], dtype=np.float32)
-      t_list.append(sphere_points)      
-  t_space = np.hstack(t_list)
+    d_space = np.linspace(r_params[0], r_params[1], r_params[2])
+    t_list = []
+    for d in d_space:
+        xx, yy, zz = uniform_sphere(theta_params, phi_params, d, False)
+        sphere_points = np.array([xx.ravel(), yy.ravel(), zz.ravel()], dtype=np.float32)
+        t_list.append(sphere_points)
+    t_space = np.hstack(t_list)
 
-  cams = []
-  for t in t_space.T:
-    cam = cam.clone()
-    cam.set_t(-t[0], -t[1],-t[2])
-    cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0.0,0,0))
-    cam.look_at([0,0,0])
+    cams = []
+    for t in t_space.T:
+        cam = cam.clone()
+        cam.set_t(-t[0], -t[1], -t[2])
+        cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0.0, 0, 0))
+        cam.look_at([0, 0, 0])
 
-    # cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0,deg2rad(180),0))
-    # cam.set_t(t[0], t[1],t[2],'world')
+        # cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0,deg2rad(180),0))
+        # cam.set_t(t[0], t[1],t[2],'world')
 
-    plane.set_origin(np.array([0, 0, 0]))
-    plane.uniform()
-    objectPoints = plane.get_points()
-    imagePoints = cam.project(objectPoints)
-    
-    #if plot:
-    #  cam.plot_image(imagePoints)
-    if ((imagePoints[0,:]<cam.img_width) & (imagePoints[0,:]>0)).all():
-      if ((imagePoints[1,:]<cam.img_height) & (imagePoints[1,:]>0)).all():
-        cams.append(cam)
+        plane.set_origin(np.array([0, 0, 0]))
+        plane.uniform()
+        objectPoints = plane.get_points()
+        imagePoints = cam.project(objectPoints)
 
-  if plot:
-    planes = []
-    plane.uniform()
-    planes.append(plane)
-    plot3D(cams, planes)
+        # if plot:
+        #  cam.plot_image(imagePoints)
+        if ((imagePoints[0, :] < cam.img_width) & (imagePoints[0, :] > 0)).all():
+            if ((imagePoints[1, :] < cam.img_height) & (imagePoints[1, :] > 0)).all():
+                cams.append(cam)
 
-  return cams
+    if plot:
+        planes = []
+        plane.uniform()
+        planes.append(plane)
+        plot3D(cams, planes)
+
+    return cams
+
+
+def create_cam_distribution_in_XZ(cam=None, plane_size=(0.3, 0.3), theta_params=(0, 180, 10),r_params=(0.25, 1.0, 4), plot=False):
+    """
+    cam distritubution in XZ plane
+    :param cam:
+    :param plane_size:
+    :param theta_params:
+    :param phi_params:
+    :param r_params:
+    :param plot:
+    :return:
+    """
+    if cam == None:
+        # Create an initial camera on the center of the world
+        cam = Camera()
+        f = 800
+        cam.set_K(fx=f, fy=f, cx=320, cy=240)  # Camera Matrix
+        cam.img_width = 320 * 2
+        cam.img_height = 240 * 2
+
+    # we create a default plane with 4 points with a side lenght of w (meters)
+    plane = Plane(origin=np.array([0, 0, 0]), normal=np.array([0, 0, 1]), size=plane_size, n=(2, 2))
+    # We extend the size of this plane to account for the deviation from a uniform pattern
+    # plane.size = (plane.size[0] + deviation, plane.size[1] + deviation)
+
+    d_space = np.linspace(r_params[0], r_params[1], r_params[2])
+    t_list = []
+    for d in d_space:
+        xx,yy,zz = uniform_halfCircle_in_XZ(theta_params, d, False) # XZ plane
+        sphere_points = np.array([xx.ravel(), yy.ravel(), zz.ravel()], dtype=np.float32)
+        t_list.append(sphere_points)
+    t_space = np.hstack(t_list)
+
+    cams = []
+    for t in t_space.T:
+        cam = cam.clone()
+        cam.set_t(-t[0], -t[1], -t[2])
+        cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0.0, 0, 0))
+        cam.look_at([0, 0, 0])
+
+        plane.set_origin(np.array([0, 0, 0]))
+        plane.uniform()
+        objectPoints = plane.get_points()
+        imagePoints = cam.project(objectPoints)
+
+        # if plot:
+        #  cam.plot_image(imagePoints)
+        if ((imagePoints[0, :] < cam.img_width) & (imagePoints[0, :] > 0)).all():
+            if ((imagePoints[1, :] < cam.img_height) & (imagePoints[1, :] > 0)).all():
+                cams.append(cam)
+
+    if plot:
+        planes = []
+        plane.uniform()
+        planes.append(plane)
+        plot3D(cams, planes)
+
+    return cams
+
+def create_cam_distribution_in_YZ(cam=None, plane_size=(0.3, 0.3), theta_params=(0, 180, 10),r_params=(0.25, 1.0, 4), plot=False):
+    """
+    cam distritubution in YZ plane
+    :param cam:
+    :param plane_size:
+    :param theta_params:
+    :param phi_params:
+    :param r_params:
+    :param plot:
+    :return:
+    """
+    if cam == None:
+        # Create an initial camera on the center of the world
+        cam = Camera()
+        f = 800
+        cam.set_K(fx=f, fy=f, cx=320, cy=240)  # Camera Matrix
+        cam.img_width = 320 * 2
+        cam.img_height = 240 * 2
+
+    # we create a default plane with 4 points with a side lenght of w (meters)
+    plane = Plane(origin=np.array([0, 0, 0]), normal=np.array([0, 0, 1]), size=plane_size, n=(2, 2))
+    # We extend the size of this plane to account for the deviation from a uniform pattern
+    # plane.size = (plane.size[0] + deviation, plane.size[1] + deviation)
+
+    d_space = np.linspace(r_params[0], r_params[1], r_params[2])
+    t_list = []
+    for d in d_space:
+        xx, yy, zz = uniform_halfCircle_in_YZ(theta_params, d, False)  # YZ plane
+        sphere_points = np.array([xx.ravel(), yy.ravel(), zz.ravel()], dtype=np.float32)
+        t_list.append(sphere_points)
+    t_space = np.hstack(t_list)
+
+    cams = []
+    for t in t_space.T:
+        cam = cam.clone()
+        cam.set_t(-t[0], -t[1], -t[2])
+        cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0.0, 0, 0))
+        cam.look_at([0, 0, 0])
+
+        plane.set_origin(np.array([0, 0, 0]))
+        plane.uniform()
+        objectPoints = plane.get_points()
+        imagePoints = cam.project(objectPoints)
+
+        # if plot:
+        #  cam.plot_image(imagePoints)
+        if ((imagePoints[0, :] < cam.img_width) & (imagePoints[0, :] > 0)).all():
+            if ((imagePoints[1, :] < cam.img_height) & (imagePoints[1, :] > 0)).all():
+                cams.append(cam)
+
+    if plot:
+        planes = []
+        plane.uniform()
+        planes.append(plane)
+        plot3D(cams, planes)
+
+    return cams
+
+
+
+
 
 
 # ==============================Test=================================================
@@ -155,3 +315,5 @@ def create_cam_distribution(cam = None, plane_size = (0.3,0.3), theta_params = (
 # print "cam.Rt",cam.Rt
 # print "cam.P",cam.P
 # ------------------Code End-----------Test for cam look at method------------------------------
+
+# uniform_hlafCircle_in_XZ(plot= True)
