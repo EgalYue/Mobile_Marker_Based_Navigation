@@ -13,7 +13,7 @@ sys.path.append("..")
 from vision.camera import Camera
 from vision.plane import Plane
 from vision.circular_plane import CircularPlane
-from vision.camera_distribution import create_cam_distribution
+from vision.camera_distribution import create_cam_distribution,create_cam_distribution_in_YZ,create_cam_distribution_in_XZ
 import Rt_matrix_from_euler_t as Rt_matrix_from_euler_t
 import brute_force as bf
 import display_condNum as dc
@@ -105,10 +105,13 @@ def cam_distribution_study():
     cam.set_K(fx=800, fy=800, cx=640 / 2., cy=480 / 2.)
     cam.set_width_heigth(640, 480)
     # TODO cam distribution position PARAMETER CHANGE!!!
-    cams = create_cam_distribution(cam, plane_size,
-                                   theta_params=(0, 360, 30), phi_params=(0, 70, 10),
-                                   r_params=(0.2, 2.0, 20), plot=False)
-
+    # cams = create_cam_distribution(cam, plane_size,
+    #                                theta_params=(0, 360, 30), phi_params=(0, 70, 10),
+    #                                r_params=(0.2, 2.0, 20), plot=False)
+    # cams = create_cam_distribution_in_YZ(cam=None, plane_size=(0.3, 0.3), theta_params=(0, 180, 100), r_params=(0.25, 1.0, 4),
+    #                               plot=False)
+    cams = create_cam_distribution_in_XZ(cam=None, plane_size=(0.3, 0.3), theta_params=(0, 180, 100), r_params=(0.25, 1.0, 8),
+                                  plot=False)
 
     inputX, inputY, inputZ, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t, input_pnp_R, input_transfer_error, display_mat = bf.heightGetCondNum(cams)
     print "Start to show:"
