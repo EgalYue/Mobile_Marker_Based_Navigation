@@ -290,8 +290,8 @@ def create_cam_distribution_in_YZ(cam=None, plane_size=(0.3, 0.3), theta_params=
 
 
 # ==============================Test=================================================
-create_cam_distribution(cam = None, plane_size = (0.3,0.3), theta_params = (0,360,20), phi_params =  (0,70,10), r_params = (0.2,2.0,10), plot=True)
-
+# cams = create_cam_distribution(cam = None, plane_size = (0.5,0.5), theta_params = (0,360,20), phi_params =  (0,70,10), r_params = (0.2,2.0,10), plot=True)
+# print "cams size: ",len(cams)
 # -----------------------------Test for cam look at method------------------------------
 # cam = Camera()
 # f = 800

@@ -108,7 +108,7 @@ def cam_distribution_study():
     # cams = create_cam_distribution(cam, plane_size,
     #                                theta_params=(0, 360, 30), phi_params=(0, 70, 10),
     #                                r_params=(0.2, 2.0, 20), plot=False)
-    cams = create_cam_distribution_in_YZ(cam=None, plane_size=(0.3, 0.3), theta_params=(0, 180, 100), r_params=(0.25, 1.0, 8),
+    cams = create_cam_distribution_in_YZ(cam=None, plane_size=(0.3, 0.3), theta_params=(0, 180, 36), r_params=(0, 2.0, 20),
                                   plot=False)
     # cams = create_cam_distribution_in_XZ(cam=None, plane_size=(0.3, 0.3), theta_params=(0, 180, 100), r_params=(0.25, 1.0, 8),
     #                               plot=False)
