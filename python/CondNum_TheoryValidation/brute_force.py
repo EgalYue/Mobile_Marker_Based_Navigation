@@ -5,6 +5,7 @@
 @File    : brute_force.py
 @author: Yue Hu
 """
+from __future__ import division # set / as float!!!!
 import numpy as np
 import pickle
 import sys
@@ -66,10 +67,10 @@ cams = create_cam_distribution(cam, plane_size,
                                r_params=(0.2, 2.0, 20), plot=False)
 homography_iters = 1000     # TODO homography_iters changed
 
-def heightGetCondNum(cams):
+def heightGetCondNum(cams,accuracy_mat,radius_step,angle_step):
     # fig1 = plt.figure('Image points')
     # ax_image = fig1.add_subplot(211)
-
+    accuracy_mat_new = np.copy(accuracy_mat)
     mat_cond_list = []
     imagePoints_des = []
     cam_valid = []
@@ -88,6 +89,16 @@ def heightGetCondNum(cams):
         imagePoints = np.array(cam.project(objectPoints, False))
         if ((imagePoints[0, :] < cam.img_width) & (imagePoints[0, :] > 0) & (imagePoints[1, :] < cam.img_height) & (
             imagePoints[1, :] > 0)).all():
+
+            accuracy_mat_row = int(np.copy(cam.radius) / radius_step) # row index, accuracy_mat store cond num for each cam position
+            # print "radius_step",radius_step
+            # print "accuracy_mat_row",accuracy_mat_row
+            # print "valid cam r \n",cam.radius
+            accuracy_mat_col = int(np.copy(cam.angle) / angle_step) # col index, accuracy_mat store cond num for each cam position
+            # print "angle_step",angle_step
+            # print "accuracy_mat_col",accuracy_mat_col
+            # print "accuracy_mat",accuracy_mat.shape
+            # print "valid cam angle \n", cam.angle
             # ------------------------Calculate Error------------------------
             transfer_error_loop = []
             ippe_tvec_error_loop1 = []
@@ -165,6 +176,8 @@ def heightGetCondNum(cams):
             input_list.append(cam.t[1, 3])
             input_list.append(cam.t[2, 3])
             mat_cond = gd.matrix_condition_number_autograd(*input_list, normalize=False)
+
+            accuracy_mat_new[accuracy_mat_row,accuracy_mat_col] = mat_cond # Store the condition num at corresponding position
             mat_cond_list.append(mat_cond)
             print "valid cam position:",cam.get_world_position()
             cam_valid.append(cam)
@@ -186,7 +199,11 @@ def heightGetCondNum(cams):
         # ax_image.set_title('Image Points')
         # plt.show()
         # plt.pause(0.001)
-
+    #-----------------transfer_condNumMatrix_to_accuracyDegreeMatrix-------------------------
+    min_cond_num = min(mat_cond_list)
+    max_cond_num = max(mat_cond_list)
+    degree = 5
+    accuracyDegreeMatrix = transfer_condNumMatrix_to_accuracyDegreeMatrix(accuracy_mat_new,min_cond_num,max_cond_num,degree)
     display_mat = display_mat[:,1:]
     # -----------------For Loop End--------------------------------------------------------
     print "--best image points--", imagePoints_des[mat_cond_list.index(min(mat_cond_list))]
@@ -240,8 +257,39 @@ def heightGetCondNum(cams):
     print ippe_tvec_error_list2
     print ippe_rmat_error_list2
     print pnp_rmat_error_list
-    # TODO
-    # dc.displayError3D(inputX,inputY,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error)
-    # dc.displayError_XYfixed3D(inputZ,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error)
-    # dc.displayError_Zfixed3D(inputX,inputY,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error)
-    return inputX,inputY,inputZ,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error,display_mat
+    return inputX,inputY,inputZ,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error,display_mat,accuracyDegreeMatrix
+
+def transfer_condNumMatrix_to_accuracyDegreeMatrix(condNumMatrix,min_cond_num,max_cond_num,degree):
+    """
+    Transfer condNum matrix to accuracy degree matrix,
+    """
+    # divide condition num distribution into 5 degree
+    degree_step = (max_cond_num - min_cond_num) / (degree - 1)
+    accuracy_degree2 = max_cond_num - 3 * degree_step
+    accuracy_degree3 = max_cond_num - 2 * degree_step
+    accuracy_degree4 = max_cond_num - degree_step
+
+    row_area_matrix = condNumMatrix.shape[0]
+    col_area_matrix = condNumMatrix.shape[1]
+    accuracyDegreeMatrix = np.copy(condNumMatrix)
+    for i in range(row_area_matrix):
+        for j in range(col_area_matrix):
+            cond_num = condNumMatrix[i,j]
+            if cond_num >= max_cond_num:
+                accuracyDegreeMatrix[i,j] = 5
+            elif cond_num >= accuracy_degree4:
+                accuracyDegreeMatrix[i, j] = 4
+            elif cond_num >= accuracy_degree3:
+                accuracyDegreeMatrix[i, j] = 3
+            elif cond_num >= accuracy_degree2:
+                accuracyDegreeMatrix[i, j] = 2
+            elif cond_num >= min_cond_num:
+                accuracyDegreeMatrix[i, j] = 1
+            else:
+                accuracyDegreeMatrix[i, j] = 0
+    return accuracyDegreeMatrix
+
+
+# ===========================================Test============================================
+# condNumMatrix = np.array([[100,200,300,400,500,],[600,700,800,99,20],[0,0,0,0,0]])
+# print transfer_condNumMatrix_to_accuracyDegreeMatrix(condNumMatrix,100,500,5)

@@ -30,6 +30,9 @@ class Camera(object):
         self.img_width = 1280
         self.img_height = 960
 
+        self.radius = 0 # distance to marker in YZ plane, used to describe accuracy degree at different area of marker
+        self.angle = 0  # deg   angle (start from Y axis)
+
     def clone_withPose(self, tvec, rmat):
         new_cam = Camera()
         new_cam.K = self.K
@@ -38,6 +41,9 @@ class Camera(object):
         new_cam.set_P()
         new_cam.img_height = self.img_height
         new_cam.img_width = self.img_width
+
+        new_cam.set_radius = self.radius
+        new_cam.set_angle = self.angle
         return new_cam
 
     def clone(self):
@@ -53,6 +59,9 @@ class Camera(object):
         new_cam.cy = self.cy
         new_cam.img_height = self.img_height
         new_cam.img_width = self.img_width
+
+        new_cam.radius = self.radius
+        new_cam.angle = self.angle
         return new_cam
 
 
@@ -114,6 +123,14 @@ class Camera(object):
         else:
           self.t[:3,3] = np.array([x,y,z])
         self.update_Rt()
+
+    def set_radius(self,radius):
+        # set radius
+        self.radius = radius
+
+    def set_angle(self,angle):
+        # set angle
+        self.angle = angle
 
     def get_normalized_pixel_coordinates(self, X):
         """

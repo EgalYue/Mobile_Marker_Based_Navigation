@@ -257,7 +257,11 @@ def create_cam_distribution_in_YZ(cam=None, plane_size=(0.3, 0.3), theta_params=
         sphere_points = np.array([xx.ravel(), yy.ravel(), zz.ravel()], dtype=np.float32)
         t_list.append(sphere_points)
     t_space = np.hstack(t_list)
-
+    # print "t_space:",t_space.shape
+    acc_row = r_params[2]
+    acc_col = theta_params[2]
+    accuracy_mat = np.zeros([acc_row,acc_col]) # accuracy_mat is used to describe accuracy degree for marker area
+    # print accuracy_mat
     cams = []
     for t in t_space.T:
         cam = cam.clone()
@@ -265,9 +269,17 @@ def create_cam_distribution_in_YZ(cam=None, plane_size=(0.3, 0.3), theta_params=
         cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0.0, 0, 0))
         cam.look_at([0, 0, 0])
 
+        radius = sqrt(t[0] * t[0] + t[1] * t[1] + t[2] * t[2])
+        # print "radius",radius
+        angle = np.rad2deg(np.arccos(t[1]/radius))
+        # print "angle",angle
+        cam.set_radius(radius)
+        cam.set_angle(angle)
+
         plane.set_origin(np.array([0, 0, 0]))
         plane.uniform()
         objectPoints = plane.get_points()
+        # print "objectPoints",objectPoints
         imagePoints = cam.project(objectPoints)
 
         # if plot:
@@ -282,7 +294,7 @@ def create_cam_distribution_in_YZ(cam=None, plane_size=(0.3, 0.3), theta_params=
         planes.append(plane)
         plot3D(cams, planes)
 
-    return cams
+    return cams,accuracy_mat
 
 
 
@@ -291,6 +303,7 @@ def create_cam_distribution_in_YZ(cam=None, plane_size=(0.3, 0.3), theta_params=
 
 # ==============================Test=================================================
 # cams = create_cam_distribution(cam = None, plane_size = (0.5,0.5), theta_params = (0,360,20), phi_params =  (0,70,10), r_params = (0.2,2.0,10), plot=True)
+# create_cam_distribution_in_YZ(cam = None, plane_size = (0.3,0.3), theta_params = (0,180,3), r_params = (0.3,0.9,3), plot=False)
 # print "cams size: ",len(cams)
 # -----------------------------Test for cam look at method------------------------------
 # cam = Camera()

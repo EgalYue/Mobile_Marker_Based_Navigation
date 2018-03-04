@@ -108,12 +108,22 @@ def cam_distribution_study():
     # cams = create_cam_distribution(cam, plane_size,
     #                                theta_params=(0, 360, 30), phi_params=(0, 70, 10),
     #                                r_params=(0.2, 2.0, 20), plot=False)
-    cams = create_cam_distribution_in_YZ(cam=None, plane_size=(0.3, 0.3), theta_params=(0, 180, 36), r_params=(0, 2.0, 20),
-                                  plot=False)
-    # cams = create_cam_distribution_in_XZ(cam=None, plane_size=(0.3, 0.3), theta_params=(0, 180, 100), r_params=(0.25, 1.0, 8),
-    #                               plot=False)
+    angle_begin = 0.0
+    angle_end = 180.0
+    angle_num = 4
+    angle_step = (angle_end - angle_begin) / (angle_num - 1)
+    theta_params = (angle_begin,angle_end,angle_num)
 
-    inputX, inputY, inputZ, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t, input_pnp_R, input_transfer_error, display_mat = bf.heightGetCondNum(cams)
+    r_begin = 0.0
+    r_end = 2.0
+    r_num = 5
+    r_step = (r_end - r_begin) / (r_num - 1)
+    r_params = (r_begin,r_end,r_num)
+
+    cams,accuracy_mat = create_cam_distribution_in_YZ(cam=None, plane_size=(0.3, 0.3), theta_params=theta_params, r_params=r_params,
+                                  plot=False)
+    inputX, inputY, inputZ, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t, input_pnp_R, input_transfer_error, display_mat,accuracy_mat_new = bf.heightGetCondNum(cams,accuracy_mat,r_step,angle_step)
+    # print "accuracy_mat distribution:\n",accuracy_mat_new
     print "Start to show:"
     dc.displayCondNumDistribution(display_mat)
     print "End"
