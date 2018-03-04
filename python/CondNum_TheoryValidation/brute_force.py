@@ -29,42 +29,24 @@ import display_condNum as dc
 
 calc_metrics = False
 number_of_points = 4
-
-## Define a Display plane with random initial points
-# TODO Change the radius of circular plane
-pl = CircularPlane(origin=np.array([0., 0., 0.]), normal=np.array([0, 0, 1]), radius=0.15, n=4)
-pl.random(n=number_of_points, r=0.01, min_sep=0.01)
-plane_size = (0.3, 0.3)
-
 ## CREATE A SIMULATED CAMERA
 cam = Camera()
 cam.set_K(fx=800, fy=800, cx=640 / 2., cy=480 / 2.)
 cam.set_width_heigth(640, 480)
-
 ## CREATE A SET OF IMAGE POINTS FOR VALIDATION OF THE HOMOGRAPHY ESTIMATION
 # This will create a grid of 16 points of size = (0.3,0.3) meters
 validation_plane = Plane(origin=np.array([0, 0, 0]), normal=np.array([0, 0, 1]), size=(0.3, 0.3), n=(4, 4))
 validation_plane.uniform()
-
-## we create the gradient for the point distribution
+# ---------This plane should be same to the plane in cam distribution!!!!-----------------------
+plane_size = (0.3, 0.3)
+plane = Plane(origin=np.array([0, 0, 0]), normal=np.array([0, 0, 1]), size=plane_size, n=(2, 2))
+plane.set_origin(np.array([0, 0, 0]))
+plane.uniform()
+objectPoints = plane.get_points()
+new_objectPoints = np.copy(objectPoints)
+# print "new_objectPoints",new_objectPoints
+# -------------------------------------------------------------------------------------------------
 normalize = False
-
-# 4 points: An ideal square
-x1 = round(pl.radius * np.cos(np.deg2rad(45)), 3)
-y1 = round(pl.radius * np.sin(np.deg2rad(45)), 3)
-objectPoints_square = np.array(
-    [[x1, -x1, -x1, x1],
-     [y1, y1, -y1, -y1],
-     [0., 0., 0., 0.],
-     [1., 1., 1., 1.]])
-
-new_objectPoints = np.copy(objectPoints_square)
-# print "new_objectPoints", new_objectPoints
-# ------------------------All cams point straight down: Test Height factor---------------------------------------
-# TODO cam distribution position PARAMETER CHANGE!!!
-cams = create_cam_distribution(cam, plane_size,
-                               theta_params=(0, 360, 30), phi_params=(0, 70, 10),
-                               r_params=(0.2, 2.0, 20), plot=False)
 homography_iters = 1000     # TODO homography_iters changed
 
 def heightGetCondNum(cams,accuracy_mat,radius_step,angle_step):
