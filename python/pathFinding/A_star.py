@@ -18,6 +18,18 @@ class Node:
         self.h_value = h_value
         self.f_value = f_value
 
+    def equal(self,other):
+        """
+        If the x,y equal, we assume that the both Nodes are same
+        :param other: 
+        :return: 
+        """
+        if(self.x == other.x) and (self.y == other.y):
+            return True
+        else:
+            return False
+
+
 
 def create_gScore(width,height):
     """
@@ -64,30 +76,66 @@ def node_lowest_fScore(openSet):
     current = min(openSet, key=lambda o: o.f_value)
     return current
 
+def current_in_cameFrom(current,cameFrom):
+    for node in cameFrom:
+        if(current.equal(node)):
+            return True
+    return False
+
+
 def reconstruct_path(cameFrom, current):
-    # TODO Need to change
-    total_path = [current]
-    while current in cameFrom:
-        current = cameFrom[current]
-        total_path.append(current)
+    """
+    Get path of A*
+    """
+    total_path = np.array([[current.x],[current.y]])
+    while current_in_cameFrom(current,cameFrom):
+        current = current.father
+        node_x = current.x
+        node_y = current.y
+        node_pos = np.array([[node_x],[node_y]])
+        total_path = np.hstack((total_path,node_pos))
+
+    l1 = total_path[0,:]
+    l1 = l1[::-1]
+    l2 = total_path[1,:]
+    l2 = l2[::-1]
+    total_path = np.vstack((l1,l2))
     return total_path
 
-def getNeighbors(current):
+def getNeighbors(current,width,height):
     """
-
+    Get neighbors of current node
     :param current:
     :return: set
     """
-    neighbors = set()
-    # TODO NOT FINISH
     x = current.x
     y = current.y
-    if (x - 1) >= 0 and (y - 1) >=0:
-        # (self,x,y,father,g_value,h_value,f_value)
-
-
-
-
+    neighbors = np.array([[x],[y]])
+    if (x - 1) >= 0:
+        t = np.array([[x - 1], [y]])
+        neighbors = np.hstack((neighbors, t))
+        if (y - 1) >= 0:
+            t = np.array([[x - 1], [y - 1]])
+            neighbors = np.hstack((neighbors,t))
+        if (y + 1) < width:
+            t = np.array([[x - 1], [y + 1]])
+            neighbors = np.hstack((neighbors,t))
+    if (y - 1) >= 0:
+        t = np.array([[x], [y - 1]])
+        neighbors = np.hstack((neighbors, t))
+    if (y + 1) < width:
+        t = np.array([[x], [y + 1]])
+        neighbors = np.hstack((neighbors, t))
+    if (x + 1) < height:
+        t = np.array([[x + 1], [y]])
+        neighbors = np.hstack((neighbors, t))
+        if (y - 1) >= 0:
+            t = np.array([[x + 1], [y - 1]])
+            neighbors = np.hstack((neighbors,t))
+        if (y + 1) < width:
+            t = np.array([[x + 1], [y + 1]])
+            neighbors = np.hstack((neighbors,t))
+        neighbors = neighbors[:,1:]
     return neighbors
 
 def dist_between(current, neighbor,d_diagnoal,d_straight):
@@ -110,6 +158,18 @@ def dist_between(current, neighbor,d_diagnoal,d_straight):
     h = d_diagnoal * h_diagonal + d_straight * (h_straight - 2 * h_diagonal)
 
     return h
+
+def neighbor_in_closedSet(neighbor,closedSet):
+    for node in closedSet:
+        if(neighbor.equal(node)):
+            return True
+    return False
+
+def neighbor_not_in_openSet(neighbor,openSet):
+    for node in openSet:
+        if(neighbor.equal(node)):
+            return False
+    return True
 
 
 
@@ -144,26 +204,35 @@ def aStar(map,width,height,startNode,goalNode,d_diagnoal,d_straight):
     startNode.f_value = heuristic_cost_estimate(startNode, goalNode,d_diagnoal,d_straight)
     fScore[start_x,start_y] = heuristic_cost_estimate(startNode, goalNode,d_diagnoal,d_straight)
     while len(openSet) != 0:
+        # print "len(openSet)",len(openSet)
         # current := the node in openSet having the lowest fScore[] value
         current = node_lowest_fScore(openSet)
         # If it is the item we want, retrace the path and return it
-        if current == goalNode:
-            return reconstruct_path(cameFrom, current)
+        if current.equal(goalNode):
+            # print "current.equal(goalNode)"
+            path = reconstruct_path(cameFrom, current)
+            # TODO
+            return path
 
         openSet.remove(current)
+        # print "openSet.remove(current)", len(openSet)
         closedSet.add(current)
-
-        current_neighbors = getNeighbors(current)
-        for neighbor in current_neighbors:
-            if neighbor in closedSet:
+        current_neighbors = getNeighbors(current,width,height)
+        current_neighbors_num = current_neighbors.shape[1]
+        for index in range(current_neighbors_num):
+        # for neighbor in current_neighbors:
+            [neighbor_x,neighbor_y] = current_neighbors[:,index]
+            neighbor = Node(neighbor_x,neighbor_y,None,np.inf,np.inf,np.inf)
+            if neighbor_in_closedSet(neighbor,closedSet):
+                # print " neighbor in closedSet:"
                 continue
-            if neighbor not in openSet:	# Discover a new node
+            if neighbor_not_in_openSet(neighbor,openSet):	# Discover a new node
                 openSet.add(neighbor)
 
             # The distance from start to a neighbor the "dist_between" function may vary as per the solution requirements.
             current_x = current.x
             current_y = current.y
-            tentative_gScore = gScore[current] + dist_between(current, neighbor,d_diagnoal,d_straight)
+            tentative_gScore = gScore[current_x,current_y] + dist_between(current, neighbor,d_diagnoal,d_straight)
             neighbor_x = neighbor.x
             neighbor_y = neighbor.y
             if tentative_gScore >= gScore[neighbor_x,neighbor_y]:
@@ -173,14 +242,11 @@ def aStar(map,width,height,startNode,goalNode,d_diagnoal,d_straight):
             cameFrom.append(neighbor)
             gScore[neighbor_x,neighbor_y] = tentative_gScore
             neighbor.g_value = tentative_gScore
-            neighbor_f_value = gScore[neighbor_x,neighbor_y] + heuristic_cost_estimate(neighbor, goalNode)
+            neighbor_f_value = gScore[neighbor_x,neighbor_y] + heuristic_cost_estimate(neighbor, goalNode,d_diagnoal,d_straight)
             fScore[neighbor_x,neighbor_y] = neighbor_f_value
             neighbor.f_value = neighbor_f_value
-
-    return
-
-
-            # =================================Test========================================
+    return False
+# =================================Test========================================
 # print create_gScore(2,2)
 # -----------------------------------------------------------------------------
 # start = Node(0,0,None,0,0)
@@ -189,11 +255,16 @@ def aStar(map,width,height,startNode,goalNode,d_diagnoal,d_straight):
 # d_straight = 10
 # print heuristic_cost_estimate(start, goal,d_diagnoal,d_straight)
 # -----------------------------------------------------------------------------
-map = None
-width = 5
-height = 5
-d_diagnoal = 14
-d_straight = 10
-startNode = Node(0,0,None,0,0,0)
-goalNode = Node(3,2,None,0,0,0)
-aStar(map,width,height,startNode,goalNode,d_diagnoal,d_straight)
+# width = 5
+# height = 5
+# current = Node(1,4,None,0,0,0)
+# print getNeighbors(current,width,height)
+# -----------------------------------------------------------------------------
+# map = None
+# width = 5
+# height = 5
+# d_diagnoal = 14
+# d_straight = 10
+# startNode = Node(0,0,None,0,0,0)
+# goalNode = Node(1,2,None,0,0,0)
+# print aStar(map,width,height,startNode,goalNode,d_diagnoal,d_straight)
