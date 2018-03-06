@@ -4,18 +4,22 @@
 @Time    : 05.03.18 18:30
 @File    : A_star.py
 @author: Yue Hu
+
+A Star algorithm
 """
 import numpy as np
 import math
 
 class Node:
+    """
+    Each position in matrix-map is a node
+    """
     def __init__(self,x,y,father,g_value,h_value,f_value):
         self.x = x
         self.y = y
         self.father = father
-        # TODO Value
         self.g_value = g_value
-        self.h_value = h_value
+        self.h_value = h_value # Maybe we do not need this h_value
         self.f_value = f_value
 
     def equal(self,other):
@@ -28,8 +32,6 @@ class Node:
             return True
         else:
             return False
-
-
 
 def create_gScore(width,height):
     """
@@ -69,7 +71,26 @@ def heuristic_cost_estimate(start, goal,d_diagnoal,d_straight):
     h_diagonal = min(np.abs(start_x - goal_x),np.abs(start_y - goal_y))
     h_straight = np.abs(start_x - goal_x) + np.abs(start_y - goal_y)
     h = d_diagnoal * h_diagonal + d_straight * (h_straight - 2 * h_diagonal)
+    return h
 
+def dist_between(current, neighbor,d_diagnoal,d_straight):
+    """
+    Manhattan distance
+    h_diagonal(n) = min(abs(n.x - goal.x), abs(n.y - goal.y))
+    h_straight(n) = (abs(n.x - goal.x) + abs(n.y - goal.y))
+    h(n) = D_diagnoal * h_diagonal(n) + D_straight * (h_straight(n) - 2*h_diagonal(n)))
+    :param start:
+    :param goal:
+    :return:
+    """
+    start_x = current.x
+    start_y = current.y
+    goal_x = neighbor.x
+    goal_y = neighbor.y
+
+    h_diagonal = min(np.abs(start_x - goal_x),np.abs(start_y - goal_y))
+    h_straight = np.abs(start_x - goal_x) + np.abs(start_y - goal_y)
+    h = d_diagnoal * h_diagonal + d_straight * (h_straight - 2 * h_diagonal)
     return h
 
 def node_lowest_fScore(openSet):
@@ -81,26 +102,6 @@ def current_in_cameFrom(current,cameFrom):
         if(current.equal(node)):
             return True
     return False
-
-
-def reconstruct_path(cameFrom, current):
-    """
-    Get path of A*
-    """
-    total_path = np.array([[current.x],[current.y]])
-    while current_in_cameFrom(current,cameFrom):
-        current = current.father
-        node_x = current.x
-        node_y = current.y
-        node_pos = np.array([[node_x],[node_y]])
-        total_path = np.hstack((total_path,node_pos))
-
-    l1 = total_path[0,:]
-    l1 = l1[::-1]
-    l2 = total_path[1,:]
-    l2 = l2[::-1]
-    total_path = np.vstack((l1,l2))
-    return total_path
 
 def getNeighbors(current,width,height):
     """
@@ -138,27 +139,6 @@ def getNeighbors(current,width,height):
         neighbors = neighbors[:,1:]
     return neighbors
 
-def dist_between(current, neighbor,d_diagnoal,d_straight):
-    """
-    Manhattan distance
-    h_diagonal(n) = min(abs(n.x - goal.x), abs(n.y - goal.y))
-    h_straight(n) = (abs(n.x - goal.x) + abs(n.y - goal.y))
-    h(n) = D_diagnoal * h_diagonal(n) + D_straight * (h_straight(n) - 2*h_diagonal(n)))
-    :param start:
-    :param goal:
-    :return:
-    """
-    start_x = current.x
-    start_y = current.y
-    goal_x = neighbor.x
-    goal_y = neighbor.y
-
-    h_diagonal = min(np.abs(start_x - goal_x),np.abs(start_y - goal_y))
-    h_straight = np.abs(start_x - goal_x) + np.abs(start_y - goal_y)
-    h = d_diagnoal * h_diagonal + d_straight * (h_straight - 2 * h_diagonal)
-
-    return h
-
 def neighbor_in_closedSet(neighbor,closedSet):
     for node in closedSet:
         if(neighbor.equal(node)):
@@ -171,12 +151,28 @@ def neighbor_not_in_openSet(neighbor,openSet):
             return False
     return True
 
-
-
-def aStar(map,width,height,startNode,goalNode,d_diagnoal,d_straight):
+def reconstruct_path(cameFrom, current):
     """
+    Get path of A*
+    """
+    total_path = np.array([[current.x],[current.y]])
+    while current_in_cameFrom(current,cameFrom):
+        current = current.father
+        node_x = current.x
+        node_y = current.y
+        node_pos = np.array([[node_x],[node_y]])
+        total_path = np.hstack((total_path,node_pos))
 
-    :param map:
+    l1 = total_path[0,:]
+    l1 = l1[::-1]
+    l2 = total_path[1,:]
+    l2 = l2[::-1]
+    total_path = np.vstack((l1,l2))
+    return total_path
+
+def aStar(width,height,startNode,goalNode,d_diagnoal,d_straight):
+    """
+     A star algorithm
     :param start_x:
     :param start_y:
     :param end_x:
@@ -204,27 +200,22 @@ def aStar(map,width,height,startNode,goalNode,d_diagnoal,d_straight):
     startNode.f_value = heuristic_cost_estimate(startNode, goalNode,d_diagnoal,d_straight)
     fScore[start_x,start_y] = heuristic_cost_estimate(startNode, goalNode,d_diagnoal,d_straight)
     while len(openSet) != 0:
-        # print "len(openSet)",len(openSet)
         # current := the node in openSet having the lowest fScore[] value
         current = node_lowest_fScore(openSet)
         # If it is the item we want, retrace the path and return it
         if current.equal(goalNode):
-            # print "current.equal(goalNode)"
             path = reconstruct_path(cameFrom, current)
-            # TODO
             return path
 
         openSet.remove(current)
-        # print "openSet.remove(current)", len(openSet)
         closedSet.add(current)
         current_neighbors = getNeighbors(current,width,height)
         current_neighbors_num = current_neighbors.shape[1]
-        for index in range(current_neighbors_num):
         # for neighbor in current_neighbors:
+        for index in range(current_neighbors_num):
             [neighbor_x,neighbor_y] = current_neighbors[:,index]
             neighbor = Node(neighbor_x,neighbor_y,None,np.inf,np.inf,np.inf)
             if neighbor_in_closedSet(neighbor,closedSet):
-                # print " neighbor in closedSet:"
                 continue
             if neighbor_not_in_openSet(neighbor,openSet):	# Discover a new node
                 openSet.add(neighbor)
@@ -260,11 +251,10 @@ def aStar(map,width,height,startNode,goalNode,d_diagnoal,d_straight):
 # current = Node(1,4,None,0,0,0)
 # print getNeighbors(current,width,height)
 # -----------------------------------------------------------------------------
-# map = None
 # width = 5
 # height = 5
 # d_diagnoal = 14
 # d_straight = 10
 # startNode = Node(0,0,None,0,0,0)
 # goalNode = Node(1,2,None,0,0,0)
-# print aStar(map,width,height,startNode,goalNode,d_diagnoal,d_straight)
+# print aStar(width,height,startNode,goalNode,d_diagnoal,d_straight)
