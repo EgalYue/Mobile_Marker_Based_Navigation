@@ -76,7 +76,10 @@ def heightGetCondNum(cams,accuracy_mat,radius_step,angle_step):
             # print "radius_step",radius_step
             # print "accuracy_mat_row",accuracy_mat_row
             # print "valid cam r \n",cam.radius
-            accuracy_mat_col = int(np.copy(cam.angle) / angle_step) # col index, accuracy_mat store cond num for each cam position
+            if angle_step == 0:
+                accuracy_mat_col = 0
+            else:
+                accuracy_mat_col = int(np.copy(cam.angle) / angle_step) # col index, accuracy_mat store cond num for each cam position
             # print "angle_step",angle_step
             # print "accuracy_mat_col",accuracy_mat_col
             # print "accuracy_mat",accuracy_mat.shape
@@ -103,7 +106,7 @@ def heightGetCondNum(cams,accuracy_mat,radius_step,angle_step):
                 # Calculate the pose using solvepnp
                 debug = False
                 # TODO  cv2.SOLVEPNP_DLS, cv2.SOLVEPNP_EPNP, cv2.SOLVEPNP_ITERATIVE
-                pnp_tvec, pnp_rmat = pose_pnp(new_objectPoints, new_imagePoints_noisy, cam.K, debug, cv2.SOLVEPNP_DLS,
+                pnp_tvec, pnp_rmat = pose_pnp(new_objectPoints, new_imagePoints_noisy, cam.K, debug, cv2.SOLVEPNP_EPNP,
                                               False)
                 pnpCam = cam.clone_withPose(pnp_tvec, pnp_rmat)
                 # Calculate errors
@@ -217,7 +220,6 @@ def heightGetCondNum(cams,accuracy_mat,radius_step,angle_step):
 
     ##------------Display cond num distribution-------------------
     # print "start to show "
-    display_mat = display_mat[:,1:]
     # dc.displayCondNumDistribution(display_mat)
     # dc.displayCondNumDistriMayavi(display_mat)
     # print "finish!!!"
