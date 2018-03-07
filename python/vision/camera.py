@@ -261,45 +261,37 @@ class Camera(object):
         self.rotate(np.array([0,0,1],dtype=np.float32), angle)
 
     def look_at(self, world_position):
-      #%%
-      world_position = self.get_world_position()[:3]
-      eye = world_position
-      target = np.array([0,0,0])
-      up = np.array([0,1,0])
+        """
 
-      zaxis = (target-eye)/np.linalg.norm(target-eye)
-      xaxis = (np.cross(up,zaxis))/np.linalg.norm(np.cross(up,zaxis))
-      yaxis = np.cross(zaxis, xaxis)
+        :param world_position:
+        :return:
+        """
+        world_position = self.get_world_position()[:3]
+        eye = world_position
+        target = np.array([0,0,0])
+        up = np.array([0,1,0])
 
-      # print "xaxis",xaxis
-      # print "yaxis",yaxis
-      # print "zaxis",zaxis
-      R = np.eye(4)
-      # TODO should use this R
-      R = np.array([[xaxis[0], yaxis[0], zaxis[0], 0],
-                   [xaxis[1], yaxis[1], zaxis[1], 0],
-                   [xaxis[2], yaxis[2], zaxis[2], 0],
-                   [       0,        0,        0, 1]]
-          )
+        zaxis = (target-eye)/np.linalg.norm(target-eye)
+        xaxis = (np.cross(up,zaxis))/np.linalg.norm(np.cross(up,zaxis))
+        yaxis = np.cross(zaxis, xaxis)
 
-      # R = np.array([[xaxis[0], xaxis[1], xaxis[2], 0],
-      #              [yaxis[0], yaxis[1], yaxis[2], 0],
-      #              [zaxis[0], zaxis[1], zaxis[2], 0],
-      #              [       0,        0,        0, 1]])
+        R = np.eye(4)
+        # TODO should use this R
+        R = np.array([[xaxis[0], yaxis[0], zaxis[0], 0],
+                      [xaxis[1], yaxis[1], zaxis[1], 0],
+                      [xaxis[2], yaxis[2], zaxis[2], 0],
+                      [       0,        0,        0, 1]])
+        # R = np.array([[xaxis[0], xaxis[1], xaxis[2], 0],
+        #              [yaxis[0], yaxis[1], yaxis[2], 0],
+        #              [zaxis[0], zaxis[1], zaxis[2], 0],
+        #              [       0,        0,        0, 1]])
+        t = np.eye(4, dtype=np.float32) # translation
+        t[:3,3] = -eye
 
-      # print (xaxis.T).dot(xaxis)
-      # print (zaxis.T).dot(zaxis)
-      # print (yaxis.T).dot(yaxis)
-      # print "R",R
-      t = np.eye(4, dtype=np.float32) # translation
-      t[:3,3] = -eye
-
-      self.R = R
-
-
-      self.Rt = np.dot(R,t)
-      self.t = np.eye(4, dtype=np.float32)
-      self.t[:3,3] = self.Rt[:3,3]
+        self.R = R
+        self.Rt = np.dot(R,t)
+        self.t = np.eye(4, dtype=np.float32)
+        self.t[:3,3] = self.Rt[:3,3]
 
     def homography_from_Rt(self):
       rt_reduced = self.Rt[:3,[0,1,3]]
@@ -308,7 +300,7 @@ class Camera(object):
         H = H/H[2,2]
       return H
 
-      #%%
+
 # cam = Camera()
 #
 # #Test that projection matrix doesnt change rotation and translation

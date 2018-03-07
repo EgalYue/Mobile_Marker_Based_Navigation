@@ -14,6 +14,7 @@ from vision.camera import Camera
 from vision.camera_distribution import create_cam_distribution,create_cam_distribution_in_YZ,create_cam_distribution_in_XZ
 import brute_force as bf
 
+# TODO add parameter : marker-size; camera intrinsic parameter
 def accuracy_func(accuracy_matrix, theta_params = (0.0,180.0,5), r_params = (0.0, 2.0, 5) , z = 0, y = 0):
     """
     Calculate the accuracy degree of given position y,z in world 
