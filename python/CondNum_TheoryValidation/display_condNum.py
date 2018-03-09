@@ -147,14 +147,11 @@ def displayCondNumDistribution(m):
 
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-
-    for i in range(0,m.shape[1]):
-        x = m[0][i]
-        y = m[1][i]
-        z = m[2][i]
-        condNum = m[3][i]
-        # color = getConNumColor(condNum)
-        ax.scatter(x, y, z, s = 100,c = condNum, marker="o",cmap="magma")
+    x = m[0,:]
+    y = m[1,:]
+    z = m[2,:]
+    condNum = m[3,:]
+    ax.scatter(x, y, z, s=100, c=condNum, marker="o", cmap="magma") # matplotlib colormap
 
     ax.set_xlabel('X Label')
     ax.set_ylabel('Y Label')
