@@ -153,8 +153,8 @@ def displayCondNumDistribution(m):
         y = m[1][i]
         z = m[2][i]
         condNum = m[3][i]
-        color = getConNumColor(condNum)
-        ax.scatter(x, y, z, s = 100,c = color, marker="o")
+        # color = getConNumColor(condNum)
+        ax.scatter(x, y, z, s = 100,c = condNum, marker="o",cmap="magma")
 
     ax.set_xlabel('X Label')
     ax.set_ylabel('Y Label')
