@@ -295,7 +295,58 @@ def create_cam_distribution_in_YZ(cam=None, plane_size=(0.3, 0.3), theta_params=
 
     return cams,accuracy_mat
 
+def create_cam_distribution_rotation_around_Z(cam=None, plane_size=(0.3, 0.3), theta_params=(0, 360, 10), phi_params=(45, 45, 1),
+                            r_params=(1.0, 1.0, 1), plot=False):
+    if cam == None:
+     # Create an initial camera on the center of the world
+     cam = Camera()
+     f = 800
+     cam.set_K(fx=f, fy=f, cx=320, cy=240)  # Camera Matrix
+     cam.img_width = 320 * 2
+     cam.img_height = 240 * 2
 
+    # we create a default plane with 4 points with a side lenght of w (meters)
+    plane = Plane(origin=np.array([0, 0, 0]), normal=np.array([0, 0, 1]), size=plane_size, n=(2, 2))
+    # We extend the size of this plane to account for the deviation from a uniform pattern
+    # plane.size = (plane.size[0] + deviation, plane.size[1] + deviation)
+
+    d_space = np.linspace(r_params[0], r_params[1], r_params[2])
+    t_list = []
+    for d in d_space:
+     xx, yy, zz = uniform_sphere(theta_params, phi_params, d, False)
+     sphere_points = np.array([xx.ravel(), yy.ravel(), zz.ravel()], dtype=np.float32)
+     t_list.append(sphere_points)
+    t_space = np.hstack(t_list)
+
+    cams = []
+    for t in t_space.T:
+     cam = cam.clone()
+     cam.set_t(-t[0], -t[1], -t[2])
+     cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0.0, 0, 0))
+     cam.look_at([0, 0, 0])
+
+     # cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0,deg2rad(180),0))
+     # cam.set_t(t[0], t[1],t[2],'world')
+
+     plane.set_origin(np.array([0, 0, 0]))
+     plane.uniform()
+     objectPoints = plane.get_points()
+     imagePoints = cam.project(objectPoints)
+
+     # if plot:
+     #  cam.plot_image(imagePoints)
+     if ((imagePoints[0, :] < cam.img_width) & (imagePoints[0, :] > 0)).all():
+      if ((imagePoints[1, :] < cam.img_height) & (imagePoints[1, :] > 0)).all():
+       cams.append(cam)
+       print cam.get_world_position()
+
+    if plot:
+     planes = []
+     plane.uniform()
+     planes.append(plane)
+     # plot3D(cams, planes)
+    print len(cams)
+    return cams
 
 
 
@@ -327,3 +378,6 @@ def create_cam_distribution_in_YZ(cam=None, plane_size=(0.3, 0.3), theta_params=
 # print "cam.Rt",cam.Rt
 # print "cam.P",cam.P
 # ------------------Code End-----------Test for cam look at method------------------------------
+
+# create_cam_distribution_rotation_around_Z(cam=None, plane_size=(0.3, 0.3), theta_params=(0, 360, 10), phi_params=(45, 45, 1),
+#                             r_params=(3.0, 3.0, 1), plot=False)

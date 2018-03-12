@@ -16,7 +16,7 @@ import numpy as np
 import scipy.io as sio
 import matplotlib.pyplot as plt
 import numpy as np
-from mayavi import mlab
+# from mayavi import mlab
 from vision.camera import Camera
 import Rt_matrix_from_euler_t as Rt_matrix_from_euler_t
 
