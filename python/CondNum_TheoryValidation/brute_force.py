@@ -199,16 +199,16 @@ def heightGetCondNum(cams,accuracy_mat,radius_step,angle_step):
 
 
     # # -----------------------Draw the image points-----------------------------------------------------------------------
-    fig1 = plt.figure('Image points')
-    ax_image_best = fig1.add_subplot(111)
-    plt.sca(ax_image_best)
-    ax_image_best.plot(imagePoints_des[mat_cond_list.index(min(mat_cond_list))][0],
-                       imagePoints_des[mat_cond_list.index(min(mat_cond_list))][1], '.', color='blue', )
-    ax_image_best.set_xlim(0, 1280)
-    ax_image_best.set_ylim(0, 960)
-    ax_image_best.invert_yaxis()
-    ax_image_best.set_title('Image Points')
-    plt.show()
+    # fig1 = plt.figure('Image points')
+    # ax_image_best = fig1.add_subplot(111)
+    # plt.sca(ax_image_best)
+    # ax_image_best.plot(imagePoints_des[mat_cond_list.index(min(mat_cond_list))][0],
+    #                    imagePoints_des[mat_cond_list.index(min(mat_cond_list))][1], '.', color='blue', )
+    # ax_image_best.set_xlim(0, 1280)
+    # ax_image_best.set_ylim(0, 960)
+    # ax_image_best.invert_yaxis()
+    # ax_image_best.set_title('Image Points')
+    # plt.show()
 
     ## plt.pause(100)
 
@@ -273,11 +273,11 @@ def transfer_condNumMatrix_to_accuracyDegreeMatrix(condNumMatrix,min_cond_num,ma
 # print transfer_condNumMatrix_to_accuracyDegreeMatrix(condNumMatrix,100,500,5)
 # ---------------------------Test normalise_points----------------------------------------
 # TODO 12.03.2018 at 11:30
-cams = []
-cam.set_t(0., 0.40957603, 0.28678823,"world")
-cam.look_at([0, 0, 0])
-cams.append(cam)
-accuracy_mat = np.zeros([5,5])
-radius_step = 0.1
-angle_step = 5
-heightGetCondNum(cams,accuracy_mat,radius_step,angle_step)
+# cams = []
+# cam.set_t(0., 0.40957603, 0.28678823,"world")
+# cam.look_at([0, 0, 0])
+# cams.append(cam)
+# accuracy_mat = np.zeros([5,5])
+# radius_step = 0.1
+# angle_step = 5
+# heightGetCondNum(cams,accuracy_mat,radius_step,angle_step)

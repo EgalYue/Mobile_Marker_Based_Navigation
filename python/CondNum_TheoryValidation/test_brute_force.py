@@ -126,13 +126,13 @@ def cam_distribution_study():
     #                                r_params=(0.2, 2.0, 20), plot=False)
     angle_begin = 0.0
     angle_end = 180.0
-    angle_num = 37
+    angle_num = 7#37
     angle_step = (angle_end - angle_begin) / (angle_num - 1)
     theta_params = (angle_begin,angle_end,angle_num)
 
     r_begin = 0.0
     r_end = 2.0
-    r_num = 21
+    r_num = 3#21
     r_step = (r_end - r_begin) / (r_num - 1)
     r_params = (r_begin,r_end,r_num)
 
@@ -141,7 +141,8 @@ def cam_distribution_study():
     inputX, inputY, inputZ, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t, input_pnp_R, input_transfer_error, display_mat,accuracy_mat_new = bf.heightGetCondNum(cams,accuracy_mat,r_step,angle_step)
     # print "accuracy_mat distribution:\n",accuracy_mat_new
     print "Start to show:"
-    dc.displayCondNumDistribution(display_mat)
+    # dc.displayCondNumDistribution(display_mat)
+    dc.displayError_YZ_plane_2D(inputY, inputZ, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t, input_pnp_R)
     print "End"
 
 # ======================================Main ========================================================

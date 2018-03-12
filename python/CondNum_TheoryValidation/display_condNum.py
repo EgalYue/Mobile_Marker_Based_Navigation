@@ -78,59 +78,6 @@ def getConNumColor(condNum):
 
         return color
 
-def getColorMayavi(condNum):
-    color = (1,1,1)
-    if condNum > 70000.0:
-        color = (0.9,0.9,0.9)
-    elif condNum > 60000.0:
-        color = (0.8,0.8,0.8)
-    elif condNum > 50000.0:
-        color = (0.7,0.7,0.7)
-    elif condNum > 40000.0:
-        color = (0.6,0.6,0.6)
-    elif condNum > 30000.0:
-        color = (0.5,0.5,0.5)
-    elif condNum > 20000.0:
-        color = (0.4,0.4,0.4)
-    elif condNum > 10000.0:
-        color = (0.3,0.3,0.3)
-    elif condNum > 8000.0:
-        color = (0.2,0.2,0.2)
-    elif condNum > 6000.0:
-        color = (0.1,0.1,0.1)
-    elif condNum > 4000.0:
-        color = (0,0,1)
-    elif condNum > 2000.0:
-        color = (0,1,0)
-    elif condNum > 1000.0:
-        color = (1,0,0)
-    else:
-        color = (0,0,0)
-
-    return color
-
-# def displayCondNumDistriMayavi(m):
-#     """"Display distribution of cond num for cam distribution in 3D"""
-#     cam = Camera()
-#     cam.set_K(fx=800, fy=800, cx=640 / 2., cy=480 / 2.)
-#     cam.set_width_heigth(640, 480)
-#     cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0,np.deg2rad(180),0))
-#     cam.set_t(0, 0,2,'world')
-#
-#     plot3D_cam(cam)
-#
-#     for i in range(0,m.shape[1]):
-#         x = m[0][i]
-#         y = m[1][i]
-#         z = m[2][i]
-#         condNum = m[3][i]
-#         color = getColorMayavi(condNum)
-#         mlab.points3d(x,y,z,color=color,mode='point',line_width=1)
-#         mlab.colorbar()
-#         # mlab.show()
-#     mlab.show()
-
-
 def displayCondNumDistribution(m):
     """
     Display distribution of cond num for cam distribution in 3D
@@ -158,120 +105,7 @@ def displayCondNumDistribution(m):
     ax.set_zlabel('Z Label')
 
     plt.show()
-    plt.pause(1000)
-
-
-def Detectionplot(m):
-
-    # data = sio.loadmat('testpython.mat')
-    # m = data['data']
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    x = m[0]
-    y = m[1]
-    z = m[2]
-    cond_num = m[3]
-    x = x.flatten('F')
-    y = y.flatten('F')
-    C = []
-
-    for a in cond_num:
-        if a > 70000.0:
-            C.append('linen')
-        elif a > 60000.0:
-            C.append('antiquewhite')
-        elif a > 50000.0:
-            C.append('papayawhip')
-        elif a > 40000.0:
-            C.append('oldlace')
-        elif a > 30000.0:
-            C.append('cornsilk')
-        elif a > 20000.0:
-            C.append('palegoldenrod')
-        elif a > 10000.0:
-            C.append('yellow')
-        elif a > 8000.0:
-            C.append('lightblue')
-        elif a > 6000.0:
-            C.append('deepskyblue')
-        elif a > 4000.0:
-            C.append('red')
-        elif a > 2000.0:
-            C.append('darkred')
-        elif a > 1000.0:
-            C.append('maroon')
-        else:
-            C.append('black')
-
-    dx = 0.1 * np.ones_like(x)
-    dy = 0.1 * np.ones_like(y)
-    dz = abs(z) * z.flatten()
-    dz = dz.flatten() / abs(z)
-    z = np.zeros_like(z)
-
-    ax.set_xlabel('Xlabel')
-    ax.set_ylabel('Ylabel')
-    ax.set_zlabel('Zlabel')
-
-    ax.bar3d(x, y, z, dx, dy, dz, color=C, zsort='average')
-    plt.show()
     # plt.pause(1000)
-
-# plot angle
-def anglePlot(m):
-
-    # data = sio.loadmat('angle_data3.mat')
-    # m = data['data']
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    x = m[0] # angle rotation around x
-    y = m[1] # angle rotation around y
-    z = m[2] # cond num
-    x = x.flatten('F')
-    y = y.flatten('F')
-
-    C = []
-    for a in z:
-        if a > 70000.0:
-            C.append('linen')
-        elif a > 60000.0:
-            C.append('antiquewhite')
-        elif a > 50000.0:
-            C.append('papayawhip')
-        elif a > 40000.0:
-            C.append('oldlace')
-        elif a > 30000.0:
-            C.append('cornsilk')
-        elif a > 20000.0:
-            C.append('palegoldenrod')
-        elif a > 10000.0:
-            C.append('yellow')
-        elif a > 8000.0:
-            C.append('lightblue')
-        elif a > 6000.0:
-            C.append('deepskyblue')
-        elif a > 4000.0:
-            C.append('red')
-        elif a > 2000.0:
-            C.append('green')
-        elif a > 1000.0:
-            C.append('maroon')
-        else:
-            C.append('black')
-
-    dx = 1 * np.ones_like(x)
-    dy = 1 * np.ones_like(y)
-    dz = abs(z) * z.flatten()
-    dz = dz.flatten() / abs(z)
-    z = np.zeros_like(z)
-
-    ax.set_xlabel('Xlabel')
-    ax.set_ylabel('Ylabel')
-    ax.set_zlabel('Zlabel')
-    ax.bar3d(x, y, z, dx, dy, dz, color=C, zsort='average')
-    plt.show()
-    plt.pause(1000)
-
 
 def displayError_XYfixed3D(z,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error):
     """
@@ -410,20 +244,46 @@ def displayError_Zfixed3D(x,y,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ip
 
     plt.savefig("Error.png")
 
+def displayError_YZ_plane_2D(y, z, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t,
+                          input_pnp_R):
+    """
+     Display R_error and t_error for ippe and pnp method
+     Using colorbar on YZ plane
+    """
+    fig1 = plt.figure("Error")
+    ax1 = fig1.add_subplot(231)
+    plt.scatter(y, z, s=100, c=input_ippe1_R, marker="o", cmap="magma")
+    ax1.set_xlabel('Y input_ippe1_R')
+    ax1.set_ylabel('Z input_ippe1_R')
 
-    # ----------------- Transfer Error ----------------------------------
-    fig2 = plt.figure("Transfer Error ")
-    # ax = fig.gca(projection='3d')
-    ax_transfer_error = fig2.add_subplot(111, projection='3d')
-    ax_transfer_error.scatter(x, y, input_transfer_error, marker = ".")
-    ax_transfer_error.legend()
-    ax_transfer_error.set_xlabel('X Label')
-    ax_transfer_error.set_ylabel('Y Label')
-    ax_transfer_error.set_zlabel('Transfer Error')
+    ax2 = fig1.add_subplot(234)
+    plt.scatter(y, z, s=100, c=input_ippe1_t, marker="o", cmap="magma")
+    ax2.set_xlabel('Y input_ippe1_t')
+    ax2.set_ylabel('Z input_ippe1_t')
 
-    plt.savefig("Transfer Error.png")
+    ax3 = fig1.add_subplot(232)
+    plt.scatter(y, z, s=100, c=input_ippe2_R, marker="o", cmap="magma")
+    ax3.set_xlabel('Y input_ippe2_R')
+    ax3.set_ylabel('Z input_ippe2_R')
+
+    ax4 = fig1.add_subplot(235)
+    plt.scatter(y, z, s=100, c=input_ippe2_t, marker="o", cmap="magma")
+    ax4.set_xlabel('Y input_ippe2_t')
+    ax4.set_ylabel('Z input_ippe2_t')
+
+    ax5 = fig1.add_subplot(233)
+    plt.scatter(y, z, s=100, c=input_pnp_R, marker="o", cmap="magma")
+    ax5.set_xlabel('Y input_pnp_R')
+    ax5.set_ylabel('Z input_pnp_R')
+
+    ax6 = fig1.add_subplot(236)
+    plt.scatter(y, z, s=100, c=input_pnp_t, marker="o", cmap="magma")
+    ax6.legend()
+    ax6.set_xlabel('Y input_pnp_t')
+    ax6.set_ylabel('Z input_pnp_t')
+    plt.colorbar()
+    plt.savefig("Error.png")
     plt.show()
-    plt.pause(1000)
 
 #--------------------------------------------- Test--------------------------------------------------
 # Detectionplot()
