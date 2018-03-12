@@ -10,10 +10,9 @@ sys.path.append("..")
 #======================================================================
 import matplotlib.pyplot as plt
 import autograd.numpy as np
-from mayavi import mlab
+# from mayavi import mlab #TODO comment because of from mayavi import mlab
 from numpy import random, cos, sin, sqrt, pi, linspace, deg2rad, meshgrid
 from mpl_toolkits.mplot3d import Axes3D
-
 from camera import Camera
 from plane import Plane
 import Rt_matrix_from_euler_t as Rt_matrix_from_euler_t
@@ -292,7 +291,7 @@ def create_cam_distribution_in_YZ(cam=None, plane_size=(0.3, 0.3), theta_params=
         planes = []
         plane.uniform()
         planes.append(plane)
-        plot3D(cams, planes)
+        # plot3D(cams, planes) #TODO comment because of from mayavi import mlab
 
     return cams,accuracy_mat
 

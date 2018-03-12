@@ -10,22 +10,17 @@ import numpy as np
 import pickle
 import sys
 sys.path.append("..")
-from vision.camera_distribution import create_cam_distribution
-# from vision.rt_matrix import R_matrix_from_euler_t
 from vision.camera import Camera
 from vision.plane import Plane
-from vision.circular_plane import CircularPlane
 import matplotlib.pyplot as plt
 import scipy.io as sio
 import error_functions as ef
 from ippe import homo2d
 from homographyHarker.homographyHarker import homographyHarker as hh
 import hT_gradient as gd
-import Rt_matrix_from_euler_t as Rt_matrix_from_euler_t
 from solve_ippe import pose_ippe_both
 from solve_pnp import pose_pnp
 import cv2
-import display_condNum as dc
 
 calc_metrics = False
 number_of_points = 4
@@ -126,9 +121,7 @@ def heightGetCondNum(cams,accuracy_mat,radius_step,angle_step):
 
                 # Homography Estimation from noisy image points
                 Xo = new_objectPoints[[0, 1, 3], :]
-                # TODO replace Xi = new_imagePoints_noisy with Xi = normalizedimagePoints
                 Xi = new_imagePoints_noisy
-                # Xi = normalizedimagePoints
                 # Hnoisy,A_t_ref,H_t = homo2d.homography2d(Xo,Xi)
                 # Hnoisy = Hnoisy/Hnoisy[2,2]
                 # TODO Change H
@@ -160,6 +153,7 @@ def heightGetCondNum(cams,accuracy_mat,radius_step,angle_step):
             input_list.append(cam.t[0, 3])
             input_list.append(cam.t[1, 3])
             input_list.append(cam.t[2, 3])
+            # TODO normalize points!!!
             mat_cond = gd.matrix_condition_number_autograd(*input_list, normalize=False)
 
             accuracy_mat_new[accuracy_mat_row,accuracy_mat_col] = mat_cond # Store the condition num at corresponding position
@@ -191,7 +185,7 @@ def heightGetCondNum(cams,accuracy_mat,radius_step,angle_step):
     accuracyDegreeMatrix = transfer_condNumMatrix_to_accuracyDegreeMatrix(accuracy_mat_new,min_cond_num,max_cond_num,degree)
     display_mat = display_mat[:,1:]
     # -----------------For Loop End--------------------------------------------------------
-    print "--best image points--", imagePoints_des[mat_cond_list.index(min(mat_cond_list))]
+    print "--best image points--\n", imagePoints_des[mat_cond_list.index(min(mat_cond_list))]
     print "--cond num min--", min(mat_cond_list)
     print "--cam position Best--", cam_valid[mat_cond_list.index(min(mat_cond_list))].get_world_position()
     print "-------------------------"
@@ -235,12 +229,12 @@ def heightGetCondNum(cams,accuracy_mat,radius_step,angle_step):
     input_pnp_R = np.copy(pnp_rmat_error_list)
     input_transfer_error = np.copy(transfer_error_list)
     # ------------------Error-----------------------------
-    print transfer_error_list
-    print ippe_tvec_error_list1
-    print ippe_rmat_error_list1
-    print ippe_tvec_error_list2
-    print ippe_rmat_error_list2
-    print pnp_rmat_error_list
+    # print transfer_error_list
+    # print ippe_tvec_error_list1
+    # print ippe_rmat_error_list1
+    # print ippe_tvec_error_list2
+    # print ippe_rmat_error_list2
+    # print pnp_rmat_error_list
     return inputX,inputY,inputZ,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error,display_mat,accuracyDegreeMatrix
 
 def transfer_condNumMatrix_to_accuracyDegreeMatrix(condNumMatrix,min_cond_num,max_cond_num,degree):
@@ -277,3 +271,13 @@ def transfer_condNumMatrix_to_accuracyDegreeMatrix(condNumMatrix,min_cond_num,ma
 # ===========================================Test============================================
 # condNumMatrix = np.array([[100,200,300,400,500,],[600,700,800,99,20],[0,0,0,0,0]])
 # print transfer_condNumMatrix_to_accuracyDegreeMatrix(condNumMatrix,100,500,5)
+# ---------------------------Test normalise_points----------------------------------------
+# TODO 12.03.2018 at 11:30
+cams = []
+cam.set_t(0,0,1.0,"world")
+cams.append(cam)
+print "cam.t:\n",cam.t
+accuracy_mat = np.zeros([5,5])
+radius_step = 0.1
+angle_step = 5
+heightGetCondNum(cams,accuracy_mat,radius_step,angle_step)

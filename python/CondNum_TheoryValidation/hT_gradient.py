@@ -352,3 +352,7 @@ def update_points(gradient, T, limitx=5,limity=5,limitz=5):
   #     op[0,:] = np.clip(op[0,:], -limitx, limitx)
   #     op[1,:] = np.clip(op[1,:], -limity, limity)
   return t
+
+# =======================================Test======================================
+# pts = np.array([[2,2,-2,-2],[2,-2,2,-2],[1,1,1,1]])
+# print normalise_points(pts)
