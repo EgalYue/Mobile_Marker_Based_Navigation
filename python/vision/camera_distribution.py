@@ -388,6 +388,7 @@ def create_cam_distribution_square_in_XY(cam=None, plane_size=(0.3, 0.3), theta_
      plane.uniform()
      objectPoints = plane.get_points()
      imagePoints = cam.project(objectPoints)
+     print "imagePoints\n",imagePoints
 
      # if plot:
      #  cam.plot_image(imagePoints)
