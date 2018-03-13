@@ -222,9 +222,10 @@ def displayError_Zfixed3D(x,y,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ip
     ax6.set_zlabel('pnp_rmat_error')
 
     plt.savefig("Error.png")
+    plt.show()
 
 
-def displayError_YZ_plane_3D(x, y, z, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t, input_pnp_R):
+def displayError_YZ_plane_3D(y, z, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t, input_pnp_R, input_transfer_error):
     """
      Display R_error and t_error for ippe and pnp method
      cam dstribution only on YZ plane
@@ -267,6 +268,16 @@ def displayError_YZ_plane_3D(x, y, z, input_ippe1_t, input_ippe1_R, input_ippe2_
     ax6.set_zlabel('pnp_rmat_error')
 
     plt.savefig("R_Error_and_t_Error_3D.png")
+    plt.show()
+    # ----------------- Transfer Error ----------------------------------
+    # fig2 = plt.figure("Transfer Error ")
+    # ax_transfer_error = fig2.add_subplot(111, projection='3d')
+    # ax_transfer_error.scatter(y,z, input_transfer_error,marker=".", label='transfer_error')
+    # ax_transfer_error.legend()
+    # ax_transfer_error.set_xlabel('Y')
+    # ax_transfer_error.set_ylabel('Z')
+    # ax_transfer_error.set_zlabel('Transfer Error')
+    # plt.show()
 
 def displayError_YZ_plane_2D(y, z, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t,
                           input_pnp_R):

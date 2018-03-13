@@ -140,12 +140,12 @@ def cam_distribution_study():
                                   plot=False)
     inputX, inputY, inputZ, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t, input_pnp_R, input_transfer_error, display_mat,accuracy_mat_new = bf.heightGetCondNum(cams,accuracy_mat,r_step,angle_step)
     # print "accuracy_mat distribution:\n",accuracy_mat_new
-    print "Start to show:"
+    print "----------------Start to show:-------------------"
     # dc.displayCondNumDistribution(display_mat)
     # dc.displayError_YZ_plane_2D(inputY, inputZ, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t, input_pnp_R)
-    dc.displayError_YZ_plane_3D(inputX, inputY, inputZ, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t,
-                             input_pnp_R)
-print "End"
+    dc.displayError_YZ_plane_3D(inputY, inputZ, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t,
+                             input_pnp_R, input_transfer_error)
+    print "----------------End-----------------------------"
 
 # ======================================Main ========================================================
 if __name__ == '__main__':
