@@ -101,7 +101,7 @@ def heightGetCondNum(cams,accuracy_mat,radius_step,angle_step):
                 # Calculate the pose using solvepnp
                 debug = False
                 # TODO  cv2.SOLVEPNP_DLS, cv2.SOLVEPNP_EPNP, cv2.SOLVEPNP_ITERATIVE
-                pnp_tvec, pnp_rmat = pose_pnp(new_objectPoints, new_imagePoints_noisy, cam.K, debug, cv2.SOLVEPNP_EPNP,
+                pnp_tvec, pnp_rmat = pose_pnp(new_objectPoints, new_imagePoints_noisy, cam.K, debug,  cv2.SOLVEPNP_ITERATIVE,
                                               False)
                 pnpCam = cam.clone_withPose(pnp_tvec, pnp_rmat)
                 # Calculate errors

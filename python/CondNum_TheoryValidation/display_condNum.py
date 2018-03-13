@@ -177,27 +177,6 @@ def displayError_Zfixed3D(x,y,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ip
      Fix Z, study X Y
      Display R_error and t_error for ippe and pnp method 
     """
-    # fig = plt.figure()
-    # # ax = Axes3D(fig)
-    # # X = np.arange(-X_range, X_range, 0.25)
-    # # Y = np.arange(-Y_range, Y_range, 0.25)
-    # # X, Y = np.meshgrid(X, Y)
-    # X = inputX
-    # Y = inputY
-    # Z = input_ippe1_t
-    #
-    # # ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap='rainbow')
-    #
-    # ax = plt.subplot(111, projection='3d')
-    # ax.scatter(X[:1000], Y[:1000], Z[:1000], c='y')
-    # ax.scatter(X[1000:4000], Y[1000:4000], Z[1000:4000], c='r')
-    # ax.scatter(X[4000:], Y[4000:], Z[4000:], c='g')
-    # ax.set_zlabel('Z')
-    # ax.set_ylabel('Y')
-    # ax.set_xlabel('X')
-    # plt.show()
-
-
     fig1 = plt.figure("Error")
     # ax = fig.gca(projection='3d')
     ax1 = fig1.add_subplot(231, projection='3d')
@@ -244,45 +223,90 @@ def displayError_Zfixed3D(x,y,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ip
 
     plt.savefig("Error.png")
 
+
+def displayError_YZ_plane_3D(x, y, z, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t, input_pnp_R):
+    """
+     Display R_error and t_error for ippe and pnp method
+     cam dstribution only on YZ plane
+    """
+    fig1 = plt.figure("R_Error_and_t_Error")
+    ax1 = fig1.add_subplot(234, projection='3d')
+    ax1.scatter(y, z, input_ippe1_t, marker=".")
+    ax1.set_xlabel('Y')
+    ax1.set_ylabel('Z')
+    ax1.set_zlabel('ippe_tvec_error1')
+
+    ax2 = fig1.add_subplot(231, projection='3d')
+    ax2.scatter(y, z, input_ippe1_R, marker=".")
+    ax2.set_xlabel('Y')
+    ax2.set_ylabel('Z')
+    ax2.set_zlabel('ippe_rmat_error1')
+
+    ax3 = fig1.add_subplot(235, projection='3d')
+    ax3.scatter(y, z, input_ippe2_t, marker=".")
+    ax3.set_xlabel('Y')
+    ax3.set_ylabel('Z')
+    ax3.set_zlabel('ippe_tvec_error2')
+
+    ax4 = fig1.add_subplot(232, projection='3d')
+    ax4.scatter(y, z, input_ippe2_R, marker=".")
+    ax4.set_xlabel('Y')
+    ax4.set_ylabel('Z')
+    ax4.set_zlabel('ippe_rmat_error2')
+
+    ax5 = fig1.add_subplot(236, projection='3d')
+    ax5.scatter(y, z, input_pnp_t, marker=".")
+    ax5.set_xlabel('Y')
+    ax5.set_ylabel('Z')
+    ax5.set_zlabel('pnp_tmat_error')
+
+    ax6 = fig1.add_subplot(233, projection='3d')
+    ax6.scatter(y, z, input_pnp_R, marker=".")
+    ax6.set_xlabel('Y')
+    ax6.set_ylabel('Z')
+    ax6.set_zlabel('pnp_rmat_error')
+
+    plt.savefig("R_Error_and_t_Error_3D.png")
+
 def displayError_YZ_plane_2D(y, z, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t,
                           input_pnp_R):
     """
      Display R_error and t_error for ippe and pnp method
      Using colorbar on YZ plane
     """
-    fig1 = plt.figure("Error")
+    fig1 = plt.figure("R_Error_and_t_Error")
     ax1 = fig1.add_subplot(231)
     plt.scatter(y, z, s=100, c=input_ippe1_R, marker="o", cmap="magma")
-    ax1.set_xlabel('Y input_ippe1_R')
-    ax1.set_ylabel('Z input_ippe1_R')
+    ax1.set_xlabel('Y ippe1_R_Error')
+    ax1.set_ylabel('Z ippe1_R_Error')
 
     ax2 = fig1.add_subplot(234)
     plt.scatter(y, z, s=100, c=input_ippe1_t, marker="o", cmap="magma")
-    ax2.set_xlabel('Y input_ippe1_t')
-    ax2.set_ylabel('Z input_ippe1_t')
+    ax2.set_xlabel('Y ippe1_t_Error')
+    ax2.set_ylabel('Z ippe1_t_Error')
 
     ax3 = fig1.add_subplot(232)
     plt.scatter(y, z, s=100, c=input_ippe2_R, marker="o", cmap="magma")
-    ax3.set_xlabel('Y input_ippe2_R')
-    ax3.set_ylabel('Z input_ippe2_R')
+    ax3.set_xlabel('Y ippe2_R_Error')
+    ax3.set_ylabel('Z ippe2_R_Error')
 
     ax4 = fig1.add_subplot(235)
     plt.scatter(y, z, s=100, c=input_ippe2_t, marker="o", cmap="magma")
-    ax4.set_xlabel('Y input_ippe2_t')
-    ax4.set_ylabel('Z input_ippe2_t')
+    ax4.set_xlabel('Y ippe2_t_Error')
+    ax4.set_ylabel('Z ippe2_t_Error')
 
     ax5 = fig1.add_subplot(233)
     plt.scatter(y, z, s=100, c=input_pnp_R, marker="o", cmap="magma")
-    ax5.set_xlabel('Y input_pnp_R')
-    ax5.set_ylabel('Z input_pnp_R')
+    ax5.set_xlabel('Y pnp_R_Error')
+    ax5.set_ylabel('Z pnp_R_Error')
 
     ax6 = fig1.add_subplot(236)
     plt.scatter(y, z, s=100, c=input_pnp_t, marker="o", cmap="magma")
     ax6.legend()
-    ax6.set_xlabel('Y input_pnp_t')
-    ax6.set_ylabel('Z input_pnp_t')
+    ax6.set_xlabel('Y pnp_t_Error')
+    ax6.set_ylabel('Z pnp_t_Error')
     plt.colorbar()
-    plt.savefig("Error.png")
+    plt.savefig("R_Error_and_t_Error.png")
     plt.show()
 
 #--------------------------------------------- Test--------------------------------------------------
