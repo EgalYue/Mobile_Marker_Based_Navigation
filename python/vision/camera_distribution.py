@@ -16,6 +16,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from camera import Camera
 from plane import Plane
 import Rt_matrix_from_euler_t as Rt_matrix_from_euler_t
+from scipy.linalg import expm, rq, det, inv
 
 
 def uniform_sphere(theta_params = (0,360,10), phi_params = (0,90,10), r = 1., plot = False):
@@ -356,7 +357,8 @@ def create_cam_distribution_square_in_XY(cam=None, plane_size=(0.3, 0.3), theta_
      f = 800
      cam.set_K(fx=f, fy=f, cx=320, cy=240)  # Camera Matrix
      cam.img_width = 320 * 2
-     cam.img_height = 240 * 2
+     # TODO set same width and height (a square camera) in order to test cam distribution
+     cam.img_height = 320 * 2 #240 * 2
 
     # we create a default plane with 4 points with a side lenght of w (meters)
     plane = Plane(origin=np.array([0, 0, 0]), normal=np.array([0, 0, 1]), size=plane_size, n=(2, 2))
@@ -374,21 +376,16 @@ def create_cam_distribution_square_in_XY(cam=None, plane_size=(0.3, 0.3), theta_
     cams = []
     for t in t_space.T:
      cam = cam.clone()
-     cam.set_t(-t[0], -t[1], -t[2])
-     print "t\n",t
-     print "cam.R before\n",cam.R
-     cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0.0, 0, 0))# Need to set cam as [1 0 0] [0 1 0] [0 0 1] for next iteration
-     print "cam.R after\n",cam.R
+     cam.set_t(t[0], t[1], t[2],"world") #TODO ???
      cam.look_at([0, 0, 0])
-     print "cam.R look at\n",cam.R
-     # cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0,deg2rad(180),0))
-     # cam.set_t(t[0], t[1],t[2],'world')
 
      plane.set_origin(np.array([0, 0, 0]))
      plane.uniform()
      objectPoints = plane.get_points()
      imagePoints = cam.project(objectPoints)
      print "imagePoints\n",imagePoints
+     print "world position\n",cam.get_world_position()
+     print "=========================================="
 
      # if plot:
      #  cam.plot_image(imagePoints)
@@ -434,5 +431,5 @@ def create_cam_distribution_square_in_XY(cam=None, plane_size=(0.3, 0.3), theta_
 
 # create_cam_distribution_rotation_around_Z(cam=None, plane_size=(0.3, 0.3), theta_params=(0, 360, 10), phi_params=(45, 45, 1),
 #                             r_params=(3.0, 3.0, 1), plot=False)
-# create_cam_distribution_square_in_XY(cam=None, plane_size=(0.3, 0.3), theta_params=(0, 360, 5), phi_params=(45, 45, 1),
-#                             r_params=(3.0, 3.0, 1), plot=False)
+create_cam_distribution_square_in_XY(cam=None, plane_size=(0.3, 0.3), theta_params=(0, 360, 5), phi_params=(45, 45, 1),
+                            r_params=(3.0, 3.0, 1), plot=False)

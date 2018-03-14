@@ -266,6 +266,8 @@ class Camera(object):
         :param world_position:
         :return:
         """
+        cam_world_position= self.get_world_position() # used to set new cam.t
+        self.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0.0, 0, 0)) # first we need to set new R
         world_position = self.get_world_position()[:3]
         eye = world_position
         target = np.array([0,0,0])
@@ -285,13 +287,8 @@ class Camera(object):
         #              [yaxis[0], yaxis[1], yaxis[2], 0],
         #              [zaxis[0], zaxis[1], zaxis[2], 0],
         #              [       0,        0,        0, 1]])
-        t = np.eye(4, dtype=np.float32) # translation
-        t[:3,3] = -eye
-
         self.R = R
-        self.Rt = np.dot(R,t)
-        self.t = np.eye(4, dtype=np.float32)
-        self.t[:3,3] = self.Rt[:3,3]
+        self.set_t(cam_world_position[0],cam_world_position[1],cam_world_position[2],"world") # !!! set new t
 
     def homography_from_Rt(self):
       rt_reduced = self.Rt[:3,[0,1,3]]
