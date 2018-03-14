@@ -267,7 +267,7 @@ class Camera(object):
         :return:
         """
         cam_world_position= self.get_world_position() # used to set new cam.t
-        self.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0.0, 0, 0)) # first we need to set new R
+        #self.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0.0, 0, 0)) # first we need to set new R
         world_position = self.get_world_position()[:3]
         eye = world_position
         target = np.array([0,0,0])
