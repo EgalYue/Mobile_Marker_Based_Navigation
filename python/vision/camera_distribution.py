@@ -10,7 +10,7 @@ sys.path.append("..")
 #======================================================================
 import matplotlib.pyplot as plt
 import autograd.numpy as np
-# from mayavi import mlab #TODO comment because of from mayavi import mlab
+from mayavi import mlab #TODO comment because of from mayavi import mlab
 from numpy import random, cos, sin, sqrt, pi, linspace, deg2rad, meshgrid
 from mpl_toolkits.mplot3d import Axes3D
 from camera import Camera
@@ -89,10 +89,10 @@ def plot3D_cam(cam, axis_scale = 0.2):
     cam_axis_x = np.array([1,0,0,1]).T
     cam_axis_y = np.array([0,1,0,1]).T
     cam_axis_z = np.array([0,0,1,1]).T
-    # TODO This place should use cam.R not cam.R.T
-    cam_axis_x = np.dot(cam.R, cam_axis_x)
-    cam_axis_y = np.dot(cam.R, cam_axis_y)
-    cam_axis_z = np.dot(cam.R, cam_axis_z)
+
+    cam_axis_x = np.dot(cam.R.T, cam_axis_x)
+    cam_axis_y = np.dot(cam.R.T, cam_axis_y)
+    cam_axis_z = np.dot(cam.R.T, cam_axis_z)
 
     cam_world = cam.get_world_position()
 
@@ -121,10 +121,9 @@ def create_cam_distribution(cam = None, plane_size = (0.3,0.3), theta_params = (
         # Create an initial camera on the center of the world
         cam = Camera()
         f = 800
-        cam.set_K(fx=f, fy=f, cx=320, cy=320)  # Camera Matrix TODO cy = 240
+        cam.set_K(fx=f, fy=f, cx=320, cy=240)
         cam.img_width = 320 * 2
-        # TODO
-        cam.img_height = 320 * 2 # 240 * 2
+        cam.img_height = 240 * 2
 
     # we create a default plane with 4 points with a side lenght of w (meters)
     plane = Plane(origin=np.array([0, 0, 0]), normal=np.array([0, 0, 1]), size=plane_size, n=(2, 2))
@@ -141,34 +140,21 @@ def create_cam_distribution(cam = None, plane_size = (0.3,0.3), theta_params = (
 
     cams = []
     for t in t_space.T:
-        print "t",t
         cam = cam.clone()
         cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0.0, 0, 0))
-        cam.set_t(-t[0], -t[1], -t[2])
-        print "cam t before lookat\n",cam.t
+        cam.set_t(t[0], t[1], t[2],"world")
         cam.look_at([0, 0, 0])
-        print "cam position",cam.get_world_position()
-        print "cam t after lookat\n",cam.t
-        # cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0,deg2rad(180),0))
-        # cam.set_t(t[0], t[1],t[2],'world')
 
         plane.set_origin(np.array([0, 0, 0]))
         plane.uniform()
         objectPoints = plane.get_points()
         imagePoints = cam.project(objectPoints)
-        print "cam.R\n",cam.R
-        print "cam.Rt\n",cam.Rt
-        print"image points\n", imagePoints
 
-        print "cam points\n",np.dot(cam.Rt,objectPoints)
         # if plot:
         #  cam.plot_image(imagePoints)
         if ((imagePoints[0, :] < cam.img_width) & (imagePoints[0, :] > 0)).all():
             if ((imagePoints[1, :] < cam.img_height) & (imagePoints[1, :] > 0)).all():
                 cams.append(cam)
-                print "valid cam position\n",cam.get_world_position()
-                print"valid image points\n",imagePoints
-        print "====================="
 
     if plot:
         planes = []
@@ -268,11 +254,10 @@ def create_cam_distribution_in_YZ(cam=None, plane_size=(0.3, 0.3), theta_params=
         sphere_points = np.array([xx.ravel(), yy.ravel(), zz.ravel()], dtype=np.float32)
         t_list.append(sphere_points)
     t_space = np.hstack(t_list)
-    # print "t_space:",t_space.shape
     acc_row = r_params[2]
     acc_col = theta_params[2]
     accuracy_mat = np.zeros([acc_row,acc_col]) # accuracy_mat is used to describe accuracy degree for marker area
-    # print accuracy_mat
+
     cams = []
     for t in t_space.T:
         cam = cam.clone()
@@ -303,7 +288,7 @@ def create_cam_distribution_in_YZ(cam=None, plane_size=(0.3, 0.3), theta_params=
         planes = []
         plane.uniform()
         planes.append(plane)
-        # plot3D(cams, planes) #TODO comment because of from mayavi import mlab
+        plot3D(cams, planes) #TODO comment because of from mayavi import mlab
 
     return cams,accuracy_mat
 
@@ -313,7 +298,7 @@ def create_cam_distribution_rotation_around_Z(cam=None, plane_size=(0.3, 0.3), t
      # Create an initial camera on the center of the world
      cam = Camera()
      f = 800
-     cam.set_K(fx=f, fy=f, cx=320, cy=240)  # Camera Matrix
+     cam.set_K(fx=f, fy=f, cx=320, cy=240)
      cam.img_width = 320 * 2
      cam.img_height = 240 * 2
 
@@ -337,9 +322,6 @@ def create_cam_distribution_rotation_around_Z(cam=None, plane_size=(0.3, 0.3), t
      cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0.0, 0, 0))
      cam.look_at([0, 0, 0])
 
-     # cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0,deg2rad(180),0))
-     # cam.set_t(t[0], t[1],t[2],'world')
-
      plane.set_origin(np.array([0, 0, 0]))
      plane.uniform()
      objectPoints = plane.get_points()
@@ -356,8 +338,7 @@ def create_cam_distribution_rotation_around_Z(cam=None, plane_size=(0.3, 0.3), t
      planes = []
      plane.uniform()
      planes.append(plane)
-     # plot3D(cams, planes)
-    print len(cams)
+     plot3D(cams, planes)
     return cams
 
 def create_cam_distribution_square_in_XY(cam=None, plane_size=(0.3, 0.3), theta_params=(0, 360, 5), phi_params=(45, 45, 1),
@@ -366,10 +347,9 @@ def create_cam_distribution_square_in_XY(cam=None, plane_size=(0.3, 0.3), theta_
      # Create an initial camera on the center of the world
      cam = Camera()
      f = 800
-     cam.set_K(fx=f, fy=f, cx=320, cy=320)  # Camera Matrix TODO cy = 240
+     cam.set_K(fx=f, fy=f, cx=320, cy=240)
      cam.img_width = 320 * 2
-     # TODO set same width and height (a square camera) in order to test cam distribution
-     cam.img_height = 320 * 2 #240 * 2
+     cam.img_height = 240 * 2 #320 * 2
 
     # we create a default plane with 4 points with a side lenght of w (meters)
     plane = Plane(origin=np.array([0, 0, 0]), normal=np.array([0, 0, 1]), size=plane_size, n=(2, 2))
@@ -387,16 +367,13 @@ def create_cam_distribution_square_in_XY(cam=None, plane_size=(0.3, 0.3), theta_
     cams = []
     for t in t_space.T:
      cam = cam.clone()
-     cam.set_t(t[0], t[1], t[2],"world") #TODO ???
+     cam.set_t(t[0], t[1], t[2],"world")
      cam.look_at([0, 0, 0])
 
      plane.set_origin(np.array([0, 0, 0]))
      plane.uniform()
      objectPoints = plane.get_points()
      imagePoints = cam.project(objectPoints)
-     print "imagePoints\n",imagePoints
-     print "world position\n",cam.get_world_position()
-     print "=========================================="
 
      # if plot:
      #  cam.plot_image(imagePoints)
@@ -408,11 +385,10 @@ def create_cam_distribution_square_in_XY(cam=None, plane_size=(0.3, 0.3), theta_
      planes = []
      plane.uniform()
      planes.append(plane)
-     # plot3D(cams, planes)
+     plot3D(cams, planes)
     return cams
 
 def plotImagePoints(imagePoints_des):
-    # TODO
     fig1 = plt.figure('Image points')
     ax_image_best = fig1.add_subplot(111)
     plt.sca(ax_image_best)
@@ -424,14 +400,7 @@ def plotImagePoints(imagePoints_des):
     plt.show()
 
 # ==============================Test=================================================
-cams = create_cam_distribution(cam = None, plane_size = (0.3,0.3), theta_params = (0,360,5), phi_params =  (0,70,2), r_params = (2.0,2.0,1), plot=False)
-image_points1 = np.array([[ 384.54923284 , 255.45076716 ,376.04978251  ,263.95021749],
- [ 217.92286143 , 217.92286143,  259.17015525,  259.17015525]])
-image_points2 = np.array([[ 376.04978251 , 263.95021749  ,384.54923284 , 255.45076716],
- [ 220.82984475 , 220.82984475 , 262.07713857 , 262.07713857]])
-# plotImagePoints(image_points1)
-# plotImagePoints(image_points2)
-
+#cams = create_cam_distribution(cam = None, plane_size = (0.3,0.3), theta_params = (0,360,10), phi_params =  (0,70,5), r_params = (0.25,1.0,4), plot=True)
 # create_cam_distribution_in_YZ(cam = None, plane_size = (0.3,0.3), theta_params = (0,180,3), r_params = (0.3,0.9,3), plot=False)
 # print "cams size: ",len(cams)
 # -----------------------------Test for cam look at method------------------------------
@@ -461,4 +430,4 @@ image_points2 = np.array([[ 376.04978251 , 263.95021749  ,384.54923284 , 255.450
 # create_cam_distribution_rotation_around_Z(cam=None, plane_size=(0.3, 0.3), theta_params=(0, 360, 10), phi_params=(45, 45, 1),
 #                             r_params=(3.0, 3.0, 1), plot=False)
 # create_cam_distribution_square_in_XY(cam=None, plane_size=(0.3, 0.3), theta_params=(0, 360, 5), phi_params=(45, 45, 1),
-#                             r_params=(3.0, 3.0, 1), plot=False)
+#                             r_params=(3.0, 3.0, 1), plot=True)
