@@ -145,9 +145,10 @@ def create_cam_distribution(cam = None, plane_size = (0.3,0.3), theta_params = (
         cam = cam.clone()
         cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0.0, 0, 0))
         cam.set_t(-t[0], -t[1], -t[2])
+        print "cam t before lookat\n",cam.t
         cam.look_at([0, 0, 0])
         print "cam position",cam.get_world_position()
-
+        print "cam t after lookat\n",cam.t
         # cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0,deg2rad(180),0))
         # cam.set_t(t[0], t[1],t[2],'world')
 
@@ -155,10 +156,11 @@ def create_cam_distribution(cam = None, plane_size = (0.3,0.3), theta_params = (
         plane.uniform()
         objectPoints = plane.get_points()
         imagePoints = cam.project(objectPoints)
-        print"image points\n", imagePoints
         print "cam.R\n",cam.R
         print "cam.Rt\n",cam.Rt
-        print "cam.K\n",cam.K
+        print"image points\n", imagePoints
+
+        print "cam points\n",np.dot(cam.Rt,objectPoints)
         # if plot:
         #  cam.plot_image(imagePoints)
         if ((imagePoints[0, :] < cam.img_width) & (imagePoints[0, :] > 0)).all():

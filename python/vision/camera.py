@@ -278,7 +278,6 @@ class Camera(object):
         yaxis = np.cross(zaxis, xaxis)
 
         R = np.eye(4)
-        # TODO should use this R
         R = np.array([[xaxis[0], yaxis[0], zaxis[0], 0],
                       [xaxis[1], yaxis[1], zaxis[1], 0],
                       [xaxis[2], yaxis[2], zaxis[2], 0],
@@ -287,8 +286,9 @@ class Camera(object):
         #              [yaxis[0], yaxis[1], yaxis[2], 0],
         #              [zaxis[0], zaxis[1], zaxis[2], 0],
         #              [       0,        0,        0, 1]])
+        R = R.T # R is rotation matrix from camera to world coordinate not from world to camera coordinate!!!
         self.R = R
-        self.set_t(cam_world_position[0],cam_world_position[1],cam_world_position[2],"world") # !!! set new t
+        self.set_t(cam_world_position[0],cam_world_position[1],cam_world_position[2],'world') # !!! set new t
 
     def homography_from_Rt(self):
       rt_reduced = self.Rt[:3,[0,1,3]]

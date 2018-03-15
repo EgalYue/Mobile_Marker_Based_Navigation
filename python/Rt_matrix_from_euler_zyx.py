@@ -9,6 +9,7 @@ import numpy as np
 from math import cos, sin
 
 def R_matrix_from_euler_zyx(alpha,beta,gamma):
+  # TODO Error
   """
   A=BCD. Z -> Y -> X
   :param alpha:
@@ -30,3 +31,6 @@ def R_matrix_from_euler_zyx(alpha,beta,gamma):
   R[2,2] = cos(gamma) * cos(beta)
 
   return R
+
+# ===================Test==========================
+print R_matrix_from_euler_zyx(0,np.deg2rad(-120),0)
