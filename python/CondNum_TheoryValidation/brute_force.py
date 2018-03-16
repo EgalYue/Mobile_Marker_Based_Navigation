@@ -101,7 +101,7 @@ def heightGetCondNum(cams,accuracy_mat,radius_step,angle_step):
                 # Calculate the pose using solvepnp
                 debug = False
                 # TODO  cv2.SOLVEPNP_DLS, cv2.SOLVEPNP_EPNP, cv2.SOLVEPNP_ITERATIVE
-                pnp_tvec, pnp_rmat = pose_pnp(new_objectPoints, new_imagePoints_noisy, cam.K, debug,  cv2.SOLVEPNP_ITERATIVE,
+                pnp_tvec, pnp_rmat = pose_pnp(new_objectPoints, new_imagePoints_noisy, cam.K, debug,  cv2.SOLVEPNP_DLS,
                                               False)
                 pnpCam = cam.clone_withPose(pnp_tvec, pnp_rmat)
                 # Calculate errors
@@ -185,6 +185,7 @@ def heightGetCondNum(cams,accuracy_mat,radius_step,angle_step):
     accuracyDegreeMatrix = transfer_condNumMatrix_to_accuracyDegreeMatrix(accuracy_mat_new,min_cond_num,max_cond_num,degree)
     display_mat = display_mat[:,1:]
     # -----------------For Loop End--------------------------------------------------------
+    print "=============================Info====================================================="
     print "--best image points--\n", imagePoints_des[mat_cond_list.index(min(mat_cond_list))]
     print "--cond num min--", min(mat_cond_list)
     print "--cam position Best--", cam_valid[mat_cond_list.index(min(mat_cond_list))].get_world_position()
@@ -196,6 +197,7 @@ def heightGetCondNum(cams,accuracy_mat,radius_step,angle_step):
     print "--cond num size--", len(mat_cond_list)
     print "--imagePoints_des size--", len(imagePoints_des)
     print "--display_mat--", display_mat.shape
+    print "========================================================================================"
 
 
     # # -----------------------Draw the image points-----------------------------------------------------------------------
@@ -221,6 +223,9 @@ def heightGetCondNum(cams,accuracy_mat,radius_step,angle_step):
     inputX = np.copy(display_mat[0,:])
     inputY = np.copy(display_mat[1,:])
     inputZ = np.copy(display_mat[2,:])
+    print "inputX:\n",inputX
+    print "inputY:\n", inputY
+    print "inputZ:\n", inputZ
     input_ippe1_t = np.copy(ippe_tvec_error_list1)
     input_ippe1_R = np.copy(ippe_rmat_error_list1)
     input_ippe2_t = np.copy(ippe_tvec_error_list2)

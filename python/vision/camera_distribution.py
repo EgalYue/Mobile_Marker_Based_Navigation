@@ -10,7 +10,7 @@ sys.path.append("..")
 #======================================================================
 import matplotlib.pyplot as plt
 import autograd.numpy as np
-from mayavi import mlab #TODO comment because of from mayavi import mlab
+# from mayavi import mlab #TODO comment because of from mayavi import mlab
 from numpy import random, cos, sin, sqrt, pi, linspace, deg2rad, meshgrid
 from mpl_toolkits.mplot3d import Axes3D
 from camera import Camera
@@ -160,7 +160,7 @@ def create_cam_distribution(cam = None, plane_size = (0.3,0.3), theta_params = (
         planes = []
         plane.uniform()
         planes.append(plane)
-        plot3D(cams, planes)
+        # plot3D(cams, planes) # TODO
 
     return cams
 
@@ -219,7 +219,7 @@ def create_cam_distribution_in_XZ(cam=None, plane_size=(0.3, 0.3), theta_params=
         planes = []
         plane.uniform()
         planes.append(plane)
-        plot3D(cams, planes)
+        # plot3D(cams, planes) #TODO
 
     return cams
 
@@ -277,7 +277,7 @@ def create_cam_distribution_in_YZ(cam=None, plane_size=(0.3, 0.3), theta_params=
         objectPoints = plane.get_points()
         # print "objectPoints",objectPoints
         imagePoints = cam.project(objectPoints)
-
+        # print "imagePoints\n",imagePoints
         # if plot:
         #  cam.plot_image(imagePoints)
         if ((imagePoints[0, :] < cam.img_width) & (imagePoints[0, :] > 0)).all():
@@ -288,7 +288,7 @@ def create_cam_distribution_in_YZ(cam=None, plane_size=(0.3, 0.3), theta_params=
         planes = []
         plane.uniform()
         planes.append(plane)
-        plot3D(cams, planes) #TODO comment because of from mayavi import mlab
+        # plot3D(cams, planes) #TODO comment because of from mayavi import mlab
 
     return cams,accuracy_mat
 
@@ -338,7 +338,7 @@ def create_cam_distribution_rotation_around_Z(cam=None, plane_size=(0.3, 0.3), t
      planes = []
      plane.uniform()
      planes.append(plane)
-     plot3D(cams, planes)
+     # plot3D(cams, planes) # TODO
     return cams
 
 def create_cam_distribution_square_in_XY(cam=None, plane_size=(0.3, 0.3), theta_params=(0, 360, 5), phi_params=(45, 45, 1),
@@ -380,24 +380,14 @@ def create_cam_distribution_square_in_XY(cam=None, plane_size=(0.3, 0.3), theta_
      if ((imagePoints[0, :] < cam.img_width) & (imagePoints[0, :] > 0)).all():
       if ((imagePoints[1, :] < cam.img_height) & (imagePoints[1, :] > 0)).all():
        cams.append(cam)
+       # print "cam position:",cam.get_world_position()
 
     if plot:
      planes = []
      plane.uniform()
      planes.append(plane)
-     plot3D(cams, planes)
+     # plot3D(cams, planes) # TODO
     return cams
-
-def plotImagePoints(imagePoints_des):
-    fig1 = plt.figure('Image points')
-    ax_image_best = fig1.add_subplot(111)
-    plt.sca(ax_image_best)
-    ax_image_best.plot(imagePoints_des[0],imagePoints_des[1], '.', color='blue', )
-    ax_image_best.set_xlim(0, 640)
-    ax_image_best.set_ylim(0, 640)
-    ax_image_best.invert_yaxis()
-    ax_image_best.set_title('Image Points')
-    plt.show()
 
 # ==============================Test=================================================
 #cams = create_cam_distribution(cam = None, plane_size = (0.3,0.3), theta_params = (0,360,10), phi_params =  (0,70,5), r_params = (0.25,1.0,4), plot=True)
@@ -430,4 +420,4 @@ def plotImagePoints(imagePoints_des):
 # create_cam_distribution_rotation_around_Z(cam=None, plane_size=(0.3, 0.3), theta_params=(0, 360, 10), phi_params=(45, 45, 1),
 #                             r_params=(3.0, 3.0, 1), plot=False)
 # create_cam_distribution_square_in_XY(cam=None, plane_size=(0.3, 0.3), theta_params=(0, 360, 5), phi_params=(45, 45, 1),
-#                             r_params=(3.0, 3.0, 1), plot=True)
+#                             r_params=(3.0, 3.0, 1), plot=False)

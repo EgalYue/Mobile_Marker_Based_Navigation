@@ -274,7 +274,10 @@ class Camera(object):
         up = np.array([0,1,0])
 
         zaxis = (target-eye)/np.linalg.norm(target-eye)
-        xaxis = (np.cross(up,zaxis))/np.linalg.norm(np.cross(up,zaxis))
+        if zaxis[1] == -1.:
+            xaxis = np.array([-1., 0., 0.])
+        else:
+            xaxis = (np.cross(up, zaxis)) / np.linalg.norm(np.cross(up, zaxis))
         yaxis = np.cross(zaxis, xaxis)
 
         R = np.eye(4)

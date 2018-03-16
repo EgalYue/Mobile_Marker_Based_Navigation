@@ -96,6 +96,10 @@ def calculate_A_matrix_autograd(x1,y1,x2,y2,x3,y3,x4,y4,K,R,tx,ty,tz,normalize=F
 
   u4 = image_pts_norm[0,3]/image_pts_norm[2,3]
   v4 = image_pts_norm[1,3]/image_pts_norm[2,3]
+  print "R\n",R
+  print "x1 - x4",x1,x2,x3,x4
+  print "u1 - u4",u1,u2,u3,u4
+  print "v1 - v4",v1,v2,v3,v4
 
   A = np.array([    [ 0,  0, 0, -x1, -y1, -1,  v1*x1,  v1*y1,  v1],
                     [x1, y1, 1,   0,   0,  0, -u1*x1, -u1*y1, -u1],

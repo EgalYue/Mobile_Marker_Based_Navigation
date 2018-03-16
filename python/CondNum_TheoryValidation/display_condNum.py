@@ -24,74 +24,48 @@ import Rt_matrix_from_euler_t as Rt_matrix_from_euler_t
 # data = sio.loadmat('testpython.mat')
 # sio.whosmat('testpython.mat')
 
-def plot3D_cam(cam, axis_scale=0.2):
-    # Coordinate Frame of real camera
-    # Camera axis
-    axis_scale = 0.05
-    cam_axis_x = np.array([1, 0, 0, 1]).T
-    cam_axis_y = np.array([0, 1, 0, 1]).T
-    cam_axis_z = np.array([0, 0, 1, 1]).T
-
-    cam_axis_x = np.dot(cam.R.T, cam_axis_x)
-    cam_axis_y = np.dot(cam.R.T, cam_axis_y)
-    cam_axis_z = np.dot(cam.R.T, cam_axis_z)
-
-    cam_world = cam.get_world_position()
-
-    mlab.quiver3d(cam_world[0], cam_world[1], cam_world[2], cam_axis_x[0], cam_axis_x[1], cam_axis_x[2], line_width=3,
-                  scale_factor=axis_scale, color=(1 - axis_scale, 0, 0))
-    mlab.quiver3d(cam_world[0], cam_world[1], cam_world[2], cam_axis_y[0], cam_axis_y[1], cam_axis_y[2], line_width=3,
-                  scale_factor=axis_scale, color=(0, 1 - axis_scale, 0))
-    mlab.quiver3d(cam_world[0], cam_world[1], cam_world[2], cam_axis_z[0], cam_axis_z[1], cam_axis_z[2], line_width=3,
-                  scale_factor=axis_scale, color=(0, 0, 1 - axis_scale))
-
-
 # -------------------------------------------------------------------------------
 def getConNumColor(condNum):
-        color = "white"
-        if condNum > 70000.0:
-            color = 'linen'
-        elif condNum > 60000.0:
-            color = 'antiquewhite'
-        elif condNum > 36100.0:
-            color = 'papayawhip'
-        elif condNum > 30300.0:
-            color = 'oldlace'
-        elif condNum > 24600.0:
-            color = 'cornsilk'
-        elif condNum > 18800.0:
-            color = 'palegoldenrod'
-        elif condNum > 13000.0:
-            color = 'yellow'
-        # elif condNum > 8000:
-        #     color = 'lightblue'
-        elif condNum > 7000.0:
-            color = 'deepskyblue'
-        elif condNum > 4000.0:
-            color = 'red'
-        elif condNum > 2000.0:
-            color = 'green'
-        elif condNum > 1000.0:
-            color = 'maroon'
-        else:
-            color = 'black'
-
-        return color
+    """
+    We do not need this function, if we use matplotlib colormap
+    :param condNum:
+    :return:
+    """
+    color = "white"
+    if condNum > 70000.0:
+        color = 'linen'
+    elif condNum > 60000.0:
+        color = 'antiquewhite'
+    elif condNum > 36100.0:
+        color = 'papayawhip'
+    elif condNum > 30300.0:
+        color = 'oldlace'
+    elif condNum > 24600.0:
+        color = 'cornsilk'
+    elif condNum > 18800.0:
+        color = 'palegoldenrod'
+    elif condNum > 13000.0:
+        color = 'yellow'
+    # elif condNum > 8000:
+    #     color = 'lightblue'
+    elif condNum > 7000.0:
+        color = 'deepskyblue'
+    elif condNum > 4000.0:
+        color = 'red'
+    elif condNum > 2000.0:
+        color = 'green'
+    elif condNum > 1000.0:
+        color = 'maroon'
+    else:
+        color = 'black'
+    return color
 
 def displayCondNumDistribution(m):
     """
-    Display distribution of cond num for cam distribution in 3D
+    Display distribution of condition number for cam distribution in 3D
     :param m: 4 * n,  each column vector is position x y z + cond num
     :return: 
     """
-    cam = Camera()
-    cam.set_K(fx=800, fy=800, cx=640 / 2., cy=480 / 2.)
-    cam.set_width_heigth(640, 480)
-    cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0,np.deg2rad(180),0))
-    cam.set_t(0, 0,5,'world')
-
-    # plot3D_cam(cam)
-
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
     x = m[0,:]
@@ -99,13 +73,12 @@ def displayCondNumDistribution(m):
     z = m[2,:]
     condNum = m[3,:]
     ax.scatter(x, y, z, s=100, c=condNum, marker="o", cmap="magma") # matplotlib colormap
-
-    ax.set_xlabel('X Label')
-    ax.set_ylabel('Y Label')
-    ax.set_zlabel('Z Label')
+    ax.set_title("Condition Number")
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
 
     plt.show()
-    # plt.pause(1000)
 
 def displayError_XYfixed3D(z,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error):
     """
@@ -122,7 +95,6 @@ def displayError_XYfixed3D(z,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ipp
     :return: 
     """
     fig1 = plt.figure("Error")
-    # ax = fig.gca(projection='3d')
     ax1 = fig1.add_subplot(231)
     ax1.plot(z, input_ippe1_t, label='ippe_tvec_error1')
     ax1.legend()
@@ -158,19 +130,15 @@ def displayError_XYfixed3D(z,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ipp
     ax2.legend()
     ax2.set_xlabel('Z Label')
     ax2.set_ylabel('Error')
-
     # ----------------- Transfer Error ----------------------------------
     fig2 = plt.figure("Transfer Error ")
-    # ax = fig.gca(projection='3d')
     ax_transfer_error = fig2.add_subplot(111)
     ax_transfer_error.plot(z, input_transfer_error, label='transfer_error')
     ax_transfer_error.legend()
     ax_transfer_error.set_xlabel('Z Label')
     ax_transfer_error.set_ylabel('Transfer Error')
 
-
     plt.show()
-    plt.pause(1000)
 
 def displayError_Zfixed3D(x,y,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error):
     """
@@ -178,7 +146,6 @@ def displayError_Zfixed3D(x,y,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ip
      Display R_error and t_error for ippe and pnp method 
     """
     fig1 = plt.figure("Error")
-    # ax = fig.gca(projection='3d')
     ax1 = fig1.add_subplot(231, projection='3d')
     ax1.scatter(x, y, input_ippe1_t, marker = ".")
     ax1.legend()
@@ -235,25 +202,25 @@ def displayError_YZ_plane_3D(y, z, input_ippe1_t, input_ippe1_R, input_ippe2_t, 
     ax1.scatter(y, z, input_ippe1_t, marker=".")
     ax1.set_xlabel('Y')
     ax1.set_ylabel('Z')
-    ax1.set_zlabel('ippe_tvec_error1')
+    ax1.set_zlabel('ippe1_tvec_error')
 
     ax2 = fig1.add_subplot(231, projection='3d')
     ax2.scatter(y, z, input_ippe1_R, marker=".")
     ax2.set_xlabel('Y')
     ax2.set_ylabel('Z')
-    ax2.set_zlabel('ippe_rmat_error1')
+    ax2.set_zlabel('ippe1_rmat_error')
 
     ax3 = fig1.add_subplot(235, projection='3d')
     ax3.scatter(y, z, input_ippe2_t, marker=".")
     ax3.set_xlabel('Y')
     ax3.set_ylabel('Z')
-    ax3.set_zlabel('ippe_tvec_error2')
+    ax3.set_zlabel('ippe2_tvec_error')
 
     ax4 = fig1.add_subplot(232, projection='3d')
     ax4.scatter(y, z, input_ippe2_R, marker=".")
     ax4.set_xlabel('Y')
     ax4.set_ylabel('Z')
-    ax4.set_zlabel('ippe_rmat_error2')
+    ax4.set_zlabel('ippe2_rmat_error')
 
     ax5 = fig1.add_subplot(236, projection='3d')
     ax5.scatter(y, z, input_pnp_t, marker=".")
@@ -288,34 +255,40 @@ def displayError_YZ_plane_2D(y, z, input_ippe1_t, input_ippe1_R, input_ippe2_t, 
     fig1 = plt.figure("R_Error_and_t_Error")
     ax1 = fig1.add_subplot(231)
     plt.scatter(y, z, s=100, c=input_ippe1_R, marker="o", cmap="magma")
-    ax1.set_xlabel('Y ippe1_R_Error')
-    ax1.set_ylabel('Z ippe1_R_Error')
+    ax1.set_title("ippe1_R_Error")
+    ax1.set_xlabel('Y')
+    ax1.set_ylabel('Z')
 
     ax2 = fig1.add_subplot(234)
     plt.scatter(y, z, s=100, c=input_ippe1_t, marker="o", cmap="magma")
-    ax2.set_xlabel('Y ippe1_t_Error')
-    ax2.set_ylabel('Z ippe1_t_Error')
+    ax2.set_title("ippe1_t_Error")
+    ax2.set_xlabel('Y')
+    ax2.set_ylabel('Z')
 
     ax3 = fig1.add_subplot(232)
     plt.scatter(y, z, s=100, c=input_ippe2_R, marker="o", cmap="magma")
-    ax3.set_xlabel('Y ippe2_R_Error')
-    ax3.set_ylabel('Z ippe2_R_Error')
+    ax3.set_title("ippe2_R_Error")
+    ax3.set_xlabel('Y')
+    ax3.set_ylabel('Z')
 
     ax4 = fig1.add_subplot(235)
     plt.scatter(y, z, s=100, c=input_ippe2_t, marker="o", cmap="magma")
-    ax4.set_xlabel('Y ippe2_t_Error')
-    ax4.set_ylabel('Z ippe2_t_Error')
+    ax4.set_title("ippe2_t_Error")
+    ax4.set_xlabel('Y')
+    ax4.set_ylabel('Z')
 
     ax5 = fig1.add_subplot(233)
     plt.scatter(y, z, s=100, c=input_pnp_R, marker="o", cmap="magma")
-    ax5.set_xlabel('Y pnp_R_Error')
-    ax5.set_ylabel('Z pnp_R_Error')
+    ax5.set_title("pnp_R_Error")
+    ax5.set_xlabel('Y')
+    ax5.set_ylabel('Z')
 
     ax6 = fig1.add_subplot(236)
     plt.scatter(y, z, s=100, c=input_pnp_t, marker="o", cmap="magma")
-    ax6.legend()
-    ax6.set_xlabel('Y pnp_t_Error')
-    ax6.set_ylabel('Z pnp_t_Error')
+    ax6.set_title("pnp_t_Error")
+    ax6.set_xlabel('Y')
+    ax6.set_ylabel('Z')
+
     plt.colorbar()
     plt.savefig("R_Error_and_t_Error.png")
     plt.show()
