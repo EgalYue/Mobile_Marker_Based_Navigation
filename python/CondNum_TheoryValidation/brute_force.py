@@ -158,9 +158,10 @@ def heightGetCondNum(cams,accuracy_mat,radius_step,angle_step):
 
             accuracy_mat_new[accuracy_mat_row,accuracy_mat_col] = mat_cond # Store the condition num at corresponding position
             mat_cond_list.append(mat_cond)
-            print "valid cam position:",cam.get_world_position()
+            # print "valid cam position:",cam.get_world_position()
             cam_valid.append(cam)
-            print "mat_cond=", mat_cond
+            # print "mat_cond=", mat_cond
+            # print "-----------------------------------------------------------------"
             # write the data(cam position + cond num) to  file, its a 4*1 array
             cam_position = cam.get_world_position()
             display_array = np.eye(4, 1, dtype=float)
@@ -223,9 +224,7 @@ def heightGetCondNum(cams,accuracy_mat,radius_step,angle_step):
     inputX = np.copy(display_mat[0,:])
     inputY = np.copy(display_mat[1,:])
     inputZ = np.copy(display_mat[2,:])
-    print "inputX:\n",inputX
-    print "inputY:\n", inputY
-    print "inputZ:\n", inputZ
+
     input_ippe1_t = np.copy(ippe_tvec_error_list1)
     input_ippe1_R = np.copy(ippe_rmat_error_list1)
     input_ippe2_t = np.copy(ippe_tvec_error_list2)

@@ -266,9 +266,7 @@ def create_cam_distribution_in_YZ(cam=None, plane_size=(0.3, 0.3), theta_params=
         cam.look_at([0, 0, 0])
 
         radius = sqrt(t[0] * t[0] + t[1] * t[1] + t[2] * t[2])
-        # print "radius",radius
         angle = np.rad2deg(np.arccos(t[1]/radius))
-        # print "angle",angle
         cam.set_radius(radius)
         cam.set_angle(angle)
 
@@ -278,11 +276,10 @@ def create_cam_distribution_in_YZ(cam=None, plane_size=(0.3, 0.3), theta_params=
         # print "objectPoints",objectPoints
         imagePoints = cam.project(objectPoints)
         # print "imagePoints\n",imagePoints
-        # if plot:
-        #  cam.plot_image(imagePoints)
         if ((imagePoints[0, :] < cam.img_width) & (imagePoints[0, :] > 0)).all():
             if ((imagePoints[1, :] < cam.img_height) & (imagePoints[1, :] > 0)).all():
                 cams.append(cam)
+                print "valid cam position:", t
 
     if plot:
         planes = []
