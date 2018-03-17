@@ -279,7 +279,6 @@ def create_cam_distribution_in_YZ(cam=None, plane_size=(0.3, 0.3), theta_params=
         if ((imagePoints[0, :] < cam.img_width) & (imagePoints[0, :] > 0)).all():
             if ((imagePoints[1, :] < cam.img_height) & (imagePoints[1, :] > 0)).all():
                 cams.append(cam)
-                print "valid cam position:", t
 
     if plot:
         planes = []

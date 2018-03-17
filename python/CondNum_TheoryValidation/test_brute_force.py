@@ -132,13 +132,15 @@ def cam_distribution_study():
 
     r_begin = 0.1
     r_end = 3.0
-    r_num = 31 #31 TODO need to set
+    r_num = 30 #31 TODO need to set
     r_step = (r_end - r_begin) / (r_num - 1)
     r_params = (r_begin,r_end,r_num)
 
     cams,accuracy_mat = create_cam_distribution_in_YZ(cam=None, plane_size=(0.3, 0.3), theta_params=theta_params, r_params=r_params,
                                   plot=False)
-    inputX, inputY, inputZ, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t, input_pnp_R, input_transfer_error, display_mat,accuracy_mat_new = bf.heightGetCondNum(cams,accuracy_mat,r_step,angle_step)
+    # inputX, inputY, inputZ, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t, input_pnp_R, input_transfer_error, display_mat,accuracy_mat_new = bf.heightGetCondNum(cams,accuracy_mat,r_step,angle_step)
+    inputX, inputY, inputZ, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t, input_pnp_R, input_transfer_error, display_mat, accuracy_mat_new = bf.heightGetCondNum(
+        cams, accuracy_mat, theta_params, r_params)
     # print "accuracy_mat distribution:\n",accuracy_mat_new
     print "----------------Start to show:-------------------"
     dc.displayCondNumDistribution(display_mat)

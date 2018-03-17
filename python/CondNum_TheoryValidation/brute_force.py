@@ -44,10 +44,17 @@ new_objectPoints = np.copy(objectPoints)
 normalize = False
 homography_iters = 1000     # TODO homography_iters changed
 
-def heightGetCondNum(cams,accuracy_mat,radius_step,angle_step):
+def heightGetCondNum(cams, accuracy_mat, theta_params, r_params):
+
     # fig1 = plt.figure('Image points')
     # ax_image = fig1.add_subplot(211)
+    angle_begin, angle_end,angle_num = theta_params
+    angle_step = (angle_end - angle_begin) / (angle_num - 1)
+    r_begin, r_end, r_num = r_params
+    radius_step = (r_end - r_begin) / (r_num - 1)
+
     accuracy_mat_new = np.copy(accuracy_mat)
+    # print "accuracy_mat_new",accuracy_mat_new.shape
     mat_cond_list = []
     imagePoints_des = []
     cam_valid = []
@@ -66,15 +73,20 @@ def heightGetCondNum(cams,accuracy_mat,radius_step,angle_step):
         imagePoints = np.array(cam.project(objectPoints, False))
         if ((imagePoints[0, :] < cam.img_width) & (imagePoints[0, :] > 0) & (imagePoints[1, :] < cam.img_height) & (
             imagePoints[1, :] > 0)).all():
-
-            accuracy_mat_row = int(np.copy(cam.radius) / radius_step) # row index, accuracy_mat store cond num for each cam position
+            if r_begin == 0.0:
+                accuracy_mat_row = int(np.copy(cam.radius) / radius_step) # row index, accuracy_mat store cond num for each cam position
+            else:
+                accuracy_mat_row = int(np.copy(cam.radius) / radius_step) - 1
             # print "radius_step",radius_step
             # print "accuracy_mat_row",accuracy_mat_row
             # print "valid cam r \n",cam.radius
             if angle_step == 0:
                 accuracy_mat_col = 0
             else:
-                accuracy_mat_col = int(np.copy(cam.angle) / angle_step) # col index, accuracy_mat store cond num for each cam position
+                if angle_begin == 0.0:
+                    accuracy_mat_col = int(np.copy(cam.angle) / angle_step)  # col index, accuracy_mat store cond num for each cam position
+                else:
+                    accuracy_mat_col = int(np.copy(cam.angle) / angle_step) - 1 # col index, accuracy_mat store cond num for each cam positon
             # print "angle_step",angle_step
             # print "accuracy_mat_col",accuracy_mat_col
             # print "accuracy_mat",accuracy_mat.shape
@@ -101,7 +113,7 @@ def heightGetCondNum(cams,accuracy_mat,radius_step,angle_step):
                 # Calculate the pose using solvepnp
                 debug = False
                 # TODO  cv2.SOLVEPNP_DLS, cv2.SOLVEPNP_EPNP, cv2.SOLVEPNP_ITERATIVE
-                pnp_tvec, pnp_rmat = pose_pnp(new_objectPoints, new_imagePoints_noisy, cam.K, debug,  cv2.SOLVEPNP_DLS,
+                pnp_tvec, pnp_rmat = pose_pnp(new_objectPoints, new_imagePoints_noisy, cam.K, debug, cv2.SOLVEPNP_ITERATIVE,
                                               False)
                 pnpCam = cam.clone_withPose(pnp_tvec, pnp_rmat)
                 # Calculate errors
@@ -160,7 +172,7 @@ def heightGetCondNum(cams,accuracy_mat,radius_step,angle_step):
             mat_cond_list.append(mat_cond)
             # print "valid cam position:",cam.get_world_position()
             cam_valid.append(cam)
-            # print "mat_cond=", mat_cond
+            print "mat_cond=", mat_cond
             # print "-----------------------------------------------------------------"
             # write the data(cam position + cond num) to  file, its a 4*1 array
             cam_position = cam.get_world_position()

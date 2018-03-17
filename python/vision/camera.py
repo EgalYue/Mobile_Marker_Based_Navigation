@@ -272,9 +272,11 @@ class Camera(object):
         eye = world_position
         target = np.array([0,0,0])
         up = np.array([0,1,0])
-
-        zaxis = (target-eye)/np.linalg.norm(target-eye)
-        if zaxis[1] == -1.:
+        if np.linalg.norm(target-eye) == 0: # avoid cam position in [0,0,0]
+            zaxis = np.array([0., 0., 1.])
+        else:
+            zaxis = (target-eye)/np.linalg.norm(target-eye)
+        if zaxis[1] == -1.: # handle cam position on Y-axis
             xaxis = np.array([-1., 0., 0.])
         else:
             xaxis = (np.cross(up, zaxis)) / np.linalg.norm(np.cross(up, zaxis))
