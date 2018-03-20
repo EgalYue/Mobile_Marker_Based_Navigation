@@ -42,7 +42,7 @@ new_objectPoints = np.copy(objectPoints)
 # print "new_objectPoints",new_objectPoints
 # -------------------------------------------------------------------------------------------------
 normalize = False
-homography_iters = 1000     # TODO homography_iters changed
+homography_iters = 10     # TODO homography_iters changed
 
 def heightGetCondNum(cams, accuracy_mat, theta_params, r_params):
 
@@ -73,20 +73,25 @@ def heightGetCondNum(cams, accuracy_mat, theta_params, r_params):
         imagePoints = np.array(cam.project(objectPoints, False))
         if ((imagePoints[0, :] < cam.img_width) & (imagePoints[0, :] > 0) & (imagePoints[1, :] < cam.img_height) & (
             imagePoints[1, :] > 0)).all():
-            if r_begin == 0.0:
-                accuracy_mat_row = int(np.copy(cam.radius) / radius_step) # row index, accuracy_mat store cond num for each cam position
-            else:
-                accuracy_mat_row = int(np.copy(cam.radius) / radius_step) - 1
-            # print "radius_step",radius_step
-            # print "accuracy_mat_row",accuracy_mat_row
-            # print "valid cam r \n",cam.radius
+            r_tem = abs(np.copy(cam.radius)/radius_step - round(np.copy(cam.radius)/radius_step))
+            print round(np.copy(cam.radius),4)
+            if r_begin == 0.0 and r_tem > 0.01:
+                # TODO need to fix
+                accuracy_mat_row = int(np.copy(cam.radius)/radius_step) # row index, accuracy_mat store cond num for each cam position
+            elif r_tem < 0.01:
+                # works for 0.1 3.0 30
+                accuracy_mat_row = int(round(np.copy(cam.radius) / radius_step)) - 1 # row index, accuracy_mat store cond num for each cam position
+            elif r_tem > 0.01:
+                # works for 0.1 3.0 7
+                accuracy_mat_row = int(np.ceil(np.copy(cam.radius) / radius_step)) - 1  # row index, accuracy_mat store cond num for each cam position
+
             if angle_step == 0:
                 accuracy_mat_col = 0
             else:
                 if angle_begin == 0.0:
-                    accuracy_mat_col = int(np.copy(cam.angle) / angle_step)  # col index, accuracy_mat store cond num for each cam position
+                    accuracy_mat_col = int(round(np.copy(cam.angle)/angle_step))  # col index, accuracy_mat store cond num for each cam position
                 else:
-                    accuracy_mat_col = int(np.copy(cam.angle) / angle_step) - 1 # col index, accuracy_mat store cond num for each cam positon
+                    accuracy_mat_col = int(round(np.copy(cam.angle)/angle_step)) - 1 # col index, accuracy_mat store cond num for each cam positon
             # print "angle_step",angle_step
             # print "accuracy_mat_col",accuracy_mat_col
             # print "accuracy_mat",accuracy_mat.shape
@@ -113,7 +118,7 @@ def heightGetCondNum(cams, accuracy_mat, theta_params, r_params):
                 # Calculate the pose using solvepnp
                 debug = False
                 # TODO  cv2.SOLVEPNP_DLS, cv2.SOLVEPNP_EPNP, cv2.SOLVEPNP_ITERATIVE
-                pnp_tvec, pnp_rmat = pose_pnp(new_objectPoints, new_imagePoints_noisy, cam.K, debug, cv2.SOLVEPNP_ITERATIVE,
+                pnp_tvec, pnp_rmat = pose_pnp(new_objectPoints, new_imagePoints_noisy, cam.K, debug,                                                                                      cv2.SOLVEPNP_ITERATIVE,
                                               False)
                 pnpCam = cam.clone_withPose(pnp_tvec, pnp_rmat)
                 # Calculate errors
@@ -296,4 +301,16 @@ def transfer_condNumMatrix_to_accuracyDegreeMatrix(condNumMatrix,min_cond_num,ma
 # accuracy_mat = np.zeros([5,5])
 # radius_step = 0.1
 # angle_step = 5
-# heightGetCondNum(cams,accuracy_mat,radius_step,angle_step)
+# angle_begin = 0.0
+# angle_end = 180.0
+# angle_num = 3  # 37 TODO need to set
+# angle_step = (angle_end - angle_begin) / (angle_num - 1)
+# theta_params = (angle_begin, angle_end, angle_num)
+#
+# r_begin = 0.1
+# r_end = 3.0
+# r_num = 3  # 31 TODO need to set
+# r_step = (r_end - r_begin) / (r_num - 1)
+# r_params = (r_begin, r_end, r_num)
+#
+# heightGetCondNum(cams,accuracy_mat,theta_params,r_params)
