@@ -12,9 +12,9 @@ def R_matrix_from_euler_t(alpha,beta,gamma):
   """
   https://en.wikipedia.org/wiki/Euler_angles
   A=BCD. Z -> X -> Z
-  1. the first rotation is by an angle phi about the z-axis using B,
-  2. the second rotation is by an angle theta in [0,pi] about the former x-axis (now x^') using C, and
-  3. the third rotation is by an angle psi about the former z-axis (now z^') using D.
+  1. the first rotation is by an angle alpha about the z-axis using B,
+  2. the second rotation is by an angle beta in [0,pi] about the former x-axis (now x^') using C, and
+  3. the third rotation is by an angle gamma about the former z-axis (now z^') using D.
   :param alpha:
   :param beta:
   :param gamma:
