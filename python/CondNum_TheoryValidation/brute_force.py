@@ -42,7 +42,7 @@ new_objectPoints = np.copy(objectPoints)
 # print "new_objectPoints",new_objectPoints
 # -------------------------------------------------------------------------------------------------
 normalize = False
-homography_iters = 10     # TODO homography_iters changed
+homography_iters = 1000     # TODO homography_iters changed
 
 def heightGetCondNum(cams, accuracy_mat, theta_params, r_params):
 
@@ -118,8 +118,7 @@ def heightGetCondNum(cams, accuracy_mat, theta_params, r_params):
                 # Calculate the pose using solvepnp
                 debug = False
                 # TODO  cv2.SOLVEPNP_DLS, cv2.SOLVEPNP_EPNP, cv2.SOLVEPNP_ITERATIVE
-                pnp_tvec, pnp_rmat = pose_pnp(new_objectPoints, new_imagePoints_noisy, cam.K, debug,                                                                                      cv2.SOLVEPNP_ITERATIVE,
-                                              False)
+                pnp_tvec, pnp_rmat = pose_pnp(new_objectPoints, new_imagePoints_noisy, cam.K, debug, cv2.SOLVEPNP_ITERATIVE, False)
                 pnpCam = cam.clone_withPose(pnp_tvec, pnp_rmat)
                 # Calculate errors
                 pnp_tvec_error, pnp_rmat_error = ef.calc_estimated_pose_error(cam.get_tvec(), cam.R, pnpCam.get_tvec(),
@@ -263,7 +262,8 @@ def transfer_condNumMatrix_to_accuracyDegreeMatrix(condNumMatrix,min_cond_num,ma
     Transfer condNum matrix to accuracy degree matrix,
     """
     # divide condition num distribution into 5 degree
-    degree_step = (max_cond_num - min_cond_num) / (degree - 1)
+    degree_step = (max_cond_num - min_cond_num) / degree
+    accuracy_degree1 = max_cond_num - 4 * degree_step
     accuracy_degree2 = max_cond_num - 3 * degree_step
     accuracy_degree3 = max_cond_num - 2 * degree_step
     accuracy_degree4 = max_cond_num - degree_step
@@ -274,13 +274,13 @@ def transfer_condNumMatrix_to_accuracyDegreeMatrix(condNumMatrix,min_cond_num,ma
     for i in range(row_area_matrix):
         for j in range(col_area_matrix):
             cond_num = condNumMatrix[i,j]
-            if cond_num >= max_cond_num:
+            if cond_num >= accuracy_degree4:
                 accuracyDegreeMatrix[i,j] = 5
-            elif cond_num >= accuracy_degree4:
-                accuracyDegreeMatrix[i, j] = 4
             elif cond_num >= accuracy_degree3:
-                accuracyDegreeMatrix[i, j] = 3
+                accuracyDegreeMatrix[i, j] = 4
             elif cond_num >= accuracy_degree2:
+                accuracyDegreeMatrix[i, j] = 3
+            elif cond_num >= accuracy_degree1:
                 accuracyDegreeMatrix[i, j] = 2
             elif cond_num >= min_cond_num:
                 accuracyDegreeMatrix[i, j] = 1
