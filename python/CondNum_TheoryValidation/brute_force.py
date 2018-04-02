@@ -49,9 +49,15 @@ def heightGetCondNum(cams, accuracy_mat, theta_params, r_params):
     # fig1 = plt.figure('Image points')
     # ax_image = fig1.add_subplot(211)
     angle_begin, angle_end,angle_num = theta_params
-    angle_step = (angle_end - angle_begin) / (angle_num - 1)
+    if angle_num ==1:
+        angle_step = 0.0
+    else:
+        angle_step = (angle_end - angle_begin) / (angle_num - 1)
     r_begin, r_end, r_num = r_params
-    radius_step = (r_end - r_begin) / (r_num - 1)
+    if r_num ==1:
+        radius_step = 0.0
+    else:
+        radius_step = (r_end - r_begin) / (r_num - 1)
 
     accuracy_mat_new = np.copy(accuracy_mat)
     # print "accuracy_mat_new",accuracy_mat_new.shape
@@ -74,7 +80,7 @@ def heightGetCondNum(cams, accuracy_mat, theta_params, r_params):
         if ((imagePoints[0, :] < cam.img_width) & (imagePoints[0, :] > 0) & (imagePoints[1, :] < cam.img_height) & (
             imagePoints[1, :] > 0)).all():
             r_tem = abs(np.copy(cam.radius)/radius_step - round(np.copy(cam.radius)/radius_step))
-            print round(np.copy(cam.radius),4)
+            # print round(np.copy(cam.radius),4)
             if r_begin == 0.0 and r_tem > 0.01:
                 # TODO need to fix
                 accuracy_mat_row = int(np.copy(cam.radius)/radius_step) # row index, accuracy_mat store cond num for each cam position
@@ -174,7 +180,7 @@ def heightGetCondNum(cams, accuracy_mat, theta_params, r_params):
 
             accuracy_mat_new[accuracy_mat_row,accuracy_mat_col] = mat_cond # Store the condition num at corresponding position
             mat_cond_list.append(mat_cond)
-            # print "valid cam position:",cam.get_world_position()
+            print "valid cam position:",cam.get_world_position()
             cam_valid.append(cam)
             print "mat_cond=", mat_cond
             # print "-----------------------------------------------------------------"
