@@ -70,12 +70,7 @@ def calculate_A_matrix_autograd(x1,y1,x2,y2,x3,y3,x4,y4,K,R,tx,ty,tz,radius,norm
     # image_pts_norm,T2 = normalise_points(image_pts)
     object_pts_norm,T1 = normalise_points(object_pts)
     image_pts_norm,T2 = normalise_points_RadiusScale(image_pts,radius)
-    print "object_pts_norm",object_pts_norm
-    print "T1", T1
-    print "image_pts",image_pts
-    print "image_pts_norm", image_pts_norm
-    print "T2", T2
-    print "==============================="
+
   else:
     object_pts_norm = object_pts[[0,1,3],:]
     image_pts_norm = image_pts
@@ -119,6 +114,7 @@ def calculate_A_matrix_autograd(x1,y1,x2,y2,x3,y3,x4,y4,K,R,tx,ty,tz,radius,norm
           ])
   return A
 
+# TODO add radius in parameter list  used for scale
 def matrix_condition_number_autograd(x1,y1,x2,y2,x3,y3,x4,y4,K,R,tx,ty,tz,radius, normalize = False):
   A = calculate_A_matrix_autograd(x1,y1,x2,y2,x3,y3,x4,y4,K,R,tx,ty,tz,radius, normalize)
 
@@ -266,7 +262,8 @@ def normalise_points(pts):
 def normalise_points_RadiusScale(pts,radius):
   """
   Function translates and normalises a set of 2D or 3d homogeneous points
-  so that their centroid is at the origin without scale!!!
+  so that their centroid is at the origin
+  Add radius(distance between camera and marker) as one influenced factor of Scale
   This process typically improves the
   conditioning of any equations used to solve homographies, fundamental
   matrices etc.

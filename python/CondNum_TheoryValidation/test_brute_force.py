@@ -138,7 +138,6 @@ def cam_distribution_study():
 
     cams,accuracy_mat = create_cam_distribution_in_YZ(cam=None, plane_size=(0.3, 0.3), theta_params=theta_params, r_params=r_params,
                                   plot=False)
-    # inputX, inputY, inputZ, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t, input_pnp_R, input_transfer_error, display_mat,accuracy_mat_new = bf.heightGetCondNum(cams,accuracy_mat,r_step,angle_step)
     inputX, inputY, inputZ, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t, input_pnp_R, input_transfer_error, display_mat, accuracy_mat_new = bf.heightGetCondNum(
         cams, accuracy_mat, theta_params, r_params)
     # print "accuracy_mat distribution:\n",accuracy_mat_new
