@@ -44,7 +44,7 @@ class Gradient(object):
 
 
 
-def calculate_A_matrix_autograd(x1,y1,x2,y2,x3,y3,x4,y4,K,R,tx,ty,tz,normalize=False):
+def calculate_A_matrix_autograd(x1,y1,x2,y2,x3,y3,x4,y4,K,R,tx,ty,tz,radius,normalize=False,):
   """ Calculate the A matrix for the DLT algorithm:  A.H = 0
   all coordinates are in object plane
   """
@@ -66,8 +66,16 @@ def calculate_A_matrix_autograd(x1,y1,x2,y2,x3,y3,x4,y4,K,R,tx,ty,tz,normalize=F
   image_pts = np.hstack([U1,U2,U3,U4])
 
   if normalize:
+    # object_pts_norm,T1 = normalise_points(object_pts)
+    # image_pts_norm,T2 = normalise_points(image_pts)
     object_pts_norm,T1 = normalise_points(object_pts)
-    image_pts_norm,T2 = normalise_points(image_pts)
+    image_pts_norm,T2 = normalise_RadiusScale(image_pts,radius)
+    print "object_pts_norm",object_pts_norm
+    print "T1", T1
+    print "image_pts",image_pts
+    print "image_pts_norm", image_pts_norm
+    print "T2", T2
+    print "==============================="
   else:
     object_pts_norm = object_pts[[0,1,3],:]
     image_pts_norm = image_pts
@@ -111,8 +119,8 @@ def calculate_A_matrix_autograd(x1,y1,x2,y2,x3,y3,x4,y4,K,R,tx,ty,tz,normalize=F
           ])
   return A
 
-def matrix_condition_number_autograd(x1,y1,x2,y2,x3,y3,x4,y4,K,R,tx,ty,tz, normalize = False):
-  A = calculate_A_matrix_autograd(x1,y1,x2,y2,x3,y3,x4,y4,K,R,tx,ty,tz, normalize)
+def matrix_condition_number_autograd(x1,y1,x2,y2,x3,y3,x4,y4,K,R,tx,ty,tz,radius, normalize = False):
+  A = calculate_A_matrix_autograd(x1,y1,x2,y2,x3,y3,x4,y4,K,R,tx,ty,tz,radius, normalize)
 
   U, s, V = np.linalg.svd(A,full_matrices=False)
 
@@ -254,6 +262,51 @@ def normalise_points(pts):
 
     return newpts, T
 
+
+def normalise_RadiusScale(pts,radius):
+  """
+  Function translates and normalises a set of 2D or 3d homogeneous points
+  so that their centroid is at the origin without scale!!!
+  This process typically improves the
+  conditioning of any equations used to solve homographies, fundamental
+  matrices etc.
+
+
+  Inputs:
+  pts: 3xN array of 2D homogeneous coordinates
+
+  Returns:
+  newpts: 3xN array of transformed 2D homogeneous coordinates.  The
+          scaling parameter is normalised to 1 unless the point is at
+          infinity.
+  """
+  if pts.shape[0] == 4:
+    pts = hom_3d_to_2d(pts)
+
+  if pts.shape[0] != 3 and pts.shape[0] != 4:
+    print "Shape error"
+
+  finiteind = np.nonzero(abs(pts[2, :]) > np.spacing(1))
+
+  if len(finiteind[0]) != pts.shape[1]:
+    print('Some points are at infinity')
+
+  dist = []
+  pts = pts / pts[2, :]
+  for i in finiteind:
+    c = np.mean(pts[0:2, i].T, axis=0).T
+    newp1 = pts[0, i] - c[0]
+    newp2 = pts[1, i] - c[1]
+    dist.append(np.sqrt(newp1 ** 2 + newp2 ** 2))
+
+  dist = np.array(dist)
+  meandist = np.mean(dist)
+  scale = np.sqrt(2) / meandist
+  scale = radius*np.sqrt(2) / meandist # TODO set the scale increasing with the radius(distance from cam to marker)
+  T = np.array([[scale, 0, -scale * c[0]], [0, scale, -scale * c[1]], [0, 0, 1]])
+  newpts = np.dot(T, pts)
+  return newpts,T
+
 def create_gradient(metric='condition_number', n = 0.000001):
   """"
   metric: 'condition_number' (default)
@@ -354,5 +407,5 @@ def update_points(gradient, T, limitx=5,limity=5,limitz=5):
   return t
 
 # =======================================Test======================================
-# pts = np.array([[2,2,-2,-2],[2,-2,2,-2],[1,1,1,1]])
-# print normalise_points(pts)
+# pts = np.array([[100,200,300,400],[200,100,100,200],[1,1,1,1]])
+# print normalise_points_withoutScale(pts)

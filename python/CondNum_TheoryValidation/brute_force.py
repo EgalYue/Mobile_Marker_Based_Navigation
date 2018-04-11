@@ -45,9 +45,6 @@ normalize = False
 homography_iters = 1000     # TODO homography_iters changed
 
 def heightGetCondNum(cams, accuracy_mat, theta_params, r_params):
-
-    # fig1 = plt.figure('Image points')
-    # ax_image = fig1.add_subplot(211)
     angle_begin, angle_end,angle_num = theta_params
     if angle_num ==1:
         angle_step = 0.0
@@ -124,7 +121,7 @@ def heightGetCondNum(cams, accuracy_mat, theta_params, r_params):
                 # Calculate the pose using solvepnp
                 debug = False
                 # TODO  cv2.SOLVEPNP_DLS, cv2.SOLVEPNP_EPNP, cv2.SOLVEPNP_ITERATIVE
-                pnp_tvec, pnp_rmat = pose_pnp(new_objectPoints, new_imagePoints_noisy, cam.K, debug, cv2.SOLVEPNP_ITERATIVE, False)
+                pnp_tvec, pnp_rmat = pose_pnp(new_objectPoints, new_imagePoints_noisy, cam.K, debug, cv2.SOLVEPNP_EPNP, False)
                 pnpCam = cam.clone_withPose(pnp_tvec, pnp_rmat)
                 # Calculate errors
                 pnp_tvec_error, pnp_rmat_error = ef.calc_estimated_pose_error(cam.get_tvec(), cam.R, pnpCam.get_tvec(),
@@ -175,9 +172,13 @@ def heightGetCondNum(cams, accuracy_mat, theta_params, r_params):
             input_list.append(cam.t[0, 3])
             input_list.append(cam.t[1, 3])
             input_list.append(cam.t[2, 3])
+            input_list.append(cam.radius)
             # TODO normalize points!!!
-            mat_cond = gd.matrix_condition_number_autograd(*input_list, normalize=False)
-
+            mat_cond = gd.matrix_condition_number_autograd(*input_list, normalize=True)
+            # TODO=========================
+            # mat_cond = mat_cond *cam.radius
+            # print "cam.radius",cam.radius
+            #=================================
             accuracy_mat_new[accuracy_mat_row,accuracy_mat_col] = mat_cond # Store the condition num at corresponding position
             mat_cond_list.append(mat_cond)
             print "valid cam position:",cam.get_world_position()
@@ -191,6 +192,10 @@ def heightGetCondNum(cams, accuracy_mat, theta_params, r_params):
             display_array[3] = np.copy(mat_cond)
             display_mat = np.hstack((display_mat, display_array))
 
+        #------------- plot the image points dynamiclly-----------------
+        # print "imagePoints\n",imagePoints
+        # fig1 = plt.figure('Image points')
+        # ax_image = fig1.add_subplot(211)
         # ax_image.cla()
         # plt.sca(ax_image)
         # plt.ion()
