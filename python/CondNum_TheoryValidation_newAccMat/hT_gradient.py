@@ -300,7 +300,6 @@ def normalise_points_RadiusScale(pts,radius):
   meandist = np.mean(dist)
   scale = np.sqrt(2) / meandist
   scale = radius*np.sqrt(2) / meandist # TODO set the scale increasing with the radius(distance from cam to marker)
-  scale = 1
   T = np.array([[scale, 0, -scale * c[0]], [0, scale, -scale * c[1]], [0, 0, 1]])
   newpts = np.dot(T, pts)
   return newpts,T
