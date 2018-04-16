@@ -127,13 +127,13 @@ def cam_distribution_study():
     #                                r_params=(0.2, 2.0, 20), plot=False)
     angle_begin = 0.0#0.0
     angle_end = 180.0#180.0
-    angle_num = 3 #37 TODO need to set
+    angle_num = 37 #37 TODO need to set
     # angle_step = (angle_end - angle_begin) / (angle_num - 1)
     theta_params = (angle_begin,angle_end,angle_num)
 
     r_begin = 0.1 # we cant set this as 0.0 !!! avoid float error!!!
     r_end = 3.0
-    r_num = 3 #30 TODO need to set
+    r_num = 30 #30 TODO need to set
     # r_step = (r_end - r_begin) / (r_num - 1)
     r_params = (r_begin,r_end,r_num)
 
@@ -144,7 +144,7 @@ def cam_distribution_study():
         cams, accuracy_mat, theta_params, r_params)
     # print "accuracy_mat distribution:\n",accuracy_mat_new
     print "----------------Start to show:-------------------"
-    print "accuracy_mat_new\n",accuracy_mat_new
+    # print "accuracy_mat_new\n",accuracy_mat_new
     # save accuracy matrix in file
     smtf.saveMatToFile(accuracy_mat_new)
     # plot condition number distribution

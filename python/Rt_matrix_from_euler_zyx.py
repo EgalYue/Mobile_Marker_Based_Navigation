@@ -31,4 +31,4 @@ def R_matrix_from_euler_zyx(alpha,beta,gamma):
   return R
 
 # ===================Test==========================
-print R_matrix_from_euler_zyx(0,np.deg2rad(-120),0)
+# print R_matrix_from_euler_zyx(0,np.deg2rad(-120),0)
