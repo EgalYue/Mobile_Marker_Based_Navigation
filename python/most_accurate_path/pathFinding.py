@@ -207,57 +207,59 @@ def main():
     # print "-- accu_path --:\n",accu_path
 
     path = np.array([[26, 26, 26, 26, 26],
-                     [18, 19, 20, 21, 22]])
-    path = np.array([[4, 4, 4, 4, 4],
-                     [16, 17, 18, 19, 20]])
+                     [18, 19, 20, 21, 22]]) # path far away Marker, accuracy degree = 5
+    # path = np.array([[4, 4, 4, 4, 4],
+    #                  [16, 17, 18, 19, 20]]) # path close to Marker, accuracy degree = 1
     fix_path = cellCenterPosition(path, cell_length)
     length = fix_path.shape[1]
     T_WM = getMarkerTransformationMatrix(width, height, cell_length)
 
+#---------------------------------------Without mean ------------------------------------
 # ------------------------ Initialization---------------------
-    cam_pos_real_current = np.array([2.65, 1.85]).reshape(2, 1)
-    cam_pos_real_current = np.array([0.45, 1.65]).reshape(2, 1)
-    cam_pos_measured_current = cam_pos_real_current
-    move_dis = moveTo(cam_pos_measured_current, fix_path[:, 1])
-
-    # ------------------------- Algorithmus -----------------------------
-    # real_path = np.eye(2, 1, dtype=float)
-    # real_path[0, 0] = cam_pos_real_current[0, 0]
-    # real_path[1, 0] = cam_pos_real_current[1, 0]
-    # measured_path = np.eye(2, 1, dtype=float)
-    # measured_path[0, 0] = cam_pos_measured_current[0, 0]
-    # measured_path[1, 0] = cam_pos_measured_current[1, 0]
-    # for i in range(1, length):
-    #     T_MC = getT_MC(T_WM, fix_path[:, i])
-    #     # camPosInMarker = getCameraPosInMarker(T_MC)
-    #     # print "camPosInMarker\n",camPosInMarker
-    #     T_WC = np.dot(T_MC, T_WM)
-    #     cam_pos_measured_current = getCameraPosInWorld(T_WC)
-    #     measured_path = np.hstack((measured_path, cam_pos_measured_current))
-    #
-    #     # Update camera current real position
-    #     cam_pos_real_current = cam_pos_real_current + move_dis  # this move_dis is the previous value
-    #     real_path = np.hstack((real_path, cam_pos_real_current))
-    #
-    #     # Update move_dis
-    #     if i == length - 1:
-    #         move_dis = np.array([0.0, 0.0]).reshape(2, 1)
-    #     else:
-    #         move_dis = moveTo(cam_pos_measured_current, fix_path[:, i + 1])
-    # print "-- fix_path --:\n", fix_path
-    # print "-- measured_path --:\n", measured_path
-    # print "-- real_path --:\n", real_path
-    # #-----------------------------Plot-----------------------------------------------
-    # plotPath.plotPath(fix_path,real_path,measured_path)
-
+#     cam_pos_real_current = np.array([2.65, 1.85]).reshape(2, 1)
+#     cam_pos_real_current = np.array([0.45, 1.65]).reshape(2, 1)
+#     cam_pos_measured_current = cam_pos_real_current
+#     move_dis = moveTo(cam_pos_measured_current, fix_path[:, 1])
+#
+#     # ------------------------- Algorithmus -----------------------------
+#     real_path = np.eye(2, 1, dtype=float)
+#     real_path[0, 0] = cam_pos_real_current[0, 0]
+#     real_path[1, 0] = cam_pos_real_current[1, 0]
+#     measured_path = np.eye(2, 1, dtype=float)
+#     measured_path[0, 0] = cam_pos_measured_current[0, 0]
+#     measured_path[1, 0] = cam_pos_measured_current[1, 0]
+#     for i in range(1, length):
+#         T_MC = getT_MC(T_WM, fix_path[:, i])
+#         # camPosInMarker = getCameraPosInMarker(T_MC)
+#         # print "camPosInMarker\n",camPosInMarker
+#         T_WC = np.dot(T_MC, T_WM)
+#         cam_pos_measured_current = getCameraPosInWorld(T_WC)
+#         measured_path = np.hstack((measured_path, cam_pos_measured_current))
+#
+#         # Update camera current real position
+#         cam_pos_real_current = cam_pos_real_current + move_dis  # this move_dis is the previous value
+#         real_path = np.hstack((real_path, cam_pos_real_current))
+#
+#         # Update move_dis
+#         if i == length - 1:
+#             move_dis = np.array([0.0, 0.0]).reshape(2, 1)
+#         else:
+#             move_dis = moveTo(cam_pos_measured_current, fix_path[:, i + 1])
+#     print "-- fix_path --:\n", fix_path
+#     print "-- measured_path --:\n", measured_path
+#     print "-- real_path --:\n", real_path
+#     #-----------------------------Plot-----------------------------------------------
+#     plotPath.plotPath(fix_path,real_path,measured_path)
+#============================================================================================================
     #TODO Iterative for path points???
+    #----------------------------------------------------------------------------------
     fix_path_mean = np.zeros((2,length))
     real_path_mean = np.zeros((2,length))
     measured_path_mean = np.zeros((2,length))
     for j in range(homography_iters):
         # ------------------------ Initialization---------------------
         cam_pos_real_current = np.array([2.65, 1.85]).reshape(2, 1)
-        cam_pos_real_current = np.array([0.45, 1.65]).reshape(2, 1)
+        # cam_pos_real_current = np.array([0.45, 1.65]).reshape(2, 1)
         cam_pos_measured_current = cam_pos_real_current
         move_dis = moveTo(cam_pos_measured_current, fix_path[:, 1])
 
@@ -289,7 +291,7 @@ def main():
         measured_path_mean = measured_path_mean +  measured_path
         real_path_mean = real_path_mean + real_path
         fix_path_mean = fix_path_mean + fix_path
-
+    # Compute the mean value of each position
     measured_path_mean = measured_path_mean/homography_iters
     real_path_mean = real_path_mean/homography_iters
     fix_path_mean = fix_path_mean/homography_iters
@@ -298,7 +300,7 @@ def main():
     print "-- real_path_mean --:\n", real_path_mean
     #-----------------------------Plot-----------------------------------------------
     plotPath.plotPath(fix_path_mean,real_path_mean,measured_path_mean)
-
+    #==================================================================================
 
 # =================================================================================================
 

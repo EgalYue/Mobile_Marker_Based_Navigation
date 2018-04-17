@@ -7,7 +7,7 @@
 """
 import matplotlib.pyplot as plt
 import numpy as np
-
+from matplotlib.font_manager import FontProperties
 
 def plotPath(fix_path,real_path,measured_path):
     plt.figure()
@@ -30,7 +30,10 @@ def plotPath(fix_path,real_path,measured_path):
     y_measured = measured_path[1,:]
     plt.plot(y_measured, x_measured, color='blue', label='measured path') #  x,y  exchange position
     plt.scatter(y_measured, x_measured,c="blue", marker='+')
-    plt.legend() # show label of line
+
+    fontP = FontProperties()
+    fontP.set_size('small')
+    plt.legend(prop=fontP,loc=9, bbox_to_anchor=(0.5, -0.1), ncol=3) # Move legend outside of figure in matplotlib
 
     ax=plt.gca()                            # get the axis
     ax.set_ylim(ax.get_ylim()[::-1])        # invert the axis
