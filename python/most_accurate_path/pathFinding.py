@@ -205,13 +205,14 @@ def main():
     # -----------------------------------------------------------------------------------
     # accu_path = accuracy_mat[4,16:21]
     # print "-- accu_path --:\n",accu_path
-
+    # TODO SET FIX PATH
     path = np.array([[26, 26, 26, 26, 26],
                      [18, 19, 20, 21, 22]]) # path far away Marker, accuracy degree = 5
     # path = np.array([[4, 4, 4, 4, 4],
     #                  [16, 17, 18, 19, 20]]) # path close to Marker, accuracy degree = 1
     fix_path = cellCenterPosition(path, cell_length)
     length = fix_path.shape[1]
+    first_pos = fix_path[:,0].reshape(2, 1)
     T_WM = getMarkerTransformationMatrix(width, height, cell_length)
 
 #---------------------------------------Without mean ------------------------------------
@@ -258,8 +259,7 @@ def main():
     measured_path_mean = np.zeros((2,length))
     for j in range(homography_iters):
         # ------------------------ Initialization---------------------
-        cam_pos_real_current = np.array([2.65, 1.85]).reshape(2, 1)
-        # cam_pos_real_current = np.array([0.45, 1.65]).reshape(2, 1)
+        cam_pos_real_current = np.copy(first_pos)
         cam_pos_measured_current = cam_pos_real_current
         move_dis = moveTo(cam_pos_measured_current, fix_path[:, 1])
 
