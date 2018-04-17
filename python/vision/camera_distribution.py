@@ -387,7 +387,7 @@ def create_cam_distribution_square_in_XY(cam=None, plane_size=(0.3, 0.3), theta_
 
 # ==============================Test=================================================
 #cams = create_cam_distribution(cam = None, plane_size = (0.3,0.3), theta_params = (0,360,10), phi_params =  (0,70,5), r_params = (0.25,1.0,4), plot=True)
-# create_cam_distribution_in_YZ(cam = None, plane_size = (0.3,0.3), theta_params = (0,180,3), r_params = (0.3,0.9,3), plot=False)
+#create_cam_distribution_in_YZ(cam = None, plane_size = (0.3,0.3), theta_params = (0,180,3), r_params = (0.3,0.9,3), plot=False)
 # print "cams size: ",len(cams)
 # -----------------------------Test for cam look at method------------------------------
 # cam = Camera()
