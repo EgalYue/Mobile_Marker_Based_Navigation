@@ -25,7 +25,7 @@ import error_functions as ef
 import os  # Read matrix form file
 
 # -----------------------Basic Infos---------------------------------------------------
-homography_iters = 1000  # TODO iterative
+homography_iters = 1  # TODO iterative
 
 # -----------------------marker object points-----------------------------------------
 plane_size = (0.3, 0.3)
@@ -208,7 +208,7 @@ def getT_MC_and_Rt_errors(T_WM, pos_world, Rmat_error_loop, tvec_error_loop):
 
 # ===================================================================================
 def main():
-    path_list = []
+    fix_pathMat_list = []
     p1 = np.array([[23, 23, 23, 23, 23, 23, 23, 23, 23],
                      [16, 17, 18, 19, 20, 21, 22, 23, 24]]) # path close to Marker, accuracy degree = 1
     p2 = np.array([[23, 22, 23, 22, 23, 22, 23, 22, 23],
@@ -219,69 +219,33 @@ def main():
                      [16, 17, 18, 19, 20, 21, 22, 23, 24]]) # path close to Marker, accuracy degree = 1
     p5 = np.array([[23, 22, 21, 21, 21, 21, 21, 22, 23],
                      [16, 17, 18, 19, 20, 21, 22, 23, 24]]) # path close to Marker, accuracy degree = 1
-    path_list.append(p1)
-    path_list.append(p2)
-    path_list.append(p3)
-    path_list.append(p4)
-    path_list.append(p5)
+    fix_pathMat_list.append(p1)
+    fix_pathMat_list.append(p2)
+    fix_pathMat_list.append(p3)
+    fix_pathMat_list.append(p4)
+    fix_pathMat_list.append(p5)
 
+    fix_path_list = []
+    for path_mat in fix_pathMat_list:
+        fix_path_mat = cellCenterPosition(path_mat, cell_length)
+        fix_path_list.append(fix_path_mat)
 
     real_path_list = []
     measured_path_list = []
-    for path in path_list:
+
+    Rmat_error_list_allPaths = [] # store the R error for all paths
+    tvec_error_list_allPaths = [] # store the t error for all paths
+    for fix_path in fix_path_list:
         # --------------------Test for a simple path----------------------------------------
         #                    A[26,18] -> B[26,22]                                          -
         #                    A - - - B                                                     -
         # -----------------------------------------------------------------------------------
         # accu_path = accuracy_mat[4,16:21]
         # print "-- accu_path --:\n",accu_path
-        # TODO SET FIX PATH
-        # path = np.array([[26, 26, 26, 26, 26],
-        #                  [18, 19, 20, 21, 22]])  # path far away Marker, accuracy degree = 5
-        # path = np.array([[4, 4, 4, 4, 4],
-        #                  [16, 17, 18, 19, 20]]) # path close to Marker, accuracy degree = 1
-        fix_path = cellCenterPosition(path, cell_length)
+
         length = fix_path.shape[1]
         first_pos = fix_path[:, 0].reshape(2, 1)
         T_WM = getMarkerTransformationMatrix(width, height, cell_length)
-
-        # ---------------------------------------Without mean ------------------------------------
-        # ------------------------ Initialization---------------------
-        #     cam_pos_real_current = np.array([2.65, 1.85]).reshape(2, 1)
-        #     cam_pos_real_current = np.array([0.45, 1.65]).reshape(2, 1)
-        #     cam_pos_measured_current = cam_pos_real_current
-        #     move_dis = moveTo(cam_pos_measured_current, fix_path[:, 1])
-        #
-        #     # ------------------------- Algorithmus -----------------------------
-        #     real_path = np.eye(2, 1, dtype=float)
-        #     real_path[0, 0] = cam_pos_real_current[0, 0]
-        #     real_path[1, 0] = cam_pos_real_current[1, 0]
-        #     measured_path = np.eye(2, 1, dtype=float)
-        #     measured_path[0, 0] = cam_pos_measured_current[0, 0]
-        #     measured_path[1, 0] = cam_pos_measured_current[1, 0]
-        #     for i in range(1, length):
-        #         T_MC = getT_MC(T_WM, fix_path[:, i])
-        #         # camPosInMarker = getCameraPosInMarker(T_MC)
-        #         # print "camPosInMarker\n",camPosInMarker
-        #         T_WC = np.dot(T_MC, T_WM)
-        #         cam_pos_measured_current = getCameraPosInWorld(T_WC)
-        #         measured_path = np.hstack((measured_path, cam_pos_measured_current))
-        #
-        #         # Update camera current real position
-        #         cam_pos_real_current = cam_pos_real_current + move_dis  # this move_dis is the previous value
-        #         real_path = np.hstack((real_path, cam_pos_real_current))
-        #
-        #         # Update move_dis
-        #         if i == length - 1:
-        #             move_dis = np.array([0.0, 0.0]).reshape(2, 1)
-        #         else:
-        #             move_dis = moveTo(cam_pos_measured_current, fix_path[:, i + 1])
-        #     print "-- fix_path --:\n", fix_path
-        #     print "-- measured_path --:\n", measured_path
-        #     print "-- real_path --:\n", real_path
-        #     #-----------------------------Plot-----------------------------------------------
-        #     plotPath.plotPath(fix_path,real_path,measured_path)
-        # ============================================================================================================
 
         # ------------------------ Initialization---------------------
         cam_pos_real_current = np.copy(first_pos)
@@ -296,15 +260,15 @@ def main():
         measured_path[0, 0] = cam_pos_measured_current[0, 0]
         measured_path[1, 0] = cam_pos_measured_current[1, 0]
 
-        # Plot the R errors and t errors
-        Rmat_error_list = []
-        tvec_error_list = []
+        Rmat_error_list = [] # store the R error for current only one path
+        tvec_error_list = [] # store the t error for current only one path
         for i in range(1, length):
             # homography_iters
             cam_pos_measured_current_sum = np.zeros((2, 1))
             # Plot the R errors and t errors
             Rmat_error_loop = []
             tvec_error_loop = []
+            # For each step(each cam position need to compute iterative, obtain mean value)
             for j in range(homography_iters):
                 T_MC = getT_MC_and_Rt_errors(T_WM, fix_path[:, i], Rmat_error_loop, tvec_error_loop)
                 # camPosInMarker = getCameraPosInMarker(T_MC)
@@ -334,14 +298,17 @@ def main():
         print "-- fix_path_mean --:\n", fix_path
         print "-- measured_path_mean --:\n", measured_path
         print "-- real_path_mean --:\n", real_path
+        print "======================================================="
         real_path_list.append(real_path)
         measured_path_list.append(measured_path)
-        # -----------------------------Plot-----------------------------------------------
-        # plotPath.plotAll(fix_path, real_path,measured_path, Rmat_error_list, tvec_error_list)
 
+        Rmat_error_list_allPaths.append(Rmat_error_list)
+        tvec_error_list_allPaths.append(tvec_error_list)
 
-
-    plotPath.plotAllPaths(fix_path, real_path_list)
+    # -----------------------------Plot-----------------------------------------------
+    # plotPath.plotAllPaths(real_path_list)
+    # plotPath.plotAllPaths(fix_path_list)
+    plotPath.plotAllPaths(fix_path_list, real_path_list, measured_path_list, Rmat_error_list_allPaths, tvec_error_list_allPaths)
     # ===================================== End main() ===============================================
 
 
