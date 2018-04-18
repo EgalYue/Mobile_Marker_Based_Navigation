@@ -55,15 +55,15 @@ def plotPositionError(fix_path,real_path,measured_path):
 
     plt.figure()
     #---------------------Real path----------------------------------------
-    x_real = real_path_error
-    y_real = range(1,len(x_real)+1)
+    x_real = range(1,len(real_path_error)+1)
+    y_real = real_path_error
     plt.plot(x_real, y_real, color='red', label='Real path')
     plt.scatter(x_real, y_real, c="red", marker='x')
     #---------------------Measured path----------------------------------------
-    x_measured = measured_path_error
-    y_measured = range(1,len(x_measured)+1)
-    plt.plot(y_measured, x_measured, color='blue', label='measured path') #  x,y  exchange position
-    plt.scatter(y_measured, x_measured,c="blue", marker='+')
+    x_measured = range(1,len(measured_path_error)+1)
+    y_measured = measured_path_error
+    plt.plot(x_measured, y_measured, color='blue', label='measured path') #  x,y  exchange position
+    plt.scatter(x_measured, y_measured,c="blue", marker='+')
 
     fontP = FontProperties()
     fontP.set_size('small')
@@ -77,32 +77,38 @@ def plotPositionError(fix_path,real_path,measured_path):
 
 def plot_Rt_error(Rmat_error_list, tvec_error_list):
     fig = plt.figure('Pose estimation errors')
-    ax_R_error = fig.add_subplot(211)
-    ax_t_error = fig.add_subplot(212)
-
-    ax_R_error.plot(Rmat_error_list)
+    ax_R_error = fig.add_subplot(121)
+    ax_t_error = fig.add_subplot(122)
+    #------------------------ R error ---------------------------------
+    x_R_error = np.arange(1, len(Rmat_error_list)+1, 1)
+    y_R_error = Rmat_error_list
+    ax_R_error.xaxis.set_ticks(np.arange(0, len(Rmat_error_list)+1, 1))
+    ax_R_error.plot(x_R_error, y_R_error, color='blue', label='measured path')
+    ax_R_error.scatter(x_R_error, y_R_error, c="red", marker='o')
 
     plt.sca(ax_R_error)
-    ax_R_error.set_title("R error()")
+    ax_R_error.set_title("R error(" + u"\u00b0" + ")")
     ax_R_error.set_xlabel('Step')
     ax_R_error.set_ylabel('Angle(degree)')
 
-
-    ax_t_error.plot(tvec_error_list)
+    #-------------------------r error ---------------------------------
+    x_t_error = np.arange(1, len(tvec_error_list)+1, 1)
+    y_t_error = tvec_error_list
+    ax_t_error.xaxis.set_ticks(np.arange(0, len(tvec_error_list)+1, 1))
+    ax_t_error.plot(x_t_error, y_t_error, color='blue', label='measured path')
+    ax_t_error.scatter(x_t_error, y_t_error, c="red", marker='o')
 
     plt.sca(ax_t_error)
     ax_t_error.set_title("t error(%)")
     ax_t_error.set_xlabel('Step')
-    ax_t_error.set_ylabel('Precent')
+    ax_t_error.set_ylabel('Percent')
+    # plt.show()
 
-    plt.show()
-
-def plotAll(fix_path,real_path,measured_path):
+def plotAll(fix_path, real_path,measured_path, Rmat_error_list, tvec_error_list):
     plotPath(fix_path, real_path, measured_path)
     plotPositionError(fix_path, real_path, measured_path)
+    plot_Rt_error(Rmat_error_list, tvec_error_list)
     plt.show()
-
-
 
 
 #=====================================Test=====================================================

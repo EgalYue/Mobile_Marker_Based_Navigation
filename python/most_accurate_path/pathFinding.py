@@ -314,7 +314,8 @@ def main():
     print "-- measured_path_mean --:\n", measured_path
     print "-- real_path_mean --:\n", real_path
     # -----------------------------Plot-----------------------------------------------
-    plotPath.plotAll(fix_path, real_path, measured_path)
+    plotPath.plotAll(fix_path, real_path,measured_path, Rmat_error_list, tvec_error_list)
+
     # ===================================== End main() ===============================================
 
 
