@@ -44,8 +44,63 @@ def plotPath(fix_path,real_path,measured_path):
     ax.set_title("Path")
     ax.set_xlabel('Y_W')
     ax.set_ylabel('X_W')
+    # plt.show() # Just use one plt.show in plotAll() method
+
+def plotPositionError(fix_path,real_path,measured_path):
+    tem_real = np.square(fix_path - real_path)
+    real_path_error = np.sqrt(tem_real[0,:] + tem_real[1,:])
+
+    tem_measured = np.square(fix_path - measured_path)
+    measured_path_error = np.sqrt(tem_measured[0,:] + tem_measured[1,:])
+
+    plt.figure()
+    #---------------------Real path----------------------------------------
+    x_real = real_path_error
+    y_real = range(1,len(x_real)+1)
+    plt.plot(x_real, y_real, color='red', label='Real path')
+    plt.scatter(x_real, y_real, c="red", marker='x')
+    #---------------------Measured path----------------------------------------
+    x_measured = measured_path_error
+    y_measured = range(1,len(x_measured)+1)
+    plt.plot(y_measured, x_measured, color='blue', label='measured path') #  x,y  exchange position
+    plt.scatter(y_measured, x_measured,c="blue", marker='+')
+
+    fontP = FontProperties()
+    fontP.set_size('small')
+    plt.legend(prop=fontP,loc=9, bbox_to_anchor=(0.5, -0.1), ncol=3) # Move legend outside of figure in matplotlib
+
+    ax=plt.gca()
+    ax.set_title("Position error (Euclidean distance)")
+    ax.set_xlabel('Step')
+    ax.set_ylabel('Error(m)')
+    # plt.show() # Just use one plt.show in plotAll() method
+
+def plot_Rt_error(Rmat_error_list, tvec_error_list):
+    fig = plt.figure('Pose estimation errors')
+    ax_R_error = fig.add_subplot(211)
+    ax_t_error = fig.add_subplot(212)
+
+    ax_R_error.plot(Rmat_error_list)
+
+    plt.sca(ax_R_error)
+    ax_R_error.set_title("R error()")
+    ax_R_error.set_xlabel('Step')
+    ax_R_error.set_ylabel('Angle(degree)')
+
+
+    ax_t_error.plot(tvec_error_list)
+
+    plt.sca(ax_t_error)
+    ax_t_error.set_title("t error(%)")
+    ax_t_error.set_xlabel('Step')
+    ax_t_error.set_ylabel('Precent')
+
     plt.show()
 
+def plotAll(fix_path,real_path,measured_path):
+    plotPath(fix_path, real_path, measured_path)
+    plotPositionError(fix_path, real_path, measured_path)
+    plt.show()
 
 
 
