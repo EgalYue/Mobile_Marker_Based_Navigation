@@ -25,7 +25,7 @@ import error_functions as ef
 import os  # Read matrix form file
 
 # -----------------------Basic Infos---------------------------------------------------
-homography_iters = 1  # TODO iterative
+homography_iters = 1000  # TODO iterative
 
 # -----------------------marker object points-----------------------------------------
 plane_size = (0.3, 0.3)
@@ -209,21 +209,39 @@ def getT_MC_and_Rt_errors(T_WM, pos_world, Rmat_error_loop, tvec_error_loop):
 # ===================================================================================
 def main():
     fix_pathMat_list = []
-    p1 = np.array([[23, 23, 23, 23, 23, 23, 23, 23, 23],
-                     [16, 17, 18, 19, 20, 21, 22, 23, 24]]) # path close to Marker, accuracy degree = 1
-    p2 = np.array([[23, 22, 23, 22, 23, 22, 23, 22, 23],
-                     [16, 17, 18, 19, 20, 21, 22, 23, 24]]) # path close to Marker, accuracy degree = 1
-    p3 = np.array([[23, 22, 22, 22, 22, 22, 22, 22, 23],
-                     [16, 17, 18, 19, 20, 21, 22, 23, 24]]) # path close to Marker, accuracy degree = 1
-    p4 = np.array([[23, 22, 21, 20, 19, 20, 21, 22, 23],
-                     [16, 17, 18, 19, 20, 21, 22, 23, 24]]) # path close to Marker, accuracy degree = 1
-    p5 = np.array([[23, 22, 21, 21, 21, 21, 21, 22, 23],
-                     [16, 17, 18, 19, 20, 21, 22, 23, 24]]) # path close to Marker, accuracy degree = 1
+    #---------------------------------------------------------
+    p1 = np.array([[23, 22, 21, 20, 19, 20, 21, 22, 23],
+                   [16, 17, 18, 19, 20, 21, 22, 23, 24]])
+    p2 = np.array([[23, 22, 21, 20, 19, 18, 19, 20, 21, 22, 23],
+                   [16, 16, 17, 18, 19, 20, 21, 22, 23, 24, 24]])
+    p3 = np.array([[23, 22, 21, 20, 19, 18, 17, 18, 19, 20, 21, 22, 23],
+                   [16, 16, 16, 17, 18, 19, 20, 21, 22, 23, 24, 24, 24]])
+    p4 = np.array([[23, 22, 21, 20, 19, 18, 17, 16, 17, 18, 19, 20, 21, 22, 23],
+                   [16, 16, 16, 16, 17, 18, 19, 20, 21, 22, 23, 24, 24, 24, 24]])
+    p5 = np.array([[23, 22, 21, 20, 19, 18, 17, 16, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+                   [16, 16, 16, 16, 16, 17, 18, 19, 20, 21, 22, 23, 24, 24, 24, 24, 24]])
+    # p6 = np.array([[23, 22, 21, 20, 19, 18, 17, 16, 15, 15, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+    #                [16, 16, 16, 16, 16, 16, 17, 18, 19, 20, 21, 22, 23, 24, 24, 24, 24, 24, 24]])
+    # p7 = np.array([[23, 22, 21, 20, 19, 18, 17, 16, 15, 15, 15, 15, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+    #                [16, 16, 16, 16, 16, 16, 16, 17, 18, 19, 20, 21, 22, 23, 24, 24, 24, 24, 24, 24, 24]])
+    # p8 = np.array([[23, 22, 21, 20, 19, 18, 17, 16, 15, 15, 15, 15, 15, 15, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+    #                [16, 16, 16, 16, 16, 16, 16, 16, 17, 18, 19, 20, 21, 22, 23, 24, 24, 24, 24, 24, 24, 24, 24]])
+    # p9 = np.array([[23, 22, 21, 20, 19, 18, 17, 16, 15, 15, 15, 15, 15, 15, 15, 15, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+    #                [16, 16, 16, 16, 16, 16, 16, 16, 16, 17, 18, 19, 20, 21, 22, 23, 24, 24, 24, 24, 24, 24, 24, 24,
+    #                 24]])
+
+    #---------------------------------------------------------
     fix_pathMat_list.append(p1)
     fix_pathMat_list.append(p2)
     fix_pathMat_list.append(p3)
     fix_pathMat_list.append(p4)
     fix_pathMat_list.append(p5)
+    # fix_pathMat_list.append(p6)
+    # fix_pathMat_list.append(p7)
+    # fix_pathMat_list.append(p8)
+    # fix_pathMat_list.append(p9)
+    # fix_pathMat_list.append(p10)
+    # fix_pathMat_list.append(p11)
 
     fix_path_list = []
     for path_mat in fix_pathMat_list:
@@ -309,6 +327,7 @@ def main():
     # plotPath.plotAllPaths(real_path_list)
     # plotPath.plotAllPaths(fix_path_list)
     plotPath.plotAllPaths(fix_path_list, real_path_list, measured_path_list, Rmat_error_list_allPaths, tvec_error_list_allPaths)
+    #plotPath.plotAllPaths_separate(fix_path_list, real_path_list, measured_path_list, Rmat_error_list_allPaths, tvec_error_list_allPaths)
     # ===================================== End main() ===============================================
 
 
