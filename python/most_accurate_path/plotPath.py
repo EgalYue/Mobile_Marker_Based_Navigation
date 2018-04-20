@@ -371,19 +371,19 @@ def plotAllPaths(fix_path_list, real_path_list, measured_path_list, Rmat_error_l
     for i in range(0, path_num):
         x_fix = fix_path_list[i][0, :]
         y_fix = fix_path_list[i][1, :]
-        l = ax_fix.plot(y_fix, x_fix)
+        l = ax_fix.plot(y_fix, x_fix, label=str(i))
         ax_fix.scatter(y_fix, x_fix, c="black", marker='o')
 
         colour = l[0].get_color()
 
         x_real = real_path_list[i][0, :]
         y_real = real_path_list[i][1, :]
-        ax_real.plot(y_real, x_real, color= colour)
+        ax_real.plot(y_real, x_real, color= colour, label=str(i))
         ax_real.scatter(y_real, x_real, c="black", marker='o')
 
         x_measured = measured_path_list[i][0, :]
         y_measured = measured_path_list[i][1, :]
-        ax_measured.plot(y_measured, x_measured, color= colour)
+        ax_measured.plot(y_measured, x_measured, color= colour, label=str(i))
         ax_measured.scatter(y_measured, x_measured, c="black", marker='o')
         # labels.append(r'$$')
 
@@ -393,14 +393,14 @@ def plotAllPaths(fix_path_list, real_path_list, measured_path_list, Rmat_error_l
         real_path_error = np.sqrt(tem_real[0, :] + tem_real[1, :])
         x_real = np.arange(1, len(real_path_error) + 1, 1)
         y_real = real_path_error
-        ax_real_distance.plot(x_real, y_real, color=colour, label='Real path')
+        ax_real_distance.plot(x_real, y_real, color=colour, label=str(i))
         ax_real_distance.scatter(x_real, y_real, c="black", marker='o')
         # ---------------------Measured path----------------------------------------
         tem_measured = np.square(fix_path_list[i] - measured_path_list[i])
         measured_path_error = np.sqrt(tem_measured[0, :] + tem_measured[1, :])
         x_measured = np.arange(1, len(measured_path_error) + 1, 1)
         y_measured = measured_path_error
-        ax_measured_distance.plot(x_measured, y_measured, color=colour, label='measured path')  # x,y  exchange position
+        ax_measured_distance.plot(x_measured, y_measured, color=colour, label=str(i))  # x,y  exchange position
         ax_measured_distance.scatter(x_measured, y_measured, c="black", marker='o')
 
         # ====================== Plot R t error ============================
@@ -427,6 +427,10 @@ def plotAllPaths(fix_path_list, real_path_list, measured_path_list, Rmat_error_l
 
 
     #---------------- Fix path ------------------------------
+    fontP = FontProperties()
+    fontP.set_size('small')
+    ax_fix.legend(prop=fontP, loc=9, bbox_to_anchor=(0.5, -0.1), ncol=3)  # Move legend outside of figure in matplotlib
+
     ax_fix.set_ylim(ax_fix.get_ylim()[::-1])  # invert the axis
     # ax.xaxis.set_ticks(np.arange(0, 6, 0.1)) # set x-ticks
     ax_fix.xaxis.tick_top()  # and move the X-Axis
@@ -437,6 +441,10 @@ def plotAllPaths(fix_path_list, real_path_list, measured_path_list, Rmat_error_l
     ax_fix.set_ylabel('Fixed path: X_W')
 
     #---------------- Real path ------------------------------
+    fontP = FontProperties()
+    fontP.set_size('small')
+    ax_real.legend(prop=fontP, loc=9, bbox_to_anchor=(0.5, -0.1), ncol=3)  # Move legend outside of figure in matplotlib
+
     ax_real.set_ylim(ax_real.get_ylim()[::-1])  # invert the axis
     # ax.xaxis.set_ticks(np.arange(0, 6, 0.1)) # set x-ticks
     ax_real.xaxis.tick_top()  # and move the X-Axis
@@ -447,6 +455,10 @@ def plotAllPaths(fix_path_list, real_path_list, measured_path_list, Rmat_error_l
     ax_real.set_ylabel('Real path: X_W')
 
     #---------------- Measured path ------------------------------
+    fontP = FontProperties()
+    fontP.set_size('small')
+    ax_measured.legend(prop=fontP, loc=9, bbox_to_anchor=(0.5, -0.1), ncol=3)  # Move legend outside of figure in matplotlib
+
     ax_measured.set_ylim(ax_measured.get_ylim()[::-1])  # invert the axis
     # ax.xaxis.set_ticks(np.arange(0, 6, 0.1)) # set x-ticks
     ax_measured.xaxis.tick_top()  # and move the X-Axis
@@ -457,13 +469,17 @@ def plotAllPaths(fix_path_list, real_path_list, measured_path_list, Rmat_error_l
     ax_measured.set_ylabel('Measured path: X_W')
 
     # ====================== Plot position error =========================================
-    # fontP = FontProperties()
-    # fontP.set_size('small')
-    # plt.legend(prop=fontP, loc=9, bbox_to_anchor=(0.5, -0.1), ncol=3)  # Move legend outside of figure in matplotlib
+    fontP = FontProperties()
+    fontP.set_size('small')
+    ax_real_distance.legend(prop=fontP, loc=9, bbox_to_anchor=(0.5, -0.1), ncol=3)  # Move legend outside of figure in matplotlib
 
     ax_real_distance.set_title("Real paths: Position error (Euclidean distance)")
     ax_real_distance.set_xlabel('Step')
     ax_real_distance.set_ylabel('Error(m)')
+
+    fontP = FontProperties()
+    fontP.set_size('small')
+    ax_measured_distance.legend(prop=fontP, loc=9, bbox_to_anchor=(0.5, -0.1), ncol=3)  # Move legend outside of figure in matplotlib
 
     ax_measured_distance.set_title("Measured paths: Position error (Euclidean distance)")
     ax_measured_distance.set_xlabel('Step')
