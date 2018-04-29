@@ -114,8 +114,8 @@ def heightGetCondNum(cams, accuracy_mat, theta_params, r_params):
     degree = 5 # Set the degree of accuracy as 5! we can change this
 
     accuracy_mat_final = np.divide(accuracy_mat_new,num_mat,out=np.zeros_like(accuracy_mat_new), where=num_mat != 0)# get the average cond num in each cell
-    #TODO MIN MAX cond_num   12.04.2018
-    accuracyDegreeMatrix = transfer_condNumMatrix_to_accuracyDegreeMatrix(accuracy_mat_final,min_cond_num,max_cond_num,degree)
+    # 27.04.2017 DO not need to convert accuracy_mat_final to accuracyDegreeMatrix
+    # accuracyDegreeMatrix = transfer_condNumMatrix_to_accuracyDegreeMatrix(accuracy_mat_final,min_cond_num,max_cond_num,degree)
     display_mat = display_mat[:,1:]
     # -----------------For Loop End--------------------------------------------------------
     print "=============================Info====================================================="
@@ -144,7 +144,7 @@ def heightGetCondNum(cams, accuracy_mat, theta_params, r_params):
     input_pnp_R = np.copy(pnp_rmat_error_list)
     input_transfer_error = np.copy(transfer_error_list)
 
-    return inputX,inputY,inputZ,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error,display_mat,accuracyDegreeMatrix
+    return inputX,inputY,inputZ,input_ippe1_t,input_ippe1_R,input_ippe2_t,input_ippe2_R,input_pnp_t,input_pnp_R,input_transfer_error,display_mat,accuracy_mat_final
 
 
 def transfer_condNumMatrix_to_accuracyDegreeMatrix(condNumMatrix,min_cond_num,max_cond_num,degree):

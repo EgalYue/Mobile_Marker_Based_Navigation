@@ -13,7 +13,7 @@ def saveMatToFile(matrix):
   mat = np.matrix(matrix)
   with open('accuracyMatrix.txt', 'wb') as f:
     for line in mat:
-      np.savetxt(f, line, fmt='%d')
+      np.savetxt(f, line, fmt='%f') # Store the data as float instead of Integer %d
 
 
 #=================Test=============================
