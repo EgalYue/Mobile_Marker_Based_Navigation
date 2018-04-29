@@ -10,7 +10,6 @@ Compare the error(accuracy) of two paths, there two paths maybe one using A* and
 
 from __future__ import division  # set / as float!!!!
 import sys
-
 sys.path.append("..")
 
 import Rt_matrix_from_euler_zyx as R_matrix_from_euler_zyx

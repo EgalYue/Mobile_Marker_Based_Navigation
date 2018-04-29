@@ -13,10 +13,12 @@ https://github.com/AtsushiSakai/PythonRobotics/tree/master/PathPlanning/Potentia
 
 
 """
+import sys
+sys.path.append("..")
 
 import numpy as np
 import matplotlib.pyplot as plt
-
+import os  # Read matrix form file
 # Parameters
 KP = 5.0  # attractive potential gain
 ETA = 100.0  # repulsive potential gain
@@ -30,6 +32,12 @@ grid_height = 30
 real_width = 6 # [m]
 real_height = 3 # [m]
 
+# Read accuracy matrix
+cur_path = os.path.dirname(__file__)
+new_path = os.path.relpath('../CondNum_TheoryValidation_newAccMat/accuracyMatrix.txt', cur_path)
+f = open(new_path, 'r')
+l = [map(float, line.split(' ')) for line in f]
+accuracy_mat = np.asarray(l)  # convert to matrix : 30 x 60
 
 def calc_potential_field(gx, gy, ox, oy, reso, rr):
     xw = grid_height
@@ -44,8 +52,15 @@ def calc_potential_field(gx, gy, ox, oy, reso, rr):
         for iy in range(yw):
             y = iy * reso + reso / 2
             ug = calc_attractive_potential(x, y, gx, gy)
+            print "ug ",ug
             uo = calc_repulsive_potential(x, y, ox, oy, rr)
-            uf = ug + uo
+            # uf = ug + uo
+            # pmap[ix][iy] = uf
+
+            # TODO
+            u_condNum = calc_repulsive_potential_condNum(ix, iy)
+            print "u_condNum ",u_condNum
+            uf = ug + uo + u_condNum
             pmap[ix][iy] = uf
 
     return pmap
@@ -77,6 +92,10 @@ def calc_repulsive_potential(x, y, ox, oy, rr):
         return 0.5 * ETA * (1.0 / dq - 1.0 / rr) ** 2
     else:
         return 0.0
+
+def calc_repulsive_potential_condNum(x, y):
+    # TODO
+    return accuracy_mat[x,y]
 
 
 def get_motion_model():
