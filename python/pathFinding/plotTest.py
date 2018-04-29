@@ -4,6 +4,8 @@
 @Time    : 27.04.18 12:32
 @File    : plotTest.py
 @author: Yue Hu
+
+Plot the condition number distribution like Mountain
 """
 
 from __future__ import division  # set / as float!!!!

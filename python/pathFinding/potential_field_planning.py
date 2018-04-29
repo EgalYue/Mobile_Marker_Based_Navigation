@@ -24,29 +24,31 @@ AREA_WIDTH = 30.0  # potential area width [m]
 
 show_animation = True
 
+grid_width = 60
+grid_height = 30
+
+real_width = 6 # [m]
+real_height = 3 # [m]
+
 
 def calc_potential_field(gx, gy, ox, oy, reso, rr):
-    minx = min(ox) - AREA_WIDTH / 2.0
-    miny = min(oy) - AREA_WIDTH / 2.0
-    maxx = max(ox) + AREA_WIDTH / 2.0
-    maxy = max(oy) + AREA_WIDTH / 2.0
-    xw = int(round((maxx - minx) / reso))
-    yw = int(round((maxy - miny) / reso))
+    xw = grid_height
+    yw = grid_width
 
     # calc each potential
-    pmap = [[0.0 for i in range(yw)] for i in range(xw)]
+    pmap = [[0.0 for i in range(grid_width)] for i in range(grid_height)]
 
     for ix in range(xw):
-        x = ix * reso + minx
+        x = ix * reso + reso / 2
 
         for iy in range(yw):
-            y = iy * reso + miny
+            y = iy * reso + reso / 2
             ug = calc_attractive_potential(x, y, gx, gy)
             uo = calc_repulsive_potential(x, y, ox, oy, rr)
             uf = ug + uo
             pmap[ix][iy] = uf
 
-    return pmap, minx, miny
+    return pmap
 
 
 def calc_attractive_potential(x, y, gx, gy):
@@ -64,12 +66,14 @@ def calc_repulsive_potential(x, y, ox, oy, rr):
             minid = i
 
     # calc repulsive potential
-    dq = np.hypot(x - ox[minid], y - oy[minid])
+    if (len(ox) != 0):
+        dq = np.hypot(x - ox[minid], y - oy[minid])
+    else:
+        dq = float("inf")
 
     if dq <= rr:
         if dq <= 0.1:
             dq = 0.1
-
         return 0.5 * ETA * (1.0 / dq - 1.0 / rr) ** 2
     else:
         return 0.0
@@ -90,16 +94,16 @@ def get_motion_model():
 
 
 def potential_field_planning(sx, sy, gx, gy, ox, oy, reso, rr):
-
     # calc potential field
-    pmap, minx, miny = calc_potential_field(gx, gy, ox, oy, reso, rr)
+    pmap= calc_potential_field(gx, gy, ox, oy, reso, rr)
 
     # search path
     d = np.hypot(sx - gx, sy - gy)
-    ix = round((sx - minx) / reso)
-    iy = round((sy - miny) / reso)
-    gix = round((gx - minx) / reso)
-    giy = round((gy - miny) / reso)
+    d = round(d,4) # avoid float problem
+    ix = round((sx - reso/2) / reso)
+    iy = round((sy - reso/2) / reso)
+    gix = round((gx - reso/2) / reso)
+    giy = round((gy - reso/2) / reso)
 
     if show_animation:
         draw_heatmap(pmap)
@@ -124,9 +128,12 @@ def potential_field_planning(sx, sy, gx, gy, ox, oy, reso, rr):
                 miniy = iny
         ix = minix
         iy = miniy
-        xp = ix * reso + minx
-        yp = iy * reso + miny
+        xp = ix * reso + reso/2
+        xp = round(xp, 4)  # avoid float problem
+        yp = iy * reso + reso/2
         d = np.hypot(gx - xp, gy - yp)
+        yp = round(yp, 4)  # avoid float problem
+        d = round(d, 4)  # avoid float problem
         rx.append(xp)
         ry.append(yp)
 
@@ -147,29 +154,43 @@ def draw_heatmap(data):
 def main():
     print("potential_field_planning start")
 
-    sx = 0.0  # start x position [m]
-    sy = 10.0  # start y positon [m]
-    gx = 30.0  # goal x position [m]
-    gy = 30.0  # goal y position [m]
-    grid_size = 0.5  # potential grid size [m]
-    robot_radius = 5.0  # robot radius [m]
+    sx = 1.15  # start x position [m]
+    sy = 2.05  # start y positon [m]
+    gx = 1.15  # goal x position [m]
+    gy = 4.05  # goal y position [m]
+    grid_size = 0.1  # potential grid size [m]
+    robot_radius = 0.5  # robot radius [m]
 
-    ox = [15.0, 5.0, 20.0, 25.0]  # obstacle x position list [m]
-    oy = [25.0, 15.0, 26.0, 25.0]  # obstacle y position list [m]
+    # TODO set the
+    ox = []  # obstacle x position list [m]
+    oy = []  # obstacle y position list [m]
 
     if show_animation:
         plt.grid(True)
         plt.axis("equal")
 
     # path generation
-    rx, ry = potential_field_planning(
-        sx, sy, gx, gy, ox, oy, grid_size, robot_radius)
+    if sx < 0 or sy < 0 or gx < 0 or gy < 0:
+        print "Error!!! The position can not be negative!"
+    elif sx > real_height or sy > real_width or gx > real_height or gy > real_width:
+        print "Error!!! The position is out of range!"
+    else:
+        rx, ry = potential_field_planning(
+            sx, sy, gx, gy, ox, oy, grid_size, robot_radius)
+        print "X position:\n", rx
+        print "Y position:\n", ry
+        if show_animation:
+            plt.show()
 
-    if show_animation:
-        plt.show()
+
 
 
 if __name__ == '__main__':
-    print(__file__ + " start!!")
+    print("------------ Start!!-----------")
     main()
-    print(__file__ + " Done!!")
+    print("------------ Done!!------------")
+
+
+
+class MyException(Exception):
+    """Raise for my specific kind of exception"""
