@@ -255,7 +255,7 @@ def comparePaths_Gaussian(fix_path_list, measured_path_list):
     plt.show() # Just use one plt.show in plotAll() method
 
 
-def plotFillBetween(fix_path, mean_error, std_error):
+def plotPositionErrorFillBetween(fix_path, mean_error, std_error):
     """
     Something wrong ,maybe cant first compute the distance error for each step!!!
     :param fix_path:
@@ -294,5 +294,36 @@ def plotFillBetween(fix_path, mean_error, std_error):
     ax.set_ylabel('Error(m)')
 
     plt.show()  # Just use one plt.show in plotAll() method
+
+def plotScatterEachStep(allPaths_pos_list):
+    colors = ['r','b','g','y','r','b','g','y','r','b','g','y']
+    i = -1
+    fig = plt.figure("plotScatterEachStep")
+    ax_fix = fig.add_subplot(111)
+    for allPos_list in allPaths_pos_list:
+        i +=1
+        for step in allPos_list:
+            x = step[0,:]
+            y = step[1,:]
+            area = 1  # 0 to 15 point radii
+            # plt.scatter(x, y, s=area, c= colors,alpha=0.5,cmap="magma")
+            ax_fix.plot(y, x, '.',color = colors[i])
+
+    plt.xlabel('Y measured')
+    plt.ylabel('X measured')
+    plt.title('')
+    fontP = FontProperties()
+    fontP.set_size('small')
+    ax_fix.legend(prop=fontP, loc=9, bbox_to_anchor=(0.5, -0.1), ncol=3)  # Move legend outside of figure in matplotlib
+
+    ax_fix.set_ylim(ax_fix.get_ylim()[::-1])  # invert the axis
+    # ax.xaxis.set_ticks(np.arange(0, 6, 0.1)) # set x-ticks
+    ax_fix.xaxis.tick_top()  # and move the X-Axis
+    # ax.yaxis.set_ticks(np.arange(0, 3, 0.1)) # set y-ticks
+    ax_fix.yaxis.tick_left()  # remove right y-Ticks
+
+    plt.show()
+
+
 
 

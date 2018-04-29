@@ -24,9 +24,10 @@ import cv2
 import error_functions as ef
 import plotPath as plotPath
 import os  # Read matrix form file
+import matplotlib.pyplot as plt
 
 # -----------------------Basic Infos---------------------------------------------------
-homography_iters = 1000  # TODO iterative
+homography_iters = 1000 # TODO iterative
 
 # -----------------------marker object points-----------------------------------------
 plane_size = (0.3, 0.3)
@@ -205,6 +206,10 @@ def main():
 
     Rmat_error_list_allPaths = [] # store the R error for all paths
     tvec_error_list_allPaths = [] # store the t error for all paths
+
+    # TODO 29
+    allPaths_pos_list = [] # store the  1000 times pos for all steps for all paths
+
     for fix_path in fix_path_list:
         # --------------------Test for a simple path----------------------------------------
         #                    A[26,18] -> B[26,22]                                          -
@@ -222,12 +227,19 @@ def main():
 
         Rmat_error_list = [] # store the R error for current only one path
         tvec_error_list = [] # store the t error for current only one path
+
+        #TODO 29
+        allPos_list = [] # store all the positions of each step ,each step is computed 1000 times
+
         for i in range(0, path_steps):
             # homography_iters
             cam_pos_measured_current_sum = np.zeros((2, 1), dtype=float)
             # The R errors and t errors
             Rmat_error_loop = []
             tvec_error_loop = []
+
+            # TODO 29
+            currentPos = np.zeros((2, 1), dtype=float)  # 2x1000 store current position, is computed 1000 times
 
             # For each step(each cam position need to compute iterative, obtain mean value)
             for j in range(homography_iters):
@@ -237,12 +249,19 @@ def main():
                 cam_pos_measured_current = getCameraPosInWorld(T_WC)
                 cam_pos_measured_current_sum = cam_pos_measured_current_sum + cam_pos_measured_current
 
+                # TODO 29
+                currentPos = np.hstack((currentPos,cam_pos_measured_current))
+
             cam_pos_measured_current_mean = cam_pos_measured_current_sum / homography_iters
             cam_pos_measured_current = np.copy(cam_pos_measured_current_mean)
             measured_path = np.hstack((measured_path, cam_pos_measured_current))
             # The R errors and t errors
             Rmat_error_list.append(np.mean(Rmat_error_loop))
             tvec_error_list.append(np.mean(tvec_error_loop))
+
+            # TODO 29
+            currentPos = currentPos[:,1:]
+            allPos_list.append(currentPos)
 
         # Because of np.hstack, remove the first column
         measured_path = measured_path[:,1:]
@@ -253,9 +272,14 @@ def main():
 
         Rmat_error_list_allPaths.append(Rmat_error_list)
         tvec_error_list_allPaths.append(tvec_error_list)
+
+        #TODO
+        allPaths_pos_list.append(allPos_list)
+
     # -----------------------------Plot-----------------------------------------------
     plotPath.plotAllPaths(fix_path_list, measured_path_list, Rmat_error_list_allPaths, tvec_error_list_allPaths)
     # plotPath.comparePaths_Gaussian(fix_path_list, measured_path_list)
+    plotPath.plotScatterEachStep(allPaths_pos_list)
     # ===================================== End main() ===============================================
 
 # Following is: compute the path 1000 times and get the mean value, this idea is not correct! we should compute 1000 times for
