@@ -173,10 +173,10 @@ def draw_heatmap(data):
 def main():
     print("potential_field_planning start")
 
-    sx = 1.15  # start x position [m]
+    sx = 2.15  # start x position [m]
     sy = 2.05  # start y positon [m]
-    gx = 1.15  # goal x position [m]
-    gy = 4.05  # goal y position [m]
+    gx = 2.15  # goal x position [m]
+    gy = 3.05  # goal y position [m]
     grid_size = 0.1  # potential grid size [m]
     robot_radius = 0.5  # robot radius [m]
 
@@ -199,6 +199,9 @@ def main():
         print "X position:\n", rx
         print "Y position:\n", ry
         if show_animation:
+            plt.xlabel('X')
+            plt.ylabel('Y')
+            plt.title('Potential field path planning')
             plt.show()
 
 
