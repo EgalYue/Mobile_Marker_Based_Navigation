@@ -255,9 +255,9 @@ def comparePaths_Gaussian(fix_path_list, measured_path_list):
     plt.show() # Just use one plt.show in plotAll() method
 
 
-def plotPositionErrorFillBetween(fix_path, mean_error, std_error):
+def plotPositionErrorFillBetween(mean_error, std_error):
     """
-    Something wrong ,maybe cant first compute the distance error for each step!!!
+    ONLY plot one path error
     :param fix_path:
     :param mean_error:
     :param std_error:
@@ -268,7 +268,7 @@ def plotPositionErrorFillBetween(fix_path, mean_error, std_error):
     plt.legend(prop=fontP, loc=9, bbox_to_anchor=(0.5, -0.1), ncol=3)  # Move legend outside of figure in matplotlib
 
     ax = plt.gca()
-    x_steps = range(1, fix_path.shape[1] + 1)
+    x_steps = range(1, len(mean_error) + 1)
     y_error = np.asarray(mean_error) # convert to array
     yerr = np.asarray(std_error) # convert to array
 
@@ -324,6 +324,81 @@ def plotScatterEachStep(allPaths_pos_list):
 
     plt.show()
 
+def plotComparePaths(fix_path_list, disErrorMean_list, disErrorStd_list):
+    """
+    Plot two paths in order to compare
+    :param fix_path_list:
+    :param real_path_list:
+    :param measured_path_list:
+    :return:
+    """
+    fig = plt.figure("Compare diffient paths")
+    ax_fix = fig.add_subplot(111)
 
+    path_num = len(fix_path_list)
+    # colormap = plt.cm.gist_ncar
+    plt.gca().set_prop_cycle(plt.cycler('color', plt.cm.jet(np.linspace(0, 1.0, path_num))))
+
+    #====================== Plot position error ============================
+    fig2 = plt.figure("Position error (Euclidean distance)")
+    ax_measured_distance = fig2.add_subplot(111)
+
+    colours = ['r','b']
+    for i in range(0, path_num):
+        #-------------------------------------------------------------
+        color = colours[i] # only for two paths
+        x_fix = fix_path_list[i][0, :]
+        if i ==0:
+            label ="Potential field pathfinding"
+        if i ==1:
+            label = "A star pathfinding"
+        #-------------------------------------------------------------
+        y_fix = fix_path_list[i][1, :]
+        l = ax_fix.plot(y_fix, x_fix,color =color, label=label)
+        ax_fix.scatter(y_fix, x_fix, c="black", marker='o')
+        # colour = l[0].get_color()
+        # ====================== Plot position error ============================
+        # ---------------------Measured path----------------------------------------
+        x_measured = np.arange(1, len(disErrorMean_list[i]) + 1, 1)
+        y_measured = disErrorMean_list[i]
+        ax_measured_distance.plot(x_measured, y_measured, color=color, label=label)  # x,y  exchange position
+        ax_measured_distance.scatter(x_measured, y_measured, c="black", marker='o')
+        # # fill between
+        # alpha_fill = 0.3
+        # yerr = disErrorStd_list[i]  # convert to array
+        # if np.isscalar(yerr) or len(yerr) == len(y_measured):
+        #     ymin = y_measured - yerr
+        #     ymax = y_measured + yerr
+        # elif len(yerr) == 2:
+        #     ymin, ymax = yerr
+        #
+        # ax_measured_distance.fill_between(x_measured, ymax, ymin, color=colour, alpha=alpha_fill)
+        #-----------errorbar------------------------------------------------------------
+        yerr = disErrorStd_list[i]
+        ax_measured_distance.errorbar(x_measured, y_measured, yerr=yerr,color =color, ecolor=color, ms=20*i+20, mew=4*i+4)
+
+    #---------------- Fix path ------------------------------
+    fontP = FontProperties()
+    # fontP.set_size('small')
+    ax_fix.legend(prop=fontP, loc=9, bbox_to_anchor=(0.5, -0.1), ncol=3)  # Move legend outside of figure in matplotlib
+
+    ax_fix.set_ylim(ax_fix.get_ylim()[::-1])  # invert the axis
+    # ax.xaxis.set_ticks(np.arange(0, 6, 0.1)) # set x-ticks
+    ax_fix.xaxis.tick_top()  # and move the X-Axis
+    # ax.yaxis.set_ticks(np.arange(0, 3, 0.1)) # set y-ticks
+    ax_fix.yaxis.tick_left()  # remove right y-Ticks
+    # ax_fix.set_title("Compare different fix paths")
+    ax_fix.set_xlabel('Fixed path: Y_W')
+    ax_fix.set_ylabel('Fixed path: X_W')
+
+    # ====================== Plot position error =========================================
+    fontP = FontProperties()
+    # fontP.set_size('small')
+    ax_measured_distance.legend(prop=fontP, loc=9, bbox_to_anchor=(0.5, -0.1), ncol=3)  # Move legend outside of figure in matplotlib
+    ax_measured_distance.set_title("Position error between fixed path and measured path(Euclidean distance)")
+    ax_measured_distance.set_xlabel('Step')
+    ax_measured_distance.set_ylabel('Error(m)')
+
+    plt.show() # Just use one plt.show in plotAll() method
 
 

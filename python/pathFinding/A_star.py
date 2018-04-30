@@ -186,7 +186,7 @@ def convertRealPathToGrid(pathReal, grid_size = 0.1):
     """
     return (pathReal * grid_size+ grid_size/2)
 
-def aStar(startNode = Node(0,0,None,0,0,0), goalNode = Node(3,3,None,0,0,0), d_diagnoal = 14, d_straight = 10, grid_width = 60, grid_height = 30):
+def aStar(startNode = Node(0,0,None,0,0,0), goalNode = Node(3,3,None,0,0,0), d_diagnoal = 14, d_straight = 10, grid_size = 0.1, grid_width = 60, grid_height = 30):
     """
      A star algorithm
     :param start_x:
@@ -205,7 +205,6 @@ def aStar(startNode = Node(0,0,None,0,0,0), goalNode = Node(3,3,None,0,0,0), d_d
     cameFrom = []
     # For each node, the cost of getting from the start node to that node.
     gScore = create_gScore(grid_width, grid_height)
-    print "gScore",len(gScore)
     start_x = startNode.x
     start_y = startNode.y
     # The cost of going from start to start is zero.
@@ -213,7 +212,6 @@ def aStar(startNode = Node(0,0,None,0,0,0), goalNode = Node(3,3,None,0,0,0), d_d
     gScore[start_x][start_y] = 0
     # For each node, the total cost of getting from the start node to the goal by passing by that node. That value is partly known, partly heuristic.
     fScore = create_fScore(grid_width, grid_height)
-    print "fScore",len(fScore)
     # For the first node, that value is completely heuristic.
     startNode.f_value = heuristic_cost_estimate(startNode, goalNode,d_diagnoal,d_straight)
     fScore[start_x][start_y] = heuristic_cost_estimate(startNode, goalNode,d_diagnoal,d_straight)
@@ -223,7 +221,7 @@ def aStar(startNode = Node(0,0,None,0,0,0), goalNode = Node(3,3,None,0,0,0), d_d
         # If it is the item we want, retrace the path and return it
         if current.equal(goalNode):
             path = reconstruct_path(cameFrom, current) # path in real
-            path_grid = convertRealPathToGrid(path, grid_size=0.1) # path in grid
+            path_grid = convertRealPathToGrid(path, grid_size) # path in grid
             return path_grid
 
         openSet.remove(current)

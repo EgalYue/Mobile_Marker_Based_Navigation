@@ -45,7 +45,6 @@ def calc_potential_field(gx, gy, ox, oy, reso, rr, grid_width, grid_height):
 
     # calc each potential
     pmap = [[0.0 for i in range(grid_width)] for i in range(grid_height)]
-    print len(pmap)
 
     for ix in range(xw):
         x = ix * reso + reso / 2
@@ -53,14 +52,14 @@ def calc_potential_field(gx, gy, ox, oy, reso, rr, grid_width, grid_height):
         for iy in range(yw):
             y = iy * reso + reso / 2
             ug = calc_attractive_potential(x, y, gx, gy)
-            print "ug ",ug
+            # print "ug ",ug
             uo = calc_repulsive_potential(x, y, ox, oy, rr)
             # uf = ug + uo
             # pmap[ix][iy] = uf
 
             # TODO
             u_condNum = calc_repulsive_potential_condNum(ix, iy)
-            print "u_condNum ",u_condNum
+            # print "u_condNum ",u_condNum
             uf = ug + uo + u_condNum
             pmap[ix][iy] = uf
 
@@ -161,7 +160,7 @@ def potential_field_planning(sx, sy, gx, gy, ox, oy, reso, rr, grid_width, grid_
             plt.plot(ix, iy, ".r")
             plt.pause(0.01)
 
-    print("Goal!!")
+    # print("Goal!!")
 
     return rx, ry
 
@@ -210,8 +209,8 @@ def potentialField(sx = 2.15, sy = 2.05, gx = 2.15, gy = 3.05, ox = [], oy = [],
     else:
         rx, ry = potential_field_planning(
             sx, sy, gx, gy, ox, oy, grid_size, robot_radius, grid_width, grid_height)
-        print "X position:\n", rx
-        print "Y position:\n", ry
+        # print "X position:\n", rx
+        # print "Y position:\n", ry
 
         if show_animation:
             plt.xlabel('X')
@@ -219,7 +218,6 @@ def potentialField(sx = 2.15, sy = 2.05, gx = 2.15, gy = 3.05, ox = [], oy = [],
             plt.title('Potential field path planning')
             plt.show()
         paths_result = np.vstack((rx,ry))
-        print "paths_result",paths_result
         return paths_result
 
 
