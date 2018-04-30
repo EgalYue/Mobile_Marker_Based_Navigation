@@ -36,21 +36,25 @@ class Node:
 def create_gScore(width,height):
     """
     For each node, the cost of getting from the start node to that node.
-    :param width:
-    :param height:
+    :param width_col:
+    :param height_row:
     :return:
     """
-    gScore = np.matrix(np.ones((width,height)) * np.inf)
+    # gScore = np.matrix(np.ones((width,height)) * np.inf)
+    # #TODO
+    gScore = [[np.inf for i in range(width)] for i in range(height)]
     return gScore
 
 def create_fScore(width,height):
     """
     For each node, the cost of getting from the start node to that node.
-    :param width:
-    :param height:
+    :param width_col:
+    :param height_row:
     :return:
     """
-    fScore = np.matrix(np.ones((width,height)) * np.inf)
+    # fScore = np.matrix(np.ones((height_row,width_col)) * np.inf)
+    # #TODO
+    fScore = [[np.inf for i in range(width)] for i in range(height)]
     return fScore
 
 def heuristic_cost_estimate(start, goal,d_diagnoal,d_straight):
@@ -105,9 +109,11 @@ def current_in_cameFrom(current,cameFrom):
 
 def getNeighbors(current,width,height):
     """
-    Get neighbors of current node
+     Get neighbors of current node
     :param current:
-    :return: set
+    :param width: default 60
+    :param height: default 30
+    :return:
     """
     x = current.x
     y = current.y
@@ -170,7 +176,17 @@ def reconstruct_path(cameFrom, current):
     total_path = np.vstack((l1,l2))
     return total_path
 
-def aStar(width,height,startNode,goalNode,d_diagnoal,d_straight):
+def convertRealPathToGrid(pathReal, grid_size = 0.1):
+    """
+    convert the path in real to grid, e.g.   2.15 -> 21
+    sx= ix * reso + reso/2
+    :param pathReal:
+    :param grid_size:
+    :return:
+    """
+    return (pathReal * grid_size+ grid_size/2)
+
+def aStar(startNode = Node(0,0,None,0,0,0), goalNode = Node(3,3,None,0,0,0), d_diagnoal = 14, d_straight = 10, grid_width = 60, grid_height = 30):
     """
      A star algorithm
     :param start_x:
@@ -188,28 +204,31 @@ def aStar(width,height,startNode,goalNode,d_diagnoal,d_straight):
     # For each node, which node it can most efficiently be reached from.If a node can be reached from many nodes, cameFrom will eventually contain the most efficient previous step.
     cameFrom = []
     # For each node, the cost of getting from the start node to that node.
-    gScore = create_gScore(width,height)
+    gScore = create_gScore(grid_width, grid_height)
+    print "gScore",len(gScore)
     start_x = startNode.x
     start_y = startNode.y
     # The cost of going from start to start is zero.
     startNode.g_value = 0
-    gScore[start_x,start_y] = 0
+    gScore[start_x][start_y] = 0
     # For each node, the total cost of getting from the start node to the goal by passing by that node. That value is partly known, partly heuristic.
-    fScore = create_fScore(width,height)
+    fScore = create_fScore(grid_width, grid_height)
+    print "fScore",len(fScore)
     # For the first node, that value is completely heuristic.
     startNode.f_value = heuristic_cost_estimate(startNode, goalNode,d_diagnoal,d_straight)
-    fScore[start_x,start_y] = heuristic_cost_estimate(startNode, goalNode,d_diagnoal,d_straight)
+    fScore[start_x][start_y] = heuristic_cost_estimate(startNode, goalNode,d_diagnoal,d_straight)
     while len(openSet) != 0:
         # current := the node in openSet having the lowest fScore[] value
         current = node_lowest_fScore(openSet)
         # If it is the item we want, retrace the path and return it
         if current.equal(goalNode):
-            path = reconstruct_path(cameFrom, current)
-            return path
+            path = reconstruct_path(cameFrom, current) # path in real
+            path_grid = convertRealPathToGrid(path, grid_size=0.1) # path in grid
+            return path_grid
 
         openSet.remove(current)
         closedSet.add(current)
-        current_neighbors = getNeighbors(current,width,height)
+        current_neighbors = getNeighbors(current, grid_width, grid_height)
         current_neighbors_num = current_neighbors.shape[1]
         # for neighbor in current_neighbors:
         for index in range(current_neighbors_num):
@@ -223,18 +242,18 @@ def aStar(width,height,startNode,goalNode,d_diagnoal,d_straight):
             # The distance from start to a neighbor the "dist_between" function may vary as per the solution requirements.
             current_x = current.x
             current_y = current.y
-            tentative_gScore = gScore[current_x,current_y] + dist_between(current, neighbor,d_diagnoal,d_straight)
+            tentative_gScore = gScore[current_x][current_y] + dist_between(current, neighbor,d_diagnoal,d_straight)
             neighbor_x = neighbor.x
             neighbor_y = neighbor.y
-            if tentative_gScore >= gScore[neighbor_x,neighbor_y]:
+            if tentative_gScore >= gScore[neighbor_x][neighbor_y]:
                 continue		# This is not a better path.
 
             neighbor.father = current
             cameFrom.append(neighbor)
-            gScore[neighbor_x,neighbor_y] = tentative_gScore
+            gScore[neighbor_x][neighbor_y] = tentative_gScore
             neighbor.g_value = tentative_gScore
-            neighbor_f_value = gScore[neighbor_x,neighbor_y] + heuristic_cost_estimate(neighbor, goalNode,d_diagnoal,d_straight)
-            fScore[neighbor_x,neighbor_y] = neighbor_f_value
+            neighbor_f_value = gScore[neighbor_x][neighbor_y] + heuristic_cost_estimate(neighbor, goalNode,d_diagnoal,d_straight)
+            fScore[neighbor_x][neighbor_y] = neighbor_f_value
             neighbor.f_value = neighbor_f_value
     return False
 # =================================Test========================================
@@ -255,6 +274,6 @@ def aStar(width,height,startNode,goalNode,d_diagnoal,d_straight):
 # height = 5
 # d_diagnoal = 14
 # d_straight = 10
-# startNode = Node(0,0,None,0,0,0)
-# goalNode = Node(1,2,None,0,0,0)
-# print aStar(width,height,startNode,goalNode,d_diagnoal,d_straight)
+# startNode = Node(20,20,None,0,0,0)
+# goalNode = Node(20,30,None,0,0,0)
+# print aStar(startNode,goalNode,d_diagnoal,d_straight)

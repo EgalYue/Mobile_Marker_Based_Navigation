@@ -25,9 +25,12 @@ import error_functions as ef
 import plotPath as plotPath
 import os  # Read matrix form file
 import matplotlib.pyplot as plt
+import potential_field_planning as pfp
+import A_star as Astar
+from A_star import Node
 
 # -----------------------Basic Infos---------------------------------------------------
-homography_iters = 1000 # TODO iterative
+homography_iters = 10 # TODO iterative
 
 # -----------------------marker object points-----------------------------------------
 plane_size = (0.3, 0.3)
@@ -186,21 +189,35 @@ def getT_MC_and_Rt_errors(T_WM, pos_world, Rmat_error_loop, tvec_error_loop):
 
 # ===================================================================================
 def main():
-    fix_pathMat_list = []
-    #======================================================
-    p1 = np.array([[11, 10, 9, 8, 8, 9, 10, 11],
-                   [36, 37, 38, 39, 40, 41, 42, 43]])
+    #------------------------Fix path manually adding only for test------------------------
+    # fix_pathMat_list = []
+    # #======================================================
+    # p1 = np.array([[11, 10, 9, 8, 8, 9, 10, 11],
+    #                [36, 37, 38, 39, 40, 41, 42, 43]])
+    #
+    # p2 = np.array([[11, 11, 11, 11, 11, 11, 11, 11],
+    #                [36, 37, 38, 39, 40, 41, 42, 43]])
+    # #---------------------------------------------------------
+    # fix_pathMat_list.append(p1)
+    # fix_pathMat_list.append(p2)
+    #
+    # fix_path_list = []
+    # for path_mat in fix_pathMat_list:
+    #     fix_path_mat = cellCenterPosition(path_mat, cell_length)
+    #     fix_path_list.append(fix_path_mat)
+    #-------------------------------------------------------------------------------------
 
-    p2 = np.array([[11, 11, 11, 11, 11, 11, 11, 11],
-                   [36, 37, 38, 39, 40, 41, 42, 43]])
-    #---------------------------------------------------------
-    fix_pathMat_list.append(p1)
-    fix_pathMat_list.append(p2)
-
+    # TODO 30
+    #----------------------------- Potential field path planning AND A* path planning -------------------------
+    # gird : start = (21,20), goal = (21,30)
+    paths_pfp = pfp.potentialField(sx = 2.15, sy = 2.05, gx = 2.15, gy = 3.05, ox = [], oy = [], grid_size = 0.1, robot_radius = 0.5, grid_width = 60, grid_height = 30)
+    # print "paths_pfp\n",paths_pfp
+    paths_Astar = Astar.aStar(startNode = Node(21,20,None,0,0,0), goalNode = Node(21,30,None,0,0,0), d_diagnoal = 14, d_straight = 10, grid_width = 60, grid_height = 30)
+    # print "paths_Astar\n",paths_Astar
     fix_path_list = []
-    for path_mat in fix_pathMat_list:
-        fix_path_mat = cellCenterPosition(path_mat, cell_length)
-        fix_path_list.append(fix_path_mat)
+    fix_path_list.append(paths_pfp)
+    fix_path_list.append(paths_Astar)
+    #---------------------------------------------------------------------------------------------------------
 
     measured_path_list = []
 
@@ -273,10 +290,11 @@ def main():
         Rmat_error_list_allPaths.append(Rmat_error_list)
         tvec_error_list_allPaths.append(tvec_error_list)
 
-        #TODO
+        #TODO 29
         allPaths_pos_list.append(allPos_list)
 
-    # -----------------------------Plot-----------------------------------------------
+    # ---------------------------- Plot-----------------------------------------------
+
     plotPath.plotAllPaths(fix_path_list, measured_path_list, Rmat_error_list_allPaths, tvec_error_list_allPaths)
     # plotPath.comparePaths_Gaussian(fix_path_list, measured_path_list)
     plotPath.plotScatterEachStep(allPaths_pos_list)
