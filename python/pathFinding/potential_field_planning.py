@@ -24,7 +24,7 @@ KP = 5.0  # attractive potential gain
 ETA = 100.0  # repulsive potential gain
 AREA_WIDTH = 30.0  # potential area width [m]
 
-show_animation = True
+show_animation = False
 
 # grid_width = 60
 # grid_height = 30
@@ -209,8 +209,8 @@ def potentialField(sx = 2.15, sy = 2.05, gx = 2.15, gy = 3.05, ox = [], oy = [],
     else:
         rx, ry = potential_field_planning(
             sx, sy, gx, gy, ox, oy, grid_size, robot_radius, grid_width, grid_height)
-        print "X position:\n", rx
-        print "Y position:\n", ry
+        # print "X position:\n", rx
+        # print "Y position:\n", ry
 
         if show_animation:
             plt.xlabel('X')

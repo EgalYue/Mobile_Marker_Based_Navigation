@@ -323,9 +323,7 @@ def compute_measured_data(fix_path):
     tvec_error_list = []  # store the t error for current only one path
 
     # TODO 29
-    allPos_list = []  # store all the positions of each step ,each step is computed 1000 times
-    # TODO 30
-    disError = []
+    # allPos_list = []  # store all the positions of each step ,each step is computed 1000 times
 
     for i in range(0, path_steps):
         # homography_iters
@@ -356,8 +354,8 @@ def compute_measured_data(fix_path):
         tvec_error_list.append(np.mean(tvec_error_loop))
 
         # TODO 29
-        currentPos = currentPos[:, 1:]
-        allPos_list.append(currentPos)
+        # currentPos = currentPos[:, 1:]
+        # allPos_list.append(currentPos)
 
     # Because of np.hstack, remove the first column
     measured_path = measured_path[:, 1:]
@@ -365,7 +363,8 @@ def compute_measured_data(fix_path):
     disError = np.sqrt(tem_measured[0, :] + tem_measured[1, :])
     # print "-- fix_path_mean --:\n", fix_path
     # print "-- measured_path_mean --:\n", measured_path
-    return  measured_path, allPos_list, disError
+    # return  measured_path, allPos_list, disError
+    return  measured_path, disError
 
 def computeDistanceErrorMeanStd(fix_path):
     stepLength = fix_path.shape[1]
@@ -374,11 +373,11 @@ def computeDistanceErrorMeanStd(fix_path):
     measured_path_list = np.zeros((1, stepLength))
     for i in range(error_iters):
         # TODO  allPos_list
-        measured_path, allPos_list, disError = compute_measured_data(fix_path)
-
+        # measured_path, allPos_list, disError = compute_measured_data(fix_path)
+        measured_path, disError = compute_measured_data(fix_path)
         disErrorList = np.vstack((disErrorList, disError))
         measured_path_list = np.vstack((measured_path_list, measured_path))
-    disErrorList = disErrorList[:,1:]
+    disErrorList = disErrorList[1:,:]
     disErrorMean = np.mean(disErrorList,axis = 0)
     disErrorStd = np.std(disErrorList,axis = 0)
 
@@ -390,7 +389,8 @@ def computeDistanceErrorMeanStd(fix_path):
 
     measured_path = np.vstack((measured_pathX_mean,measured_pathY_mean))
 
-    return measured_path, allPos_list, disErrorMean, disErrorStd
+    # return measured_path, allPos_list, disErrorMean, disErrorStd
+    return measured_path, disErrorMean, disErrorStd
 
 def gridPosToRealPos(ix, iy, reso = 0.1):
     x_real = ix * reso + reso/2
@@ -413,21 +413,22 @@ def main():
     #---------------------------------------------------------------------------------------------------------
     measured_path_list = []
     # TODO 29
-    allPaths_pos_list = [] # store the  1000 times pos for all steps for all paths
+    # allPaths_pos_list = [] # store the  1000 times pos for all steps for all paths
     # TODO 30
     disErrorMean_list = []
     disErrorStd_list = []
 
     for fix_path in fix_path_list:
         print "======================LOOP start one time================================="
-        measured_path, allPos_list, disErrorMean, disErrorStd = computeDistanceErrorMeanStd(fix_path)
+        # measured_path, allPos_list, disErrorMean, disErrorStd = computeDistanceErrorMeanStd(fix_path)
+        measured_path, disErrorMean, disErrorStd = computeDistanceErrorMeanStd(fix_path)
         print "fix_path\n",fix_path
         print "measured_path\n",measured_path
         print "disErrorStd\n",disErrorStd
         print "disErrorMean\n",disErrorMean
         measured_path_list.append(measured_path)
         # TODO 29
-        allPaths_pos_list.append(allPos_list)
+        # allPaths_pos_list.append(allPos_list)
         # TODO 30
         disErrorMean_list.append(disErrorMean)
         disErrorStd_list.append(disErrorStd)
@@ -435,7 +436,8 @@ def main():
         print "======================LOOP end one time================================="
 
     # ---------------------------- Plot-----------------------------------------------
-    plotPath.plotComparePaths(fix_path_list, disErrorMean_list, disErrorStd_list)
+    # plotPath.plotComparePaths(fix_path_list, disErrorMean_list, disErrorStd_list)
+    plotPath.plotFixedMeasuredFillBetween(fix_path_list, disErrorMean_list)
     # ===================================== End main() ===============================================
 
 
