@@ -49,6 +49,7 @@ def get_velocity_command(U, V, x_robot, y_robot):
 
 
 Vx_robot, Vy_robot = get_velocity_command(U, V, 40, 40)
+print "Vx_robot, Vy_robot",Vx_robot,Vy_robot
 
 # # Plot
 # mlab.figure(size=(800, 600))

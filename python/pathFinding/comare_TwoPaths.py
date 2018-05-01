@@ -30,8 +30,8 @@ import A_star as Astar
 from A_star import Node
 
 # -----------------------Basic Infos---------------------------------------------------
-homography_iters = 1 # TODO iterative for cam pose of each step
-error_iters = 1       # TODO iterative for distance error
+homography_iters = 1000 # TODO iterative for cam pose of each step
+error_iters = 10       # TODO iterative for distance error
 
 # -----------------------marker object points-----------------------------------------
 plane_size = (0.3, 0.3)
@@ -401,11 +401,11 @@ def main():
     #----------------------------- Potential field path planning AND A* path planning -------------------------
     # gird : start = (21,20), goal = (21,30)
     # convert position in grid to real    2.15 2.05 2.15 3.05
-    pfp_sx,pfp_sy= gridPosToRealPos(21,20,reso = cell_length)
-    pfp_gx, pfp_gy = gridPosToRealPos(21, 30, reso=cell_length)
+    pfp_sx,pfp_sy= gridPosToRealPos(15,20,reso = cell_length)
+    pfp_gx, pfp_gy = gridPosToRealPos(15, 40, reso=cell_length)
 
     paths_pfp = pfp.potentialField(sx = pfp_sx, sy = pfp_sy, gx = pfp_gx, gy = pfp_gy, ox = [], oy = [], grid_size = cell_length, robot_radius = robot_radius, grid_width = width, grid_height = height)
-    paths_Astar = Astar.aStar(startNode = Node(21,20,None,0,0,0), goalNode = Node(21,30,None,0,0,0), d_diagnoal = 14, d_straight = 10, grid_width = width, grid_height = height)
+    paths_Astar = Astar.aStar(startNode = Node(15,20,None,0,0,0), goalNode = Node(15,40,None,0,0,0), d_diagnoal = 14, d_straight = 10, grid_width = width, grid_height = height)
 
     fix_path_list = [] # first is pfp, second is A*
     fix_path_list.append(paths_pfp)
