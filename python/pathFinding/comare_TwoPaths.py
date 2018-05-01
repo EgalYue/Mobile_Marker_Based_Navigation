@@ -30,8 +30,8 @@ import A_star as Astar
 from A_star import Node
 
 # -----------------------Basic Infos---------------------------------------------------
-homography_iters = 1000 # TODO iterative for cam pose of each step
-error_iters = 10        # TODO iterative for distance error
+homography_iters = 1 # TODO iterative for cam pose of each step
+error_iters = 1       # TODO iterative for distance error
 
 # -----------------------marker object points-----------------------------------------
 plane_size = (0.3, 0.3)
@@ -392,11 +392,21 @@ def computeDistanceErrorMeanStd(fix_path):
 
     return measured_path, allPos_list, disErrorMean, disErrorStd
 
+def gridPosToRealPos(ix, iy, reso = 0.1):
+    x_real = ix * reso + reso/2
+    y_real = iy * reso + reso/2
+    return x_real,y_real
+
 def main():
     #----------------------------- Potential field path planning AND A* path planning -------------------------
     # gird : start = (21,20), goal = (21,30)
-    paths_pfp = pfp.potentialField(sx = 2.15, sy = 2.05, gx = 2.15, gy = 3.05, ox = [], oy = [], grid_size = cell_length, robot_radius = robot_radius, grid_width = width, grid_height = height)
+    # convert position in grid to real    2.15 2.05 2.15 3.05
+    pfp_sx,pfp_sy= gridPosToRealPos(21,20,reso = cell_length)
+    pfp_gx, pfp_gy = gridPosToRealPos(21, 30, reso=cell_length)
+
+    paths_pfp = pfp.potentialField(sx = pfp_sx, sy = pfp_sy, gx = pfp_gx, gy = pfp_gy, ox = [], oy = [], grid_size = cell_length, robot_radius = robot_radius, grid_width = width, grid_height = height)
     paths_Astar = Astar.aStar(startNode = Node(21,20,None,0,0,0), goalNode = Node(21,30,None,0,0,0), d_diagnoal = 14, d_straight = 10, grid_width = width, grid_height = height)
+
     fix_path_list = [] # first is pfp, second is A*
     fix_path_list.append(paths_pfp)
     fix_path_list.append(paths_Astar)
@@ -411,6 +421,7 @@ def main():
     for fix_path in fix_path_list:
         print "======================LOOP start one time================================="
         measured_path, allPos_list, disErrorMean, disErrorStd = computeDistanceErrorMeanStd(fix_path)
+        print "fix_path\n",fix_path
         print "measured_path\n",measured_path
         print "disErrorStd\n",disErrorStd
         print "disErrorMean\n",disErrorMean
@@ -425,7 +436,6 @@ def main():
 
     # ---------------------------- Plot-----------------------------------------------
     plotPath.plotComparePaths(fix_path_list, disErrorMean_list, disErrorStd_list)
-    # plotPath.plotScatterEachStep(allPaths_pos_list)
     # ===================================== End main() ===============================================
 
 
