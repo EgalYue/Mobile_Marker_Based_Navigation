@@ -77,7 +77,7 @@ def plotAllPaths(fix_path_list, measured_path_list, Rmat_error_list, tvec_error_
     :param tvec_error_list:
     :return:
     """
-    fig = plt.figure("Compare diffient paths")
+    fig = plt.figure("Compare different paths")
     ax_fix = fig.add_subplot(121)
     ax_measured = fig.add_subplot(122)
 
@@ -94,7 +94,6 @@ def plotAllPaths(fix_path_list, measured_path_list, Rmat_error_list, tvec_error_
     ax_R_error = fig3.add_subplot(121)
     ax_t_error = fig3.add_subplot(122)
 
-    labels = []
     for i in range(0, path_num):
         x_fix = fix_path_list[i][0, :]
         y_fix = fix_path_list[i][1, :]
@@ -102,8 +101,6 @@ def plotAllPaths(fix_path_list, measured_path_list, Rmat_error_list, tvec_error_
         ax_fix.scatter(y_fix, x_fix, c="black", marker='o')
 
         colour = l[0].get_color()
-
-
 
         x_measured = measured_path_list[i][0, :]
         y_measured = measured_path_list[i][1, :]
@@ -124,6 +121,7 @@ def plotAllPaths(fix_path_list, measured_path_list, Rmat_error_list, tvec_error_
         # ------------------------ R error ---------------------------------
         Rmat_error = Rmat_error_list[i]
         x_R_error = np.arange(1, len(Rmat_error) + 1, 1)
+
         y_R_error = Rmat_error
         ax_R_error.xaxis.set_ticks(np.arange(0, len(Rmat_error) + 1, 1))
         ax_R_error.plot(x_R_error, y_R_error, color=colour, label='Fixed path R error')
@@ -135,13 +133,6 @@ def plotAllPaths(fix_path_list, measured_path_list, Rmat_error_list, tvec_error_
         ax_t_error.xaxis.set_ticks(np.arange(0, len(tvec_error) + 1, 1))
         ax_t_error.plot(x_t_error, y_t_error, color=colour, label='Fixed path t error')
         ax_t_error.scatter(x_t_error, y_t_error, c="black", marker='o')
-
-    # plt.legend(labels, ncol=4, loc='upper center',
-    #            bbox_to_anchor=[0.5, 1.1],
-    #            columnspacing=1.0, labelspacing=0.0,
-    #            handletextpad=0.0, handlelength=1.5,
-    #            fancybox=True, shadow=True)
-
 
     #---------------- Fix path ------------------------------
     fontP = FontProperties()
@@ -264,11 +255,11 @@ def plotScatterEachStep(allPaths_pos_list):
 
 def plotFixedMeasuredFillBetween(fix_path_list, disErrorMean_list):
     """
-    Plot the fixed paths and fill with mean error
+    Plot the fixed paths and fill with mean error.
+    1.Figure: Fixed paths and fill with error(eulidean diantance)
     """
-    fig = plt.figure("Compare diffient paths")
+    fig = plt.figure("Compare different paths")
     ax_fix = fig.add_subplot(111)
-
     path_num = len(fix_path_list)
     # colormap = plt.cm.gist_ncar
     plt.gca().set_prop_cycle(plt.cycler('color', plt.cm.jet(np.linspace(0, 1.0, path_num))))
@@ -277,7 +268,7 @@ def plotFixedMeasuredFillBetween(fix_path_list, disErrorMean_list):
     for i in range(0, path_num):
         #-------------------------------------------------------------
         if i ==0:
-            label ="Potential field pathfinding"
+            label = "Potential field pathfinding"
         if i ==1:
             label = "A star pathfinding"
         color = colours[i] # only for two paths
@@ -296,7 +287,7 @@ def plotFixedMeasuredFillBetween(fix_path_list, disErrorMean_list):
         elif len(xerr) == 2:
             xmin, xmax = xerr
 
-        ax_fix.plot(y_fix, x_fix, color='blue', label = label)
+        ax_fix.plot(y_fix, x_fix, color=color, label = label)
         plt.scatter(y_fix, x_fix, c="blue", marker='o')
         ax_fix.fill_between(y_fix, xmax, xmin, color=color, alpha=alpha_fill)
 
@@ -315,15 +306,19 @@ def plotFixedMeasuredFillBetween(fix_path_list, disErrorMean_list):
 
     plt.show() # Just use one plt.show in plotAll() method
 
-def plotComparePaths(fix_path_list, disErrorMean_list, disErrorStd_list):
+def plotComparePaths(fix_path_list, disErrorMean_list, disErrorStd_list, Rmat_error_list_AllPaths, tvec_error_list_AllPaths, Rmat_error_std_list_AllPaths, tvec_error_std_list_AllPaths):
     """
     Plot two paths in order to compare
+    1.Figure compare fixed paths (in wolrd coordinate)
+    2.Figure compare position error(Euclidean distance)
+    3.Figure compare R_error and t_error (errorbar)
+
     :param fix_path_list:
     :param real_path_list:
     :param measured_path_list:
     :return:
     """
-    fig = plt.figure("Compare diffient paths")
+    fig = plt.figure("Compare different paths(fixed paths)")
     ax_fix = fig.add_subplot(111)
 
     path_num = len(fix_path_list)
@@ -333,21 +328,25 @@ def plotComparePaths(fix_path_list, disErrorMean_list, disErrorStd_list):
     #====================== Plot position error ============================
     fig2 = plt.figure("Position error (Euclidean distance)")
     ax_measured_distance = fig2.add_subplot(111)
+    #=======================R t error ======================================
+    fig3 = plt.figure('Compare R error and t error of different paths')
+    ax_R_error = fig3.add_subplot(121)
+    ax_t_error = fig3.add_subplot(122)
 
-    colours = ['r','b']
+    colours = ['r','b'] # Now we only compare 2 paths, just use 2 colors
     for i in range(0, path_num):
         #-------------------------------------------------------------
         color = colours[i] # only for two paths
         x_fix = fix_path_list[i][0, :]
         if i ==0:
-            label ="Potential field pathfinding"
+            label = "Potential field pathfinding"
         if i ==1:
             label = "A star pathfinding"
         #-------------------------------------------------------------
         y_fix = fix_path_list[i][1, :]
         l = ax_fix.plot(y_fix, x_fix,color =color, label=label)
         ax_fix.scatter(y_fix, x_fix, c="black", marker='o')
-        # colour = l[0].get_color()
+
         # ====================== Plot position error ============================
         # ---------------------Measured path----------------------------------------
         x_measured = np.arange(1, len(disErrorMean_list[i]) + 1, 1)
@@ -367,6 +366,27 @@ def plotComparePaths(fix_path_list, disErrorMean_list, disErrorStd_list):
         #-----------errorbar------------------------------------------------------------
         yerr = disErrorStd_list[i]
         ax_measured_distance.errorbar(x_measured, y_measured, yerr=yerr,color =color, ecolor=color, ms=20*i+20, mew=4*i+4)
+
+        # ====================== Plot R t error ============================
+        # ------------------------ R error ---------------------------------
+        Rmat_error = Rmat_error_list_AllPaths[i]
+        x_R_error = np.arange(1, len(Rmat_error) + 1, 1)
+        y_R_error = Rmat_error
+        ax_R_error.xaxis.set_ticks(np.arange(0, len(Rmat_error) + 1, 1))
+        ax_R_error.plot(x_R_error, y_R_error, color=color, label= label)
+        ax_R_error.scatter(x_R_error, y_R_error, c="black", marker='o')
+        yerr_Rerror = Rmat_error_std_list_AllPaths[i]
+
+        ax_R_error.errorbar(x_R_error, y_R_error, yerr=yerr_Rerror,color =color, ecolor=color, ms=20*i+20, mew=4*i+4)
+        # -------------------------r error ---------------------------------
+        tvec_error = tvec_error_list_AllPaths[i]
+        x_t_error = np.arange(1, len(tvec_error) + 1, 1)
+        y_t_error = tvec_error
+        ax_t_error.xaxis.set_ticks(np.arange(0, len(tvec_error) + 1, 1))
+        ax_t_error.plot(x_t_error, y_t_error, color=color, label= label)
+        ax_t_error.scatter(x_t_error, y_t_error, c="black", marker='o')
+        yerr_terror = tvec_error_std_list_AllPaths[i]
+        ax_t_error.errorbar(x_t_error, y_t_error, yerr=yerr_terror, color=color, ecolor=color, ms=20 * i + 20, mew=4 * i + 4)
 
     #---------------- Fix path ------------------------------
     fontP = FontProperties()
@@ -390,11 +410,28 @@ def plotComparePaths(fix_path_list, disErrorMean_list, disErrorStd_list):
     ax_measured_distance.set_xlabel('Step')
     ax_measured_distance.set_ylabel('Error(m)')
 
+    # ====================== Plot R t error ============================
+    plt.sca(ax_R_error)
+    # fontP = FontProperties()
+    # fontP.set_size('small')
+    # ax_R_error.legend(prop=fontP, loc=9, bbox_to_anchor=(0.5, -0.1), ncol=3)  # Move legend outside of figure in matplotlib
+    ax_R_error.set_title("R error(" + u"\u00b0" + ")")
+    ax_R_error.set_xlabel('Step')
+    ax_R_error.set_ylabel('Angle(degree)')
+
+    plt.sca(ax_t_error)
+    fontP = FontProperties()
+    fontP.set_size('small')
+    ax_R_error.legend(prop=fontP, loc=9, bbox_to_anchor=(0.5, -0.1), ncol=3)  # Move legend outside of figure in matplotlib
+    ax_t_error.set_title("t error(%)")
+    ax_t_error.set_xlabel('Step')
+    ax_t_error.set_ylabel('Percent')
     plt.show() # Just use one plt.show in plotAll() method
 
-def plotComparePaths3DSurface(xyError_list_AllPaths, resolution = 0.1, width = 3, height = 6):
+def plotComparePaths_DisError_3DSurface(xyError_list_AllPaths, resolution = 0.1, width = 3, height = 6):
     """
-
+    Plot the measured paths with 3D surface(like mountain, high mountain means big error, low mountain means small error)
+    1.Figure:
     :param xyError_list_AllPaths:
     :param width: 3 [m]
     :param height: 6 [m]
@@ -403,11 +440,10 @@ def plotComparePaths3DSurface(xyError_list_AllPaths, resolution = 0.1, width = 3
     """
     path_num = len(xyError_list_AllPaths)
 
-
     gridX = int(width / resolution)
     gridY = int(height / resolution)
-    print "gridX",gridX
-    fig = plt.figure("Compare diffient paths")
+
+    fig = plt.figure("Compare different paths")
     ax = Axes3D(fig)
 
     Y = np.arange(0, width, resolution)
@@ -418,20 +454,120 @@ def plotComparePaths3DSurface(xyError_list_AllPaths, resolution = 0.1, width = 3
     for i in range(path_num):
         xyError_list = xyError_list_AllPaths[i]
         iter_num = xyError_list.shape[0] / 3
-
         for j in range(iter_num):
-
-
             x_real = xyError_list[0+j*3,:]
             y_real = xyError_list[1+j*3,:]
-            print
+
             ix = (x_real - resolution / 2) / resolution
             ix = ix.astype(int)
-            print "ix",ix
+
             iy = (y_real - resolution / 2) / resolution
             iy = iy.astype(int)
-            print "iy",iy
-            Z[ix,iy] = xyError_list[2++j*3,:]
+            Z[ix,iy] = xyError_list[2+j*3,:]
+
+            # print "X.shape",X.shape
+            # print "Y.shape",Y.shape
+            # print "Z.shape",Z.shape
+    ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.plasma)
+
+    ax.set_ylim(ax.get_ylim()[::-1])  # invert the axis
+    # ax.xaxis.set_ticks(np.arange(0, 6, 0.1)) # set x-ticks
+    ax.xaxis.tick_top()  # and move the X-Axis
+    # ax.yaxis.set_ticks(np.arange(0, 3, 0.1)) # set y-ticks
+    # ax.yaxis.tick_left()  # remove right y-Ticks
+    ax.set_xlabel('Y: world coordinate')
+    ax.set_ylabel('X: world coordinate')
+    ax.set_zlabel('Error between fixed path and measured path (Euclidean distance)')
+    plt.show()
+
+def plotComparePaths_R_error_3DSurface(fix_path_list, Rmat_error_mean_list_AllPaths, resolution = 0.1, width = 3, height = 6):
+    """
+    Plot the measured paths with 3D surface(like mountain, high mountain means big error, low mountain means small error)
+    1.Figure:
+    :param xyError_list_AllPaths:
+    :param width: 3 [m]
+    :param height: 6 [m]
+    :param resolution: default 0.1 [m]
+    :return:
+    """
+    #TODO
+    path_num = len(fix_path_list)
+
+    gridX = int(width / resolution)
+    gridY = int(height / resolution)
+
+    fig = plt.figure("Compare R error of different paths")
+    ax = Axes3D(fig)
+
+    Y = np.arange(0, width, resolution)
+    X = np.arange(0, height, resolution)
+    X, Y = np.meshgrid(X, Y)
+    Z = np.zeros((gridX, gridY))
+
+    for i in range(path_num):
+        Rmat_error_mean_list = Rmat_error_mean_list_AllPaths[i]
+        fixed_path = fix_path_list[i]
+        x_real = fixed_path[0,:]
+        y_real = fixed_path[1,:]
+
+        ix = (x_real - resolution / 2) / resolution
+        ix = ix.astype(int)
+        iy = (y_real - resolution / 2) / resolution
+        iy = iy.astype(int)
+
+        Z[ix,iy] = Rmat_error_mean_list
+
+            # print "X.shape",X.shape
+            # print "Y.shape",Y.shape
+            # print "Z.shape",Z.shape
+    ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.plasma)
+
+    ax.set_ylim(ax.get_ylim()[::-1])  # invert the axis
+    # ax.xaxis.set_ticks(np.arange(0, 6, 0.1)) # set x-ticks
+    ax.xaxis.tick_top()  # and move the X-Axis
+    # ax.yaxis.set_ticks(np.arange(0, 3, 0.1)) # set y-ticks
+    # ax.yaxis.tick_left()  # remove right y-Ticks
+    ax.set_xlabel('Y: world coordinate')
+    ax.set_ylabel('X: world coordinate')
+    ax.set_zlabel("R error(" + u"\u00b0" + ")")
+    plt.show()
+
+def plotComparePaths_t_error_3DSurface(fix_path_list, tvec_error_mean_list_AllPaths, resolution = 0.1, width = 3, height = 6):
+    """
+    Plot the measured paths with 3D surface(like mountain, high mountain means big error, low mountain means small error)
+    1.Figure:
+    :param xyError_list_AllPaths:
+    :param width: 3 [m]
+    :param height: 6 [m]
+    :param resolution: default 0.1 [m]
+    :return:
+    """
+    #TODO
+    path_num = len(fix_path_list)
+
+    gridX = int(width / resolution)
+    gridY = int(height / resolution)
+
+    fig = plt.figure("Compare t error of different paths")
+    ax = Axes3D(fig)
+
+    Y = np.arange(0, width, resolution)
+    X = np.arange(0, height, resolution)
+    X, Y = np.meshgrid(X, Y)
+    Z = np.zeros((gridX, gridY))
+
+    for i in range(path_num):
+        Rmat_error_mean_list = tvec_error_mean_list_AllPaths[i]
+        fixed_path = fix_path_list[i]
+        x_real = fixed_path[0,:]
+        y_real = fixed_path[1,:]
+
+        ix = (x_real - resolution / 2) / resolution
+        ix = ix.astype(int)
+        iy = (y_real - resolution / 2) / resolution
+        iy = iy.astype(int)
+
+        Z[ix,iy] = Rmat_error_mean_list
 
             # print "X.shape",X.shape
             # print "Y.shape",Y.shape
@@ -445,9 +581,5 @@ def plotComparePaths3DSurface(xyError_list_AllPaths, resolution = 0.1, width = 3
     # ax.yaxis.tick_left()  # remove right y-Ticks
     ax.set_xlabel('Y: world coordinate')
     ax.set_ylabel('X: world coordinate')
-    ax.set_zlabel('Error between fixed path and measured path (Euclidean distance)')
+    ax.set_zlabel('t error(%)')
     plt.show()
-
-
-
-
