@@ -30,8 +30,8 @@ import A_star as Astar
 from A_star import Node
 
 # -----------------------Basic Infos---------------------------------------------------
-homography_iters = 1000 # TODO iterative for cam pose of each step
-error_iters = 10       # TODO iterative for distance error
+homography_iters = 1 # TODO iterative for cam pose of each step
+error_iters = 1       # TODO iterative for distance error
 
 # -----------------------marker object points-----------------------------------------
 plane_size = (0.3, 0.3)
@@ -364,22 +364,32 @@ def compute_measured_data(fix_path):
     # print "-- fix_path_mean --:\n", fix_path
     # print "-- measured_path_mean --:\n", measured_path
     # return  measured_path, allPos_list, disError
-    return  measured_path, disError
+    # TODO 2
+    xyError = np.vstack((measured_path,disError)) # 3 x n path_steps : measured path + distance error
+
+    return  measured_path, disError, xyError
 
 def computeDistanceErrorMeanStd(fix_path):
     stepLength = fix_path.shape[1]
     disErrorList = np.zeros((1, stepLength))
-
     measured_path_list = np.zeros((1, stepLength))
+    # TODO 2
+    xyError_list = np.zeros((1, stepLength))
+
     for i in range(error_iters):
         # TODO  allPos_list
         # measured_path, allPos_list, disError = compute_measured_data(fix_path)
-        measured_path, disError = compute_measured_data(fix_path)
+        measured_path, disError, xyError = compute_measured_data(fix_path)
         disErrorList = np.vstack((disErrorList, disError))
         measured_path_list = np.vstack((measured_path_list, measured_path))
+        # TODO 2
+        xyError_list = np.vstack((xyError_list, xyError))
+
     disErrorList = disErrorList[1:,:]
     disErrorMean = np.mean(disErrorList,axis = 0)
     disErrorStd = np.std(disErrorList,axis = 0)
+    # TODO 2
+    xyError_list = xyError_list[1:,:] # (3*error_iters) x path_steps :  store x,y,distance error of error_iters times
 
     measured_path_list = measured_path_list[1:,:]
     measured_pathX_list = measured_path_list[0::2,:]
@@ -387,15 +397,20 @@ def computeDistanceErrorMeanStd(fix_path):
     measured_pathY_list = measured_path_list[1::2, :]
     measured_pathY_mean = np.mean(measured_pathY_list,axis = 0)
 
-    measured_path = np.vstack((measured_pathX_mean,measured_pathY_mean))
+    measured_path = np.vstack((measured_pathX_mean,measured_pathY_mean)) # mean measured path of error_iters times
 
     # return measured_path, allPos_list, disErrorMean, disErrorStd
-    return measured_path, disErrorMean, disErrorStd
+    return measured_path, disErrorMean, disErrorStd, xyError_list
 
 def gridPosToRealPos(ix, iy, reso = 0.1):
     x_real = ix * reso + reso/2
     y_real = iy * reso + reso/2
     return x_real,y_real
+
+def realPosTogridPos(x_real, y_real, reso = 0.1):
+    ix = int(round((x_real - reso/2) /reso))
+    iy = int(round((y_real - reso/2) /reso))
+    return ix,iy
 
 def main():
     #----------------------------- Potential field path planning AND A* path planning -------------------------
@@ -417,15 +432,18 @@ def main():
     # TODO 30
     disErrorMean_list = []
     disErrorStd_list = []
+    # TODO 2
+    xyError_list_AllPaths = []  # store xyError_list for all paths
 
     for fix_path in fix_path_list:
         print "======================LOOP start one time================================="
         # measured_path, allPos_list, disErrorMean, disErrorStd = computeDistanceErrorMeanStd(fix_path)
-        measured_path, disErrorMean, disErrorStd = computeDistanceErrorMeanStd(fix_path)
+        measured_path, disErrorMean, disErrorStd, xyError_list = computeDistanceErrorMeanStd(fix_path)
         print "fix_path\n",fix_path
         print "measured_path\n",measured_path
         print "disErrorStd\n",disErrorStd
         print "disErrorMean\n",disErrorMean
+        print "xyError_list.shape",xyError_list.shape
         measured_path_list.append(measured_path)
         # TODO 29
         # allPaths_pos_list.append(allPos_list)
@@ -433,11 +451,15 @@ def main():
         disErrorMean_list.append(disErrorMean)
         disErrorStd_list.append(disErrorStd)
 
+        # TODO 2
+        xyError_list_AllPaths.append(xyError_list)
+
         print "======================LOOP end one time================================="
 
     # ---------------------------- Plot-----------------------------------------------
-    # plotPath.plotComparePaths(fix_path_list, disErrorMean_list, disErrorStd_list)
-    plotPath.plotFixedMeasuredFillBetween(fix_path_list, disErrorMean_list)
+    plotPath.plotComparePaths(fix_path_list, disErrorMean_list, disErrorStd_list)
+    # plotPath.plotFixedMeasuredFillBetween(fix_path_list, disErrorMean_list)
+    # plotPath.plotComparePaths3DSurface(xyError_list_AllPaths, resolution = cell_length)
     # ===================================== End main() ===============================================
 
 

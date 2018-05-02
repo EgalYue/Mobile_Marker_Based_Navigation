@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 @Time    : 27.04.18 12:32
-@File    : plotTest.py
+@File    : plotConditionNum3Dsurface.py
 @author: Yue Hu
 
 Plot the condition number distribution like Mountain
@@ -18,18 +18,9 @@ import sys
 
 sys.path.append("..")
 
-import Rt_matrix_from_euler_zyx as R_matrix_from_euler_zyx
-import Rt_matrix_from_euler_t as Rt_matrix_from_euler_t
 import numpy as np
-import decimal
-from scipy.linalg import expm, rq, det, inv
-from vision.camera import Camera
-from vision.plane import Plane
-from solve_pnp import pose_pnp
-import cv2
-import error_functions as ef
-
 import os  # Read matrix form file
+
 cur_path = os.path.dirname(__file__)
 new_path = os.path.relpath('../CondNum_TheoryValidation_newAccMat/accuracyMatrix.txt', cur_path)
 f = open(new_path, 'r')
@@ -44,12 +35,15 @@ X = np.arange(0, col, 1)
 print "X.shape",X.shape
 print "Y.shape",Y.shape
 X, Y = np.meshgrid(X, Y)
+print "X.shape",X.shape
+print "Y.shape",Y.shape
 Z = accuracy_mat
+print "Z.shape",Z.shape
 
 fig = plt.figure()
 ax = Axes3D(fig)
-ax.set_xlabel('Y')
-ax.set_ylabel('Z')
+ax.set_xlabel('Y: marker coordinate')
+ax.set_ylabel('Z: marker coordinate')
 ax.set_zlabel('Condition number')
 ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.viridis)
 

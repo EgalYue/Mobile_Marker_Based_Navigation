@@ -9,6 +9,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.font_manager import FontProperties
+from matplotlib import cm
+from mpl_toolkits.mplot3d import Axes3D
 
 def plotPath(fix_path, measured_path):
     plt.figure()
@@ -389,5 +391,63 @@ def plotComparePaths(fix_path_list, disErrorMean_list, disErrorStd_list):
     ax_measured_distance.set_ylabel('Error(m)')
 
     plt.show() # Just use one plt.show in plotAll() method
+
+def plotComparePaths3DSurface(xyError_list_AllPaths, resolution = 0.1, width = 3, height = 6):
+    """
+
+    :param xyError_list_AllPaths:
+    :param width: 3 [m]
+    :param height: 6 [m]
+    :param resolution: default 0.1 [m]
+    :return:
+    """
+    path_num = len(xyError_list_AllPaths)
+
+
+    gridX = int(width / resolution)
+    gridY = int(height / resolution)
+    print "gridX",gridX
+    fig = plt.figure("Compare diffient paths")
+    ax = Axes3D(fig)
+
+    Y = np.arange(0, width, resolution)
+    X = np.arange(0, height, resolution)
+    X, Y = np.meshgrid(X, Y)
+    Z = np.zeros((gridX, gridY))
+
+    for i in range(path_num):
+        xyError_list = xyError_list_AllPaths[i]
+        iter_num = xyError_list.shape[0] / 3
+
+        for j in range(iter_num):
+
+
+            x_real = xyError_list[0+j*3,:]
+            y_real = xyError_list[1+j*3,:]
+            print
+            ix = (x_real - resolution / 2) / resolution
+            ix = ix.astype(int)
+            print "ix",ix
+            iy = (y_real - resolution / 2) / resolution
+            iy = iy.astype(int)
+            print "iy",iy
+            Z[ix,iy] = xyError_list[2++j*3,:]
+
+            # print "X.shape",X.shape
+            # print "Y.shape",Y.shape
+            # print "Z.shape",Z.shape
+    ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.Reds)
+
+    ax.set_ylim(ax.get_ylim()[::-1])  # invert the axis
+    # ax.xaxis.set_ticks(np.arange(0, 6, 0.1)) # set x-ticks
+    ax.xaxis.tick_top()  # and move the X-Axis
+    # ax.yaxis.set_ticks(np.arange(0, 3, 0.1)) # set y-ticks
+    # ax.yaxis.tick_left()  # remove right y-Ticks
+    ax.set_xlabel('Y: world coordinate')
+    ax.set_ylabel('X: world coordinate')
+    ax.set_zlabel('Error between fixed path and measured path (Euclidean distance)')
+    plt.show()
+
+
 
 
