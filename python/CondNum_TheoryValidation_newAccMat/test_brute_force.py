@@ -139,6 +139,7 @@ def cam_distribution_study():
 
     cams,accuracy_mat = create_cam_distribution_in_YZ(cam=None, plane_size=(0.3, 0.3), theta_params=theta_params, r_params=r_params,
                                   plot=False)
+    # TODO
     accuracy_mat = np.zeros([30, 60])# define the new acc_mat as 30 x 30 ,which means 3m x 3m area in real world and each cel
     inputX, inputY, inputZ, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t, input_pnp_R, input_transfer_error, display_mat, accuracy_mat_new = bf.heightGetCondNum(
         cams, accuracy_mat, theta_params, r_params)

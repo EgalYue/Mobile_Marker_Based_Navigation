@@ -18,17 +18,16 @@ sys.path.append("..")
 
 import numpy as np
 import matplotlib.pyplot as plt
+# import changeAccMatSize as changeAccMatSize
 import os  # Read matrix form file
 # Parameters
 KP = 5.0  # attractive potential gain
 ETA = 100.0  # repulsive potential gain
-AREA_WIDTH = 30.0  # potential area width [m]
 
 show_animation = False
 
 # grid_width = 60
 # grid_height = 30
-#
 # real_width = 6 # [m]
 # real_height = 3 # [m]
 
@@ -39,7 +38,8 @@ f = open(new_path, 'r')
 l = [map(float, line.split(' ')) for line in f]
 accuracy_mat = np.asarray(l)  # convert to matrix : 30 x 60
 
-def calc_potential_field(gx, gy, ox, oy, reso, rr, grid_width, grid_height):
+
+def calc_potential_field(gx, gy, ox, oy, grid_reso, rr, grid_width, grid_height):
     xw = grid_height
     yw = grid_width
 
@@ -47,10 +47,10 @@ def calc_potential_field(gx, gy, ox, oy, reso, rr, grid_width, grid_height):
     pmap = [[0.0 for i in range(grid_width)] for i in range(grid_height)]
 
     for ix in range(xw):
-        x = ix * reso + reso / 2
+        x = ix * grid_reso + grid_reso / 2
 
         for iy in range(yw):
-            y = iy * reso + reso / 2
+            y = iy * grid_reso + grid_reso / 2
             ug = calc_attractive_potential(x, y, gx, gy)
             # print "ug ",ug
             uo = calc_repulsive_potential(x, y, ox, oy, rr)
@@ -112,17 +112,17 @@ def get_motion_model():
     return motion
 
 
-def potential_field_planning(sx, sy, gx, gy, ox, oy, reso, rr, grid_width, grid_height):
+def potential_field_planning(sx, sy, gx, gy, ox, oy, grid_reso, rr, grid_width, grid_height):
     # calc potential field
-    pmap= calc_potential_field(gx, gy, ox, oy, reso, rr, grid_width, grid_height)
+    pmap= calc_potential_field(gx, gy, ox, oy, grid_reso, rr, grid_width, grid_height)
 
     # search path
     d = np.hypot(sx - gx, sy - gy)
     d = round(d,4) # avoid float problem
-    ix = round((sx - reso/2) / reso)
-    iy = round((sy - reso/2) / reso)
-    gix = round((gx - reso/2) / reso)
-    giy = round((gy - reso/2) / reso)
+    ix = round((sx - grid_reso/2) / grid_reso)
+    iy = round((sy - grid_reso/2) / grid_reso)
+    gix = round((gx - grid_reso/2) / grid_reso)
+    giy = round((gy - grid_reso/2) / grid_reso)
 
     if show_animation:
         draw_heatmap(pmap)
@@ -131,7 +131,7 @@ def potential_field_planning(sx, sy, gx, gy, ox, oy, reso, rr, grid_width, grid_
 
     rx, ry = [sx], [sy]
     motion = get_motion_model()
-    while d >= reso:
+    while d >= grid_reso:
         minp = float("inf")
         minix, miniy = -1, -1
         for i in range(len(motion)):
@@ -147,18 +147,25 @@ def potential_field_planning(sx, sy, gx, gy, ox, oy, reso, rr, grid_width, grid_
                 miniy = iny
         ix = minix
         iy = miniy
-        xp = ix * reso + reso/2
+        print "ix iy",ix,iy
+        xp = ix * grid_reso + grid_reso/2
         xp = round(xp, 4)  # avoid float problem
-        yp = iy * reso + reso/2
+        yp = iy * grid_reso + grid_reso/2
         d = np.hypot(gx - xp, gy - yp)
         yp = round(yp, 4)  # avoid float problem
+        print "xp yp",xp,yp
         d = round(d, 4)  # avoid float problem
+        print "d",d
         rx.append(xp)
         ry.append(yp)
 
         if show_animation:
             plt.plot(ix, iy, ".r")
             plt.pause(0.01)
+
+    if (gix * grid_reso + grid_reso/2) != gx or (giy * grid_reso + grid_reso/2) != gy:
+        rx.append(gx)
+        ry.append(gy)
 
     # print("Goal!!")
 
@@ -170,7 +177,7 @@ def draw_heatmap(data):
     plt.pcolor(data, vmax=100.0, cmap=plt.cm.Blues)
 
 
-def potentialField(sx = 2.15, sy = 2.05, gx = 2.15, gy = 3.05, ox = [], oy = [], grid_size = 0.1, robot_radius = 0.5, grid_width = 60, grid_height = 30):
+def potentialField(sx = 2.15, sy = 2.05, gx = 2.15, gy = 3.05, ox = [], oy = [], grid_reso = 0.1, robot_radius = 0.5, grid_width = 6, grid_height = 3):
     """
     Entry, would be called in other class
     :param sx: start x position [m], sx= ix * reso + reso/2
@@ -179,8 +186,10 @@ def potentialField(sx = 2.15, sy = 2.05, gx = 2.15, gy = 3.05, ox = [], oy = [],
     :param gy: goal y position [m]
     :param ox: obstacle x position list [m]
     :param oy: obstacle y position list [m]
-    :param grid_size: default 0.1m
+    :param grid_reso: default 0.1m
     :param robot_radius: default 0.5m
+    :param grid_width: default 6m
+    :param grid_height: default 3m
     :return:
     """
 
@@ -188,14 +197,14 @@ def potentialField(sx = 2.15, sy = 2.05, gx = 2.15, gy = 3.05, ox = [], oy = [],
     # sy = 2.05  # start y positon [m]
     # gx = 2.15  # goal x position [m]
     # gy = 3.05  # goal y position [m]
-    # grid_size = 0.1  # potential grid size [m]
+    # grid_reso = 0.1  # potential grid size [m]
     # robot_radius = 0.5  # robot radius [m]
     # TODO set the
     # ox = []  # obstacle x position list [m]
     # oy = []  # obstacle y position list [m]
 
-    real_height = grid_height / grid_size
-    real_width = grid_width / grid_size
+    width = int(grid_width / grid_reso)
+    height = int(grid_height / grid_reso)
 
     if show_animation:
         plt.grid(True)
@@ -204,11 +213,11 @@ def potentialField(sx = 2.15, sy = 2.05, gx = 2.15, gy = 3.05, ox = [], oy = [],
     # path generation
     if sx < 0 or sy < 0 or gx < 0 or gy < 0:
         print "Error!!! The position can not be negative!"
-    elif sx > real_height or sy > real_width or gx > real_height or gy > real_width:
+    elif sx > grid_height or sy > grid_width or gx > grid_height or gy > grid_width:
         print "Error!!! The position is out of range!"
     else:
         rx, ry = potential_field_planning(
-            sx, sy, gx, gy, ox, oy, grid_size, robot_radius, grid_width, grid_height)
+            sx, sy, gx, gy, ox, oy, grid_reso, robot_radius, width, height)
         # print "X position:\n", rx
         # print "Y position:\n", ry
 
@@ -220,57 +229,10 @@ def potentialField(sx = 2.15, sy = 2.05, gx = 2.15, gy = 3.05, ox = [], oy = [],
         paths_result = np.vstack((rx,ry))
         return paths_result
 
-
-
-
-def main(grid_height = 30, grid_width = 60):
-    print("potential_field_planning start")
-
-
-    sx = 2.15  # start x position [m]
-    sy = 2.05  # start y positon [m]
-    gx = 2.15  # goal x position [m]
-    gy = 3.05  # goal y position [m]
-    grid_size = 0.1  # potential grid size [m]
-    robot_radius = 0.5  # robot radius [m]
-
-    real_width = grid_width * grid_size
-    real_height = grid_height * grid_size
-    # TODO set the
-    ox = []  # obstacle x position list [m]
-    oy = []  # obstacle y position list [m]
-
-    if show_animation:
-        plt.grid(True)
-        plt.axis("equal")
-
-    # path generation
-    if sx < 0 or sy < 0 or gx < 0 or gy < 0:
-        print "Error!!! The position can not be negative!"
-    elif sx > real_height or sy > real_width or gx > real_height or gy > real_width:
-        print "Error!!! The position is out of range!"
-    else:
-        rx, ry = potential_field_planning(
-            sx, sy, gx, gy, ox, oy, grid_size, robot_radius, grid_width, grid_height)
-        print "X position:\n", rx
-        print "Y position:\n", ry
-        if show_animation:
-            plt.xlabel('X')
-            plt.ylabel('Y')
-            plt.title('Potential field path planning')
-            plt.show()
-
-
-
-
+#==========================================================================================================
 if __name__ == '__main__':
     print(__file__ + "------------ Start!!-----------")
-    #main()
     #called in other class
-    potentialField(sx = 2.55, sy = 2.05, gx = 2.55, gy = 4.05)
+    potentialField(sx=1.55, sy=2.05, gx=1.55, gy=4.05, ox=[], oy=[], grid_reso=0.1,
+                   robot_radius=0.5, grid_width=6, grid_height=3)
     print(__file__ + "------------ Done!!------------")
-
-
-
-class MyException(Exception):
-    """Raise for my specific kind of exception"""

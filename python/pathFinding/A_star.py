@@ -36,8 +36,8 @@ class Node:
 def create_gScore(width,height):
     """
     For each node, the cost of getting from the start node to that node.
-    :param width_col:
-    :param height_row:
+    :param width: 60
+    :param height: 30
     :return:
     """
     # gScore = np.matrix(np.ones((width,height)) * np.inf)
@@ -48,8 +48,8 @@ def create_gScore(width,height):
 def create_fScore(width,height):
     """
     For each node, the cost of getting from the start node to that node.
-    :param width_col:
-    :param height_row:
+    :param width: 60
+    :param height: 30
     :return:
     """
     # fScore = np.matrix(np.ones((height_row,width_col)) * np.inf)
@@ -176,25 +176,50 @@ def reconstruct_path(cameFrom, current):
     total_path = np.vstack((l1,l2))
     return total_path
 
-def convertRealPathToGrid(pathReal, grid_size = 0.1):
+def convertGridPathToReal(pathInGrid, sx, sy, gx, gy, grid_reso = 0.1):
     """
-    convert the path in real to grid, e.g.   2.15 -> 21
+    convert the path in real to grid, e.g.   21 -> 2.15
     sx= ix * reso + reso/2
     :param pathReal:
-    :param grid_size:
+    :param grid_reso: default 0.1[m]
     :return:
     """
-    return (pathReal * grid_size+ grid_size/2)
 
-def aStar(startNode = Node(0,0,None,0,0,0), goalNode = Node(3,3,None,0,0,0), d_diagnoal = 14, d_straight = 10, grid_size = 0.1, grid_width = 60, grid_height = 30):
+    pathInReal = (pathInGrid * grid_reso + grid_reso / 2)
+    stepNum = pathInReal.shape[1]
+    # Replace head and tail
+    pathInReal[:, 0] = [sx, sy]
+    pathInReal[:, 0] = [sx, sy]
+    pathInReal[:, stepNum - 1] = [gx, gy]
+    pathInReal[:, stepNum - 1] = [gx, gy]
+
+    return pathInReal
+
+def realPosTogridPos(x_real, y_real, grid_reso = 0.1):
+    ix = int(round((x_real - grid_reso/2) /grid_reso))
+    iy = int(round((y_real - grid_reso/2) /grid_reso))
+    return ix,iy
+
+def aStar(sx = 1.55, sy = 2.05, gx = 1.55, gy = 4.05, d_diagnoal = 14, d_straight = 10, grid_reso = 0.1, grid_width = 6, grid_height = 3):
     """
-     A star algorithm
-    :param start_x:
-    :param start_y:
-    :param end_x:
-    :param end_y:
+    A* algorithm
+    A square 6m x 3m region
+    :param startNode:
+    :param goalNode:
+    :param d_diagnoal:
+    :param d_straight:
+    :param grid_reso: default 0.1[m]
+    :param grid_width: default 6[m]
+    :param grid_height: default 3[m]
     :return:
     """
+    width = int(grid_width/grid_reso)
+    height = int(grid_height/grid_reso)
+    #TODO
+    A_sx, A_sy = realPosTogridPos(sx, sy, grid_reso = grid_reso)
+    A_gx, A_gy = realPosTogridPos(gx, gy, grid_reso = grid_reso)
+    startNode = Node(A_sx,A_sy,None,0,0,0)
+    goalNode = Node(A_gx,A_gy,None,0,0,0)
     # The set of nodes already evaluated
     closedSet = set()
     # The set of currently discovered nodes that are not evaluated yet.
@@ -204,14 +229,14 @@ def aStar(startNode = Node(0,0,None,0,0,0), goalNode = Node(3,3,None,0,0,0), d_d
     # For each node, which node it can most efficiently be reached from.If a node can be reached from many nodes, cameFrom will eventually contain the most efficient previous step.
     cameFrom = []
     # For each node, the cost of getting from the start node to that node.
-    gScore = create_gScore(grid_width, grid_height)
+    gScore = create_gScore(width, height)
     start_x = startNode.x
     start_y = startNode.y
     # The cost of going from start to start is zero.
     startNode.g_value = 0
     gScore[start_x][start_y] = 0
     # For each node, the total cost of getting from the start node to the goal by passing by that node. That value is partly known, partly heuristic.
-    fScore = create_fScore(grid_width, grid_height)
+    fScore = create_fScore(width, height)
     # For the first node, that value is completely heuristic.
     startNode.f_value = heuristic_cost_estimate(startNode, goalNode,d_diagnoal,d_straight)
     fScore[start_x][start_y] = heuristic_cost_estimate(startNode, goalNode,d_diagnoal,d_straight)
@@ -221,12 +246,13 @@ def aStar(startNode = Node(0,0,None,0,0,0), goalNode = Node(3,3,None,0,0,0), d_d
         # If it is the item we want, retrace the path and return it
         if current.equal(goalNode):
             path = reconstruct_path(cameFrom, current) # path in real
-            path_grid = convertRealPathToGrid(path, grid_size) # path in grid
-            return path_grid
+            # print "path",path
+            pathInReal = convertGridPathToReal(path, sx, sy, gx, gy, grid_reso = grid_reso) # path in grid
+            return pathInReal
 
         openSet.remove(current)
         closedSet.add(current)
-        current_neighbors = getNeighbors(current, grid_width, grid_height)
+        current_neighbors = getNeighbors(current, width, height)
         current_neighbors_num = current_neighbors.shape[1]
         # for neighbor in current_neighbors:
         for index in range(current_neighbors_num):
@@ -274,4 +300,4 @@ def aStar(startNode = Node(0,0,None,0,0,0), goalNode = Node(3,3,None,0,0,0), d_d
 # d_straight = 10
 # startNode = Node(20,20,None,0,0,0)
 # goalNode = Node(20,30,None,0,0,0)
-# print aStar(startNode,goalNode,d_diagnoal,d_straight)
+# print aStar(sx = 1.55, sy = 2.05, gx = 1.55, gy = 4.05, d_diagnoal = 14, d_straight = 10, grid_reso = 0.3, grid_width = 6, grid_height = 3)

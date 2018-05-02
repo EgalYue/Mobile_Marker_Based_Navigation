@@ -29,31 +29,30 @@ import potential_field_planning as pfp
 import A_star as Astar
 from A_star import Node
 
-# -----------------------Basic Infos---------------------------------------------------
+# ----------------------- Basic Infos ---------------------------------------------------
 homography_iters = 1000 # TODO iterative for cam pose of each step
 error_iters = 10       # TODO iterative for distance error
 
-# -----------------------marker object points-----------------------------------------
-plane_size = (0.3, 0.3)
-plane = Plane(origin=np.array([0, 0, 0]), normal=np.array([0, 0, 1]), size=plane_size, n=(2, 2))
-plane.set_origin(np.array([0, 0, 0]))
-plane.uniform()
-objectPoints = plane.get_points()
-new_objectPoints = np.copy(objectPoints)
-# --------------------------------------------------------------------------
-
-cell_length = 0.1  # The length of each cell is 0.1m. Each cell of matrix is 0.1m x 0.1m.
-robot_radius = 0.5
-width = 60
-height = 30
+grid_reso = 0.1  # The length of each cell is 0.1m. Each cell of matrix is 0.1m x 0.1m.
+robot_radius = 0.5 # [m]
+grid_width = 6 # default 6[m]
+grid_height = 3 # default 3[m]
 cur_path = os.path.dirname(__file__)
 new_path = os.path.relpath('../CondNum_TheoryValidation_newAccMat/accuracyMatrix.txt', cur_path)
 f = open(new_path, 'r')
 l = [map(float, line.split(' ')) for line in f]
 accuracy_mat = np.asarray(l)  # convert to matrix
 
+# ----------------------- Marker object points -----------------------------------------
+plane_size = (0.3, 0.3)
+plane = Plane(origin=np.array([0, 0, 0]), normal=np.array([0, 0, 1]), size=plane_size, n=(2, 2))
+plane.set_origin(np.array([0, 0, 0]))
+plane.uniform()
+objectPoints = plane.get_points()
+new_objectPoints = np.copy(objectPoints)
+# --------------------------------------------------------------------------------------
 
-def cellCenterPosition(path, grid_size):
+def cellCenterPosition(path, grid_reso):
     """
     Get the exact position of each cell in the real world
     Based on Real World Coordinate System [30,60]
@@ -64,8 +63,8 @@ def cellCenterPosition(path, grid_size):
     real_path = np.eye(2, 1, dtype=float)
     length = path.shape[1]
     for i in range(length):
-        x_str = str(path[0][i] * grid_size + grid_size / 2)
-        y_str = str(path[1][i] * grid_size + grid_size / 2)
+        x_str = str(path[0][i] * grid_reso + grid_reso / 2)
+        y_str = str(path[1][i] * grid_reso + grid_reso / 2)
         x = float(decimal.Decimal(x_str))
         y = float(decimal.Decimal(y_str))
         xy = np.eye(2, 1, dtype=float)
@@ -95,7 +94,7 @@ def marker_set_t(x, y, z, R, frame='world'):
         t[:3, 3] = np.array([x, y, z])
         return t
 
-def getMarkerTransformationMatrix(width, height, cell_length):
+def getMarkerTransformationMatrix(width, height, grid_reso):
     """
     Assume that we create a [30,60] matrix for the area of marker and the center of marker is between 29 and 30.
     The Real World Coordinate System is at [0,0].
@@ -111,7 +110,7 @@ def getMarkerTransformationMatrix(width, height, cell_length):
     gamma = np.deg2rad(0.0)
     R = R_matrix_from_euler_zyx.R_matrix_from_euler_zyx(alpha, beta, gamma)
     x = 0.0
-    y = width / 2.0 * cell_length
+    y = width / 2.0 * grid_reso
     z = 0.0
     t = marker_set_t(x, y, z, R, frame='world')
     T = np.dot(t, R)  # Transformation matrix between World and Marker coordinate systems
@@ -200,7 +199,9 @@ def compute_measured_data(fix_path):
     # print "-- accu_path --:\n",accu_path
 
     path_steps = fix_path.shape[1]  # The total step of  one path
-    T_WM = getMarkerTransformationMatrix(width, height, cell_length)
+    width = int(grid_width/ grid_reso)
+    height = int(grid_height/ grid_reso)
+    T_WM = getMarkerTransformationMatrix(width, height, grid_reso)
 
     # ------------------------ Initialization---------------------
     measured_path = np.zeros((2, 1), dtype=float)
@@ -298,25 +299,28 @@ def computeDistanceErrorMeanStd(fix_path):
     # return measured_path, allPos_list, disErrorMean, disErrorStd
     return measured_path, disErrorMean, disErrorStd, xyError_list, Rmat_error_list_mean, tvec_error_list_mean, Rmat_error_list_std, tvec_error_list_std
 
-def gridPosToRealPos(ix, iy, reso = 0.1):
-    x_real = ix * reso + reso/2
-    y_real = iy * reso + reso/2
-    return x_real,y_real
-
-def realPosTogridPos(x_real, y_real, reso = 0.1):
-    ix = int(round((x_real - reso/2) /reso))
-    iy = int(round((y_real - reso/2) /reso))
-    return ix,iy
+# def gridPosToRealPos(ix, iy, grid_reso = 0.1):
+#     x_real = ix * grid_reso + grid_reso/2
+#     y_real = iy * grid_reso + grid_reso/2
+#     return x_real,y_real
+#
+# def realPosTogridPos(x_real, y_real, grid_reso = 0.1):
+#     ix = int(round((x_real - grid_reso/2) /grid_reso))
+#     iy = int(round((y_real - grid_reso/2) /grid_reso))
+#     return ix,iy
 
 def main():
     #----------------------------- Potential field path planning AND A* path planning -------------------------
     # gird : start = (21,20), goal = (21,30)
     # convert position in grid to real    2.15 2.05 2.15 3.05
-    pfp_sx,pfp_sy= gridPosToRealPos(15,20,reso = cell_length)
-    pfp_gx, pfp_gy = gridPosToRealPos(15, 40, reso=cell_length)
+    # TODO Set the position!!!
+    sx_real = 1.55
+    sy_real = 2.05
+    gx_real = 1.55
+    gy_real = 4.05
 
-    paths_pfp = pfp.potentialField(sx = pfp_sx, sy = pfp_sy, gx = pfp_gx, gy = pfp_gy, ox = [], oy = [], grid_size = cell_length, robot_radius = robot_radius, grid_width = width, grid_height = height)
-    paths_Astar = Astar.aStar(startNode = Node(15,20,None,0,0,0), goalNode = Node(15,40,None,0,0,0), d_diagnoal = 14, d_straight = 10, grid_width = width, grid_height = height)
+    paths_pfp = pfp.potentialField(sx = sx_real, sy = sy_real, gx = gx_real, gy = gy_real, ox = [], oy = [], grid_reso = grid_reso, robot_radius = robot_radius, grid_width = grid_width, grid_height = grid_height)
+    paths_Astar = Astar.aStar(sx = sx_real, sy = sy_real, gx = gx_real, gy = gy_real, d_diagnoal = 14, d_straight = 10, grid_reso = grid_reso, grid_width = grid_width, grid_height = grid_height)
 
     fix_path_list = [] # first is pfp, second is A*
     fix_path_list.append(paths_pfp)
@@ -363,9 +367,9 @@ def main():
     plotPath.plotComparePaths(fix_path_list, disErrorMean_list, disErrorStd_list, Rmat_error_mean_list_AllPaths, tvec_error_mean_list_AllPaths, Rmat_error_std_list_AllPaths, tvec_error_std_list_AllPaths)
 
     plotPath.plotFixedMeasuredFillBetween(fix_path_list, disErrorMean_list)
-    plotPath.plotComparePaths_DisError_3DSurface(xyError_list_AllPaths, resolution = cell_length)
-    plotPath.plotComparePaths_R_error_3DSurface(fix_path_list, Rmat_error_mean_list_AllPaths, resolution=0.1, width=3, height=6)
-    plotPath.plotComparePaths_t_error_3DSurface(fix_path_list, tvec_error_mean_list_AllPaths, resolution=0.1, width=3, height=6)
+    plotPath.plotComparePaths_DisError_3DSurface(xyError_list_AllPaths, grid_reso = grid_reso)
+    plotPath.plotComparePaths_R_error_3DSurface(fix_path_list, Rmat_error_mean_list_AllPaths, grid_reso = grid_reso, width = grid_width, height = grid_height)
+    plotPath.plotComparePaths_t_error_3DSurface(fix_path_list, tvec_error_mean_list_AllPaths, grid_reso = grid_reso, width = grid_width, height = grid_height)
     # ===================================== End main() ===============================================
 
 # =============================== Main Entry ==================================================================

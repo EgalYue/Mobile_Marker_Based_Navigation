@@ -45,7 +45,7 @@ new_objectPoints = np.copy(objectPoints)
 # print "new_objectPoints",new_objectPoints
 # -------------------------------------------------------------------------------------------------
 normalize = False
-homography_iters = 1000     # TODO homography_iters changed
+homography_iters = 1     # TODO homography_iters changed
 
 def heightGetCondNum(cams, accuracy_mat, theta_params, r_params):
 

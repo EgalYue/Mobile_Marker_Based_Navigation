@@ -428,26 +428,26 @@ def plotComparePaths(fix_path_list, disErrorMean_list, disErrorStd_list, Rmat_er
     ax_t_error.set_ylabel('Percent')
     plt.show() # Just use one plt.show in plotAll() method
 
-def plotComparePaths_DisError_3DSurface(xyError_list_AllPaths, resolution = 0.1, width = 3, height = 6):
+def plotComparePaths_DisError_3DSurface(xyError_list_AllPaths, grid_reso = 0.1, width = 3, height = 6):
     """
     Plot the measured paths with 3D surface(like mountain, high mountain means big error, low mountain means small error)
     1.Figure:
     :param xyError_list_AllPaths:
     :param width: 3 [m]
     :param height: 6 [m]
-    :param resolution: default 0.1 [m]
+    :param grid_reso: default 0.1 [m]
     :return:
     """
     path_num = len(xyError_list_AllPaths)
 
-    gridX = int(width / resolution)
-    gridY = int(height / resolution)
+    gridX = int(width / grid_reso)
+    gridY = int(height / grid_reso)
 
     fig = plt.figure("Compare different paths")
     ax = Axes3D(fig)
 
-    Y = np.arange(0, width, resolution)
-    X = np.arange(0, height, resolution)
+    Y = np.arange(0, width, grid_reso)
+    X = np.arange(0, height, grid_reso)
     X, Y = np.meshgrid(X, Y)
     Z = np.zeros((gridX, gridY))
 
@@ -458,10 +458,10 @@ def plotComparePaths_DisError_3DSurface(xyError_list_AllPaths, resolution = 0.1,
             x_real = xyError_list[0+j*3,:]
             y_real = xyError_list[1+j*3,:]
 
-            ix = (x_real - resolution / 2) / resolution
+            ix = (x_real - grid_reso / 2) / grid_reso
             ix = ix.astype(int)
 
-            iy = (y_real - resolution / 2) / resolution
+            iy = (y_real - grid_reso / 2) / grid_reso
             iy = iy.astype(int)
             Z[ix,iy] = xyError_list[2+j*3,:]
 
@@ -480,7 +480,7 @@ def plotComparePaths_DisError_3DSurface(xyError_list_AllPaths, resolution = 0.1,
     ax.set_zlabel('Error between fixed path and measured path (Euclidean distance)')
     plt.show()
 
-def plotComparePaths_R_error_3DSurface(fix_path_list, Rmat_error_mean_list_AllPaths, resolution = 0.1, width = 3, height = 6):
+def plotComparePaths_R_error_3DSurface(fix_path_list, Rmat_error_mean_list_AllPaths, grid_reso = 0.1, width = 6, height = 3):
     """
     Plot the measured paths with 3D surface(like mountain, high mountain means big error, low mountain means small error)
     1.Figure:
@@ -493,14 +493,14 @@ def plotComparePaths_R_error_3DSurface(fix_path_list, Rmat_error_mean_list_AllPa
     #TODO
     path_num = len(fix_path_list)
 
-    gridX = int(width / resolution)
-    gridY = int(height / resolution)
+    gridX = int(height / grid_reso)
+    gridY = int(width / grid_reso)
 
     fig = plt.figure("Compare R error of different paths")
     ax = Axes3D(fig)
 
-    Y = np.arange(0, width, resolution)
-    X = np.arange(0, height, resolution)
+    Y = np.arange(0, height, grid_reso)
+    X = np.arange(0, width, grid_reso)
     X, Y = np.meshgrid(X, Y)
     Z = np.zeros((gridX, gridY))
 
@@ -510,9 +510,9 @@ def plotComparePaths_R_error_3DSurface(fix_path_list, Rmat_error_mean_list_AllPa
         x_real = fixed_path[0,:]
         y_real = fixed_path[1,:]
 
-        ix = (x_real - resolution / 2) / resolution
+        ix = (x_real - grid_reso / 2) / grid_reso
         ix = ix.astype(int)
-        iy = (y_real - resolution / 2) / resolution
+        iy = (y_real - grid_reso / 2) / grid_reso
         iy = iy.astype(int)
 
         Z[ix,iy] = Rmat_error_mean_list
@@ -532,27 +532,27 @@ def plotComparePaths_R_error_3DSurface(fix_path_list, Rmat_error_mean_list_AllPa
     ax.set_zlabel("R error(" + u"\u00b0" + ")")
     plt.show()
 
-def plotComparePaths_t_error_3DSurface(fix_path_list, tvec_error_mean_list_AllPaths, resolution = 0.1, width = 3, height = 6):
+def plotComparePaths_t_error_3DSurface(fix_path_list, tvec_error_mean_list_AllPaths, grid_reso = 0.1, width = 6, height = 3):
     """
     Plot the measured paths with 3D surface(like mountain, high mountain means big error, low mountain means small error)
     1.Figure:
     :param xyError_list_AllPaths:
     :param width: 3 [m]
     :param height: 6 [m]
-    :param resolution: default 0.1 [m]
+    :param grid_reso: default 0.1 [m]
     :return:
     """
     #TODO
     path_num = len(fix_path_list)
 
-    gridX = int(width / resolution)
-    gridY = int(height / resolution)
+    gridX = int(height / grid_reso)
+    gridY = int(width / grid_reso)
 
     fig = plt.figure("Compare t error of different paths")
     ax = Axes3D(fig)
 
-    Y = np.arange(0, width, resolution)
-    X = np.arange(0, height, resolution)
+    Y = np.arange(0, height, grid_reso)
+    X = np.arange(0, width, grid_reso)
     X, Y = np.meshgrid(X, Y)
     Z = np.zeros((gridX, gridY))
 
@@ -562,9 +562,9 @@ def plotComparePaths_t_error_3DSurface(fix_path_list, tvec_error_mean_list_AllPa
         x_real = fixed_path[0,:]
         y_real = fixed_path[1,:]
 
-        ix = (x_real - resolution / 2) / resolution
+        ix = (x_real - grid_reso / 2) / grid_reso
         ix = ix.astype(int)
-        iy = (y_real - resolution / 2) / resolution
+        iy = (y_real - grid_reso / 2) / grid_reso
         iy = iy.astype(int)
 
         Z[ix,iy] = Rmat_error_mean_list
@@ -572,7 +572,7 @@ def plotComparePaths_t_error_3DSurface(fix_path_list, tvec_error_mean_list_AllPa
             # print "X.shape",X.shape
             # print "Y.shape",Y.shape
             # print "Z.shape",Z.shape
-    ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.Reds)
+    ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.plasma)
 
     ax.set_ylim(ax.get_ylim()[::-1])  # invert the axis
     # ax.xaxis.set_ticks(np.arange(0, 6, 0.1)) # set x-ticks
