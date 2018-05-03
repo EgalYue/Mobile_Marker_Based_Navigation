@@ -22,7 +22,6 @@ accuracy_mat = np.asarray(l)  # convert to matrix : 30 x 60
 def changeAccMatSize(accuracy_mat, newRow, newCol):
     oldRow = accuracy_mat.shape[0]
     oldCol = accuracy_mat.shape[1]
-    print int(oldRow / newRow)
     nRow = int(oldRow / newRow)
     nCol = int(oldCol / newCol)
     result = np.zeros((newRow,newCol),dtype=float)
@@ -34,4 +33,4 @@ def changeAccMatSize(accuracy_mat, newRow, newCol):
     return result
 
 #============================== Test =====================================
-print changeAccMatSize(accuracy_mat, 30, 60).shape
+# print changeAccMatSize(accuracy_mat, 30, 60).shape

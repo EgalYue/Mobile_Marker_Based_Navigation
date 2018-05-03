@@ -18,7 +18,7 @@ sys.path.append("..")
 
 import numpy as np
 import matplotlib.pyplot as plt
-# import changeAccMatSize as changeAccMatSize
+import changeAccMatSize as changeAccMatSize
 import os  # Read matrix form file
 # Parameters
 KP = 5.0  # attractive potential gain
@@ -37,6 +37,8 @@ new_path = os.path.relpath('../CondNum_TheoryValidation_newAccMat/accuracyMatrix
 f = open(new_path, 'r')
 l = [map(float, line.split(' ')) for line in f]
 accuracy_mat = np.asarray(l)  # convert to matrix : 30 x 60
+# TODO NEED TO SET
+# accuracy_mat = changeAccMatSize.changeAccMatSize(accuracy_mat,6,12)
 
 
 def calc_potential_field(gx, gy, ox, oy, grid_reso, rr, grid_width, grid_height):
@@ -147,15 +149,15 @@ def potential_field_planning(sx, sy, gx, gy, ox, oy, grid_reso, rr, grid_width, 
                 miniy = iny
         ix = minix
         iy = miniy
-        print "ix iy",ix,iy
+        # print "ix iy",ix,iy
         xp = ix * grid_reso + grid_reso/2
         xp = round(xp, 4)  # avoid float problem
         yp = iy * grid_reso + grid_reso/2
         d = np.hypot(gx - xp, gy - yp)
         yp = round(yp, 4)  # avoid float problem
-        print "xp yp",xp,yp
+        # print "xp yp",xp,yp
         d = round(d, 4)  # avoid float problem
-        print "d",d
+        # print "d",d
         rx.append(xp)
         ry.append(yp)
 
@@ -205,6 +207,7 @@ def potentialField(sx = 2.15, sy = 2.05, gx = 2.15, gy = 3.05, ox = [], oy = [],
 
     width = int(grid_width / grid_reso)
     height = int(grid_height / grid_reso)
+    print "width,height",width,height
 
     if show_animation:
         plt.grid(True)
