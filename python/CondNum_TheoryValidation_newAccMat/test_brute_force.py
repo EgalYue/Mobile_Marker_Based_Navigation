@@ -125,9 +125,9 @@ def cam_distribution_study():
     # cams = create_cam_distribution(cam, plane_size,
     #                                theta_params=(0, 360, 30), phi_params=(0, 70, 10),
     #                                r_params=(0.2, 2.0, 20), plot=False)
-    angle_begin = 10.0#0.0
-    angle_end = 170.0#180.0
-    angle_num = 171 #37 TODO need to set
+    angle_begin = 0.0#0.0
+    angle_end = 180.0#180.0
+    angle_num = 37 #37 TODO need to set
     # angle_step = (angle_end - angle_begin) / (angle_num - 1)
     theta_params = (angle_begin,angle_end,angle_num)
 

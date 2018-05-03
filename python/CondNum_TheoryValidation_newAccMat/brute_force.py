@@ -44,7 +44,7 @@ objectPoints = plane.get_points()
 new_objectPoints = np.copy(objectPoints)
 # print "new_objectPoints",new_objectPoints
 # -------------------------------------------------------------------------------------------------
-normalize = False
+normalized = True
 homography_iters = 1     # TODO homography_iters changed
 
 def heightGetCondNum(cams, accuracy_mat, theta_params, r_params):
@@ -87,7 +87,7 @@ def heightGetCondNum(cams, accuracy_mat, theta_params, r_params):
             input_list.append(cam.t[2, 3])
             input_list.append(cam.radius)
             # TODO normalize points!!!
-            mat_cond = gd.matrix_condition_number_autograd(*input_list, normalize=True)
+            mat_cond = gd.matrix_condition_number_autograd(*input_list, normalize = normalized)
             mat_cond_list.append(mat_cond)
 
             updateAccuracySumMat(accuracy_mat_row_list, accuracy_mat_col_list, num_mat, accuracy_mat_new, mat_cond)

@@ -33,7 +33,7 @@ show_animation = False
 
 # Read accuracy matrix
 cur_path = os.path.dirname(__file__)
-new_path = os.path.relpath('../CondNum_TheoryValidation_newAccMat/accuracyMatrix.txt', cur_path)
+new_path = os.path.relpath('../pathFinding/accuracyMatrix.txt', cur_path)
 f = open(new_path, 'r')
 l = [map(float, line.split(' ')) for line in f]
 accuracy_mat = np.asarray(l)  # convert to matrix : 30 x 60
