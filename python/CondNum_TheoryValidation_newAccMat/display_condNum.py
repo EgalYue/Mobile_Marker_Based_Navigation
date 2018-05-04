@@ -72,11 +72,14 @@ def displayCondNumDistribution(m):
     y = m[1,:]
     z = m[2,:]
     condNum = m[3,:]
-    ax.scatter(x, y, z, s=100, c=condNum, marker="o", cmap="magma") # matplotlib colormap
-    ax.set_title("Condition Number")
+    surf = ax.scatter(x, y, z, s=100, c=condNum, marker="o", cmap="magma") # matplotlib colormap
+    ax.set_title("Condition number distribution")
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
+
+    # Add a color bar which maps values to colors.
+    fig.colorbar(surf, shrink=0.8, aspect=10)
 
     plt.show()
 

@@ -79,6 +79,9 @@ def heightGetCondNum(cams, accuracy_mat, theta_params, r_params):
             accuracy_mat_row_list,accuracy_mat_col_list = camPositionInRealMatGrid(cam_r, cam_angle, accuracy_mat_new_rowNum, accuracy_mat_new_colNum)
             #----------------------------Calculate cond num-----------------------------------
             imagePoints_des.append(np.array(cam.project(objectPoints, False)))
+            # ------------- plot the image points dynamiclly-----------------
+            # plotImagePointsDyn(imagePoints)
+
             input_list = gd.extract_objectpoints_vars(objectPoints)
             input_list.append(np.array(cam.K))
             input_list.append(np.array(cam.R))
@@ -88,6 +91,8 @@ def heightGetCondNum(cams, accuracy_mat, theta_params, r_params):
             input_list.append(cam.radius)
             # TODO normalize points!!!
             mat_cond = gd.matrix_condition_number_autograd(*input_list, normalize = normalized)
+            # TODO normalized with no scaling (scale = 1) , invert the condtion number
+            # mat_cond = 1 / mat_cond
             mat_cond_list.append(mat_cond)
 
             updateAccuracySumMat(accuracy_mat_row_list, accuracy_mat_col_list, num_mat, accuracy_mat_new, mat_cond)
@@ -104,8 +109,6 @@ def heightGetCondNum(cams, accuracy_mat, theta_params, r_params):
             # print "-- valid cam position --\n",cam.get_world_position()
             # print "-- cond num --\n", mat_cond
         #------------------------------- If End------------------------------------------------------
-        # ------------- plot the image points dynamiclly-----------------
-        #plotImagePointsDyn(imagePoints)
     #----------------------------For End-------------------------------------------------------------------
 
     #-----------------Transfer_condNumMatrix_to_accuracyDegreeMatrix-------------------------

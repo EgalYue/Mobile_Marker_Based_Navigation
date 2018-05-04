@@ -151,9 +151,10 @@ def cam_distribution_study():
     smtf.saveMatToFile(accuracy_mat_new)
     # plot condition number distribution
     dc.displayCondNumDistribution(display_mat)
-    dc.displayError_YZ_plane_2D(inputY, inputZ, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t, input_pnp_R)
-    dc.displayError_YZ_plane_3D(inputY, inputZ, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t,
-                             input_pnp_R, input_transfer_error)
+    # plot the Rt error
+    # dc.displayError_YZ_plane_2D(inputY, inputZ, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t, input_pnp_R)
+    # dc.displayError_YZ_plane_3D(inputY, inputZ, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t,
+    #                          input_pnp_R, input_transfer_error)
     print "----------------End-----------------------------"
 
 # ======================================Main ========================================================

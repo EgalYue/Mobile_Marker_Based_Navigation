@@ -207,7 +207,7 @@ def potentialField(sx = 2.15, sy = 2.05, gx = 2.15, gy = 3.05, ox = [], oy = [],
 
     width = int(grid_width / grid_reso)
     height = int(grid_height / grid_reso)
-    print "width,height",width,height
+    # print "width,height",width,height
 
     if show_animation:
         plt.grid(True)

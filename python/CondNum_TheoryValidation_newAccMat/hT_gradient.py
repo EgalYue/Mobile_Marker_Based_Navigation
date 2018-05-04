@@ -10,6 +10,7 @@ sys.path.append("..")
 from vision.camera import *
 import autograd.numpy as np
 from autograd import grad
+import matplotlib.pyplot as plt
 
 class Gradient(object):
   def __init__(self):
@@ -66,9 +67,8 @@ def calculate_A_matrix_autograd(x1,y1,x2,y2,x3,y3,x4,y4,K,R,tx,ty,tz,radius,norm
   image_pts = np.hstack([U1,U2,U3,U4])
 
   if normalize:
-    # object_pts_norm,T1 = normalise_points(object_pts)
-    # image_pts_norm,T2 = normalise_points(image_pts)
     object_pts_norm,T1 = normalise_points(object_pts)
+    # image_pts_norm, T2 = normalise_points(image_pts)
     image_pts_norm,T2 = normalise_points_RadiusScale(image_pts,radius)
 
   else:
@@ -299,7 +299,7 @@ def normalise_points_RadiusScale(pts,radius):
   dist = np.array(dist)
   meandist = np.mean(dist)
   # scale = np.sqrt(2) / meandist # translate and scaling
-  #scale = 1 # Only translate, no scaling
+  # scale = 1 # Only translate, no scaling
   scale = radius*np.sqrt(2) / meandist # translate and set the scale increasing with the radius(distance from cam to marker)
   T = np.array([[scale, 0, -scale * c[0]], [0, scale, -scale * c[1]], [0, 0, 1]])
   newpts = np.dot(T, pts)
@@ -407,3 +407,20 @@ def update_points(gradient, T, limitx=5,limity=5,limitz=5):
 # =======================================Test======================================
 # pts = np.array([[100,200,300,400],[200,100,100,200],[1,1,1,1]])
 # print normalise_points_withoutScale(pts)
+
+
+def plotImagePointsDyn(imagePoints):
+    # ------------- plot the image points dynamiclly-----------------
+    print "imagePoints\n", imagePoints
+    fig1 = plt.figure('Image points')
+    ax_image = fig1.add_subplot(211)
+    ax_image.cla()
+    plt.sca(ax_image)
+    plt.ion()
+    ax_image.plot(imagePoints[0], imagePoints[1], '.', color='blue', )
+    ax_image.set_xlim(0, 1280)
+    ax_image.set_ylim(0, 960)
+    ax_image.invert_yaxis()
+    ax_image.set_title('Image Points')
+    plt.show()
+    plt.pause(0.001)
