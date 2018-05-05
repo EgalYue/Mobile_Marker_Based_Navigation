@@ -28,12 +28,12 @@ import potential_field_planning as pfp
 import A_star as Astar
 import plotPath as plotPath
 import plotPath_mayavi as plotPath_mayavi
-import CondNum_TheoryValidation_newAccMat.hT_gradient as gd
+import CondNumTheoryValidation.hT_gradient as gd
 
 
 # ----------------------- Basic Infos ---------------------------------------------------
-homography_iters = 1000 # TODO iterative for cam pose of each step
-error_iters = 10       # TODO iterative for distance error
+homography_iters = 1 # TODO iterative for cam pose of each step
+error_iters = 1       # TODO iterative for distance error
 normalized = True
 
 
