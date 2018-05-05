@@ -13,7 +13,7 @@ sys.path.append("..")
 from vision.camera import Camera
 from vision.plane import Plane
 from vision.circular_plane import CircularPlane
-from vision.camera_distribution import create_cam_distribution,create_cam_distribution_in_YZ,create_cam_distribution_in_XZ
+from vision.camera_distribution import create_cam_distribution,create_cam_distribution_in_YZ
 import Rt_matrix_from_euler_t as Rt_matrix_from_euler_t
 import brute_force as bf
 import display_condNum as dc

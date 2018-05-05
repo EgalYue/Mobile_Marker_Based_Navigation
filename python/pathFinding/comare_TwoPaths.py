@@ -28,11 +28,14 @@ import potential_field_planning as pfp
 import A_star as Astar
 import plotPath as plotPath
 import plotPath_mayavi as plotPath_mayavi
+import CondNum_TheoryValidation_newAccMat.hT_gradient as gd
 
 
 # ----------------------- Basic Infos ---------------------------------------------------
-homography_iters = 1 # TODO iterative for cam pose of each step
-error_iters = 1       # TODO iterative for distance error
+homography_iters = 1000 # TODO iterative for cam pose of each step
+error_iters = 10       # TODO iterative for distance error
+normalized = True
+
 
 grid_reso = 0.1  # The length of each cell is 0.1m. Each cell of matrix is 0.1m x 0.1m.
 robot_radius = 0.5 # [m]
@@ -188,7 +191,48 @@ def getT_MC_and_Rt_errors(T_WM, pos_world, Rmat_error_loop, tvec_error_loop):
     return T_MC
 
 
+def getCondNum_camPoseInRealWord(x_w, y_w):
+    """
+    Compute the condition number of camera position in real world coordinate
+    :param x_w: camera potion in real world coordinate
+    :param y_w: camera potion in real world coordinate
+    :return:
+    """
+    width = int(grid_width/ grid_reso)
+    height = int(grid_height/ grid_reso)
+    T_WM = getMarkerTransformationMatrix(width, height, grid_reso)
+    pos_world_homo = np.array([x_w, y_w, 0, 1])
+    pos_marker = np.dot(T_WM, pos_world_homo)
 
+    ## CREATE A SIMULATED CAMERA
+    cam = Camera()
+    cam.set_K(fx=800, fy=800, cx=640 / 2., cy=480 / 2.)
+    cam.set_width_heigth(640, 480)
+
+    cam.set_t(pos_marker[0], pos_marker[1], pos_marker[2], 'world')
+    cam.set_R_mat(Rt_matrix_from_euler_t.R_matrix_from_euler_t(0.0, 0, 0))
+    cam.look_at([0, 0, 0])
+
+    radius = np.sqrt(pos_marker[0]**2 + pos_marker[1]**2 + pos_marker[2]**2)
+    angle = np.rad2deg(np.arccos(pos_marker[1] / radius))
+    cam.set_radius(radius)
+    cam.set_angle(angle)
+    objectPoints = np.copy(new_objectPoints)
+    imagePoints = np.array(cam.project(objectPoints, False))
+
+    if ((imagePoints[0, :] < cam.img_width) & (imagePoints[0, :] > 0) & (imagePoints[1, :] < cam.img_height) & (
+            imagePoints[1, :] > 0)).all():
+        input_list = gd.extract_objectpoints_vars(objectPoints)
+        input_list.append(np.array(cam.K))
+        input_list.append(np.array(cam.R))
+        input_list.append(cam.t[0, 3])
+        input_list.append(cam.t[1, 3])
+        input_list.append(cam.t[2, 3])
+        input_list.append(cam.radius)
+        # TODO normalize points!!!
+        condNum = gd.matrix_condition_number_autograd(*input_list, normalize=normalized)
+
+    return condNum
 # ===================================================================================
 
 def compute_measured_data(fix_path):
@@ -365,7 +409,7 @@ def main():
         print "======================LOOP end one time================================="
 
     # ---------------------------- Plot-----------------------------------------------
-    plotPath.plotComparePaths(fix_path_list, disErrorMean_list, disErrorStd_list, Rmat_error_mean_list_AllPaths, tvec_error_mean_list_AllPaths, Rmat_error_std_list_AllPaths, tvec_error_std_list_AllPaths)
+    # plotPath.plotComparePaths(fix_path_list, disErrorMean_list, disErrorStd_list, Rmat_error_mean_list_AllPaths, tvec_error_mean_list_AllPaths, Rmat_error_std_list_AllPaths, tvec_error_std_list_AllPaths)
 
     # plotPath.plotFixedMeasuredFillBetween(fix_path_list, disErrorMean_list)
     # plotPath.plotComparePaths_DisError_3DSurface(xyError_list_AllPaths, grid_reso = grid_reso)

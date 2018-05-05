@@ -7,14 +7,15 @@
 """
 
 # --------------!!! important!!!----------
-# from traits.etsconfig.api import ETSConfig
-# ETSConfig.toolkit = 'wx'
+from traits.etsconfig.api import ETSConfig
+ETSConfig.toolkit = 'wx'
 #-----------------------------------------
 import numpy as np
 from mayavi import mlab
 
 def plotComparePaths_DisError_3DSurface(xyError_list_AllPaths, grid_reso = 0.1, width = 3, height = 6):
     """
+    Using Mayavi
     Plot the measured paths with 3D surface(like mountain, high mountain means big error, low mountain means small error)
     1.Figure:
     :param xyError_list_AllPaths:
@@ -24,15 +25,10 @@ def plotComparePaths_DisError_3DSurface(xyError_list_AllPaths, grid_reso = 0.1, 
     :return:
     """
     path_num = len(xyError_list_AllPaths)
-
     gridX = int(width / grid_reso)
     gridY = int(height / grid_reso)
 
-
-
-    Y = np.arange(0, width, grid_reso)
-    X = np.arange(0, height, grid_reso)
-    X, Y = np.meshgrid(X, Y)
+    X, Y = np.mgrid[0:width:grid_reso, 0:height:grid_reso]
     Z = np.zeros((gridX, gridY))
 
     for i in range(path_num):
@@ -49,9 +45,12 @@ def plotComparePaths_DisError_3DSurface(xyError_list_AllPaths, grid_reso = 0.1, 
             iy = iy.astype(int)
             Z[ix,iy] = xyError_list[2+j*3,:]
 
-            # print "X.shape",X.shape
-            # print "Y.shape",Y.shape
-            # print "Z.shape",Z.shape
+    s = mlab.surf(X, Y, Z,warp_scale="auto")
 
-    s = mlab.surf(X, Y, Z)
+    cat1_extent = (0, 30, 0, 60, -10, 10)
+    mlab.outline(s, color=(.7, .7, .7), extent=cat1_extent)
+    mlab.text(0, 30, 'pf', z=0, width=0.14)
+    mlab.text(30, 30, 'A*', z=0, width=0.14)
+    mlab.title('Compare measured error(Euclidean distance) between Potential field method and A*')
+
     mlab.show()

@@ -44,7 +44,7 @@ objectPoints = plane.get_points()
 new_objectPoints = np.copy(objectPoints)
 # print "new_objectPoints",new_objectPoints
 # -------------------------------------------------------------------------------------------------
-normalized = False
+normalized = True
 homography_iters = 1     # TODO homography_iters changed
 
 def heightGetCondNum(cams, accuracy_mat, theta_params, r_params):
@@ -107,8 +107,8 @@ def heightGetCondNum(cams, accuracy_mat, theta_params, r_params):
             display_array[0:3, 0] = np.copy(cam_position[0:3])
             display_array[3] = np.copy(mat_cond)
             display_mat = np.hstack((display_mat, display_array))
-            # print "-- valid cam position --\n",cam.get_world_position()
-            # print "-- cond num --\n", mat_cond
+            print "-- valid cam position --\n",cam.get_world_position()
+            print "-- cond num --\n", mat_cond
         #------------------------------- If End------------------------------------------------------
     #----------------------------For End-------------------------------------------------------------------
 
