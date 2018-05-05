@@ -7,11 +7,11 @@
 """
 
 # --------------!!! important!!!----------
-from traits.etsconfig.api import ETSConfig
-ETSConfig.toolkit = 'wx'
+# from traits.etsconfig.api import ETSConfig
+# ETSConfig.toolkit = 'wx'
 #-----------------------------------------
 import numpy as np
-from mayavi.mlab import *
+from mayavi import mlab
 
 def plotComparePaths_DisError_3DSurface(xyError_list_AllPaths, grid_reso = 0.1, width = 3, height = 6):
     """
@@ -53,4 +53,5 @@ def plotComparePaths_DisError_3DSurface(xyError_list_AllPaths, grid_reso = 0.1, 
             # print "Y.shape",Y.shape
             # print "Z.shape",Z.shape
 
-    s = surf(X, Y, Z)
+    s = mlab.surf(X, Y, Z)
+    mlab.show()

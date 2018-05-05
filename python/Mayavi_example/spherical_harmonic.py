@@ -8,8 +8,8 @@
 
 # Create the data.
 # --------------!!! important!!!----------
-from traits.etsconfig.api import ETSConfig
-ETSConfig.toolkit = 'wx'
+# from traits.etsconfig.api import ETSConfig
+# ETSConfig.toolkit = 'wx'
 #-----------------------------------------
 from numpy import pi, sin, cos, mgrid
 dphi, dtheta = pi/250.0, pi/250.0
