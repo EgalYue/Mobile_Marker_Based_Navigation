@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 @Time    : 28.04.18 21:16
-@File    : comare_TwoPaths.py
+@File    : compare_TwoPaths.py
 @author: Yue Hu
 
 Compare the error(accuracy) of two paths, there two paths maybe one using A* and another using Potential field based on condition number
@@ -32,8 +32,8 @@ import CondNumTheoryValidation.hT_gradient as gd
 
 
 # ----------------------- Basic Infos ---------------------------------------------------
-homography_iters = 1 # TODO iterative for cam pose of each step
-error_iters = 1       # TODO iterative for distance error
+homography_iters = 1000 # TODO iterative for cam pose of each step
+error_iters = 10       # TODO iterative for distance error
 normalized = True
 
 
@@ -417,6 +417,9 @@ def main():
     # plotPath.plotComparePaths_t_error_3DSurface(fix_path_list, tvec_error_mean_list_AllPaths, grid_reso = grid_reso, width = grid_width, height = grid_height)
     # ---------------------------- Plot with Mayavi ------------------------------------
     plotPath_mayavi.plotComparePaths_DisError_3DSurface(xyError_list_AllPaths, grid_reso = grid_reso)
+    plotPath_mayavi.plotComparePaths_R_error_3DSurface(fix_path_list, Rmat_error_mean_list_AllPaths, grid_reso = grid_reso, width = grid_width, height = grid_height)
+    plotPath_mayavi.plotComparePaths_t_error_3DSurface(fix_path_list, tvec_error_mean_list_AllPaths, grid_reso = grid_reso, width = grid_width, height = grid_height)
+
     # ===================================== End main() ===============================================
 
 # =============================== Main Entry ==================================================================

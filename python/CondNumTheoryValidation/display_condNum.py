@@ -25,41 +25,6 @@ import Rt_matrix_from_euler_t as Rt_matrix_from_euler_t
 # sio.whosmat('testpython.mat')
 
 # -------------------------------------------------------------------------------
-def getConNumColor(condNum):
-    """
-    We do not need this function, if we use matplotlib colormap
-    :param condNum:
-    :return:
-    """
-    color = "white"
-    if condNum > 70000.0:
-        color = 'linen'
-    elif condNum > 60000.0:
-        color = 'antiquewhite'
-    elif condNum > 36100.0:
-        color = 'papayawhip'
-    elif condNum > 30300.0:
-        color = 'oldlace'
-    elif condNum > 24600.0:
-        color = 'cornsilk'
-    elif condNum > 18800.0:
-        color = 'palegoldenrod'
-    elif condNum > 13000.0:
-        color = 'yellow'
-    # elif condNum > 8000:
-    #     color = 'lightblue'
-    elif condNum > 7000.0:
-        color = 'deepskyblue'
-    elif condNum > 4000.0:
-        color = 'red'
-    elif condNum > 2000.0:
-        color = 'green'
-    elif condNum > 1000.0:
-        color = 'maroon'
-    else:
-        color = 'black'
-    return color
-
 def displayCondNumDistribution(m):
     """
     Display distribution of condition number for cam distribution in 3D
