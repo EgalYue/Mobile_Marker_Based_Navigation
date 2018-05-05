@@ -22,16 +22,17 @@ from vision.plane import Plane
 from solve_pnp import pose_pnp
 import cv2
 import error_functions as ef
-import plotPath as plotPath
 import os  # Read matrix form file
 import matplotlib.pyplot as plt
 import potential_field_planning as pfp
 import A_star as Astar
-from A_star import Node
+import plotPath as plotPath
+import plotPath_mayavi as plotPath_mayavi
+
 
 # ----------------------- Basic Infos ---------------------------------------------------
-homography_iters = 1000 # TODO iterative for cam pose of each step
-error_iters = 10       # TODO iterative for distance error
+homography_iters = 1 # TODO iterative for cam pose of each step
+error_iters = 1       # TODO iterative for distance error
 
 grid_reso = 0.1  # The length of each cell is 0.1m. Each cell of matrix is 0.1m x 0.1m.
 robot_radius = 0.5 # [m]
@@ -366,10 +367,12 @@ def main():
     # ---------------------------- Plot-----------------------------------------------
     plotPath.plotComparePaths(fix_path_list, disErrorMean_list, disErrorStd_list, Rmat_error_mean_list_AllPaths, tvec_error_mean_list_AllPaths, Rmat_error_std_list_AllPaths, tvec_error_std_list_AllPaths)
 
-    plotPath.plotFixedMeasuredFillBetween(fix_path_list, disErrorMean_list)
-    plotPath.plotComparePaths_DisError_3DSurface(xyError_list_AllPaths, grid_reso = grid_reso)
-    plotPath.plotComparePaths_R_error_3DSurface(fix_path_list, Rmat_error_mean_list_AllPaths, grid_reso = grid_reso, width = grid_width, height = grid_height)
-    plotPath.plotComparePaths_t_error_3DSurface(fix_path_list, tvec_error_mean_list_AllPaths, grid_reso = grid_reso, width = grid_width, height = grid_height)
+    # plotPath.plotFixedMeasuredFillBetween(fix_path_list, disErrorMean_list)
+    # plotPath.plotComparePaths_DisError_3DSurface(xyError_list_AllPaths, grid_reso = grid_reso)
+    # plotPath.plotComparePaths_R_error_3DSurface(fix_path_list, Rmat_error_mean_list_AllPaths, grid_reso = grid_reso, width = grid_width, height = grid_height)
+    # plotPath.plotComparePaths_t_error_3DSurface(fix_path_list, tvec_error_mean_list_AllPaths, grid_reso = grid_reso, width = grid_width, height = grid_height)
+    # ---------------------------- Plot with Mayavi ------------------------------------
+    plotPath_mayavi.plotComparePaths_DisError_3DSurface(xyError_list_AllPaths, grid_reso = grid_reso)
     # ===================================== End main() ===============================================
 
 # =============================== Main Entry ==================================================================

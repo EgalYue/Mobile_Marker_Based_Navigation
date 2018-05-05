@@ -44,7 +44,7 @@ objectPoints = plane.get_points()
 new_objectPoints = np.copy(objectPoints)
 # print "new_objectPoints",new_objectPoints
 # -------------------------------------------------------------------------------------------------
-normalized = True
+normalized = False
 homography_iters = 1     # TODO homography_iters changed
 
 def heightGetCondNum(cams, accuracy_mat, theta_params, r_params):
@@ -80,6 +80,7 @@ def heightGetCondNum(cams, accuracy_mat, theta_params, r_params):
             #----------------------------Calculate cond num-----------------------------------
             imagePoints_des.append(np.array(cam.project(objectPoints, False)))
             # ------------- plot the image points dynamiclly-----------------
+            # print "-- imagePoints --\n", imagePoints
             # plotImagePointsDyn(imagePoints)
 
             input_list = gd.extract_objectpoints_vars(objectPoints)
