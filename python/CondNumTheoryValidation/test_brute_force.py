@@ -67,15 +67,15 @@ def cam_distribution_study():
     # cams = create_cam_distribution(cam, plane_size,
     #                                theta_params=(0, 360, 30), phi_params=(0, 70, 10),
     #                                r_params=(0.2, 2.0, 20), plot=False)
-    angle_begin = 90.0#0.0
+    angle_begin = 0.0#0.0
     angle_end = 180.0#180.0
-    angle_num = 1 #37 TODO need to set
+    angle_num = 37 #37 TODO need to set
     # angle_step = (angle_end - angle_begin) / (angle_num - 1)
     theta_params = (angle_begin,angle_end,angle_num)
 
     r_begin = 0.1 # we cant set this as 0.0 !!! avoid float error!!!
     r_end = 3.0
-    r_num = 30 #30 TODO need to set
+    r_num = 2 #30 TODO need to set
     # r_step = (r_end - r_begin) / (r_num - 1)
     r_params = (r_begin,r_end,r_num)
 

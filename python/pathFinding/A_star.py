@@ -59,7 +59,7 @@ def create_fScore(width,height):
 
 def heuristic_cost_estimate(start, goal,d_diagnoal,d_straight):
     """
-    Manhattan distance
+    Diagonal distance
     h_diagonal(n) = min(abs(n.x - goal.x), abs(n.y - goal.y))
     h_straight(n) = (abs(n.x - goal.x) + abs(n.y - goal.y))
     h(n) = D_diagnoal * h_diagonal(n) + D_straight * (h_straight(n) - 2*h_diagonal(n)))
@@ -79,7 +79,7 @@ def heuristic_cost_estimate(start, goal,d_diagnoal,d_straight):
 
 def dist_between(current, neighbor,d_diagnoal,d_straight):
     """
-    Manhattan distance
+    Diagonal distance
     h_diagonal(n) = min(abs(n.x - goal.x), abs(n.y - goal.y))
     h_straight(n) = (abs(n.x - goal.x) + abs(n.y - goal.y))
     h(n) = D_diagnoal * h_diagonal(n) + D_straight * (h_straight(n) - 2*h_diagonal(n)))
