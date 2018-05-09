@@ -1,0 +1,61 @@
+This is BibTeX, Version 0.99d (TeX Live 2015/Debian)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: Master_HuYue.aux
+The style file: biblatex.bst
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Database file #1: Master_HuYue-blx.bib
+Database file #2: References.bib
+Biblatex version: 3.3
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 9000 items from 6000.
+You've used 28 entries,
+            6047 wiz_defined-function locations,
+            1268 strings with 12166 characters,
+and the built_in function-call counts, 101500 in all, are:
+= -- 3349
+> -- 6386
+< -- 1060
++ -- 3957
+- -- 4078
+* -- 6090
+:= -- 8529
+add.period$ -- 0
+call.type$ -- 28
+change.case$ -- 375
+chr.to.int$ -- 346
+cite$ -- 54
+duplicate$ -- 10211
+empty$ -- 9315
+format.name$ -- 1704
+if$ -- 20297
+int.to.chr$ -- 0
+int.to.str$ -- 77
+missing$ -- 0
+newline$ -- 638
+num.names$ -- 1309
+pop$ -- 8763
+preamble$ -- 1
+purify$ -- 436
+quote$ -- 0
+skip$ -- 5362
+stack$ -- 0
+substring$ -- 2510
+swap$ -- 3271
+text.length$ -- 897
+text.prefix$ -- 27
+top$ -- 1
+type$ -- 1051
+warning$ -- 0
+while$ -- 769
+width$ -- 0
+write$ -- 609

@@ -1,0 +1,68 @@
+\chapter{Pose Estimation Algorithm}
+\label{chap:Pose_Estimation_Algorithm}
+
+%TODO
+The camera pose consists of 6 degrees-of-freedom (DOF) which are made up of the rotation (roll, pitch, and yaw) and 3D translation of the camera with respect to the world.%wiki
+\section{3D-2D: PnP}
+
+\textbf{PnP(Perspective-n-Point)} is a problem of determining the pose of a calibrated camera, which given a set of n 3D points in the world coordinate system and their corresponding 2D projections in the image\cite{wiki_pnp}.
+% https://en.wikipedia.org/wiki/Perspective-n-Point
+
+There are many methods to solve \textbf{PnP} problem, for example: we can use 3 pairs of pints to determine the camera pose(\textbf{P3P}); \textbf{Direct Linear Transformation(DLT)}; \textbf{Efficient PnP(EPnP)}; \textbf{EPnP Iterative} and so on. In addition, we can also use non-linear method to build a least squares problem and solve it iteratively, that is \textbf{Bundle Adjustment}(we did not use \textbf{Bundle Adjustment} method in this thesis). 
+
+\subsection{Direct linear transformation}
+In projective geometry, \textbf{Direct linear transformation (DLT)} s an algorithm to solve a set of variables from linear equation:
+
+\begin{align*}
+   x_n = Ay_n,  & \text{ for n = 1,...,N}          
+\end{align*}
+
+where $\boldsymbol{x_n}$ and $\boldsymbol{y_n}$ are the known vectors and \textbf{A} is the matrix which contains the unknown variables need to be solved.
+
+Considering one 3D point \textbf{P} in world, its homogeneous coordinate is $\boldsymbol{P} = (X,Y,Z,1)$. The projective points in image is $\boldsymbol{x_1} = (u_1,v_1,1)$(normalized homogeneous coordinate). At this moment, the camera pose \textbf{R}, \textbf{t} is unknown. We assume that augmented matrix 
+$ \boldsymbol{\begin{bmatrix} R|t \end{bmatrix}} $ is a $3 \times 4$ matrix which contains the information of rotation and translation(it is a little different to transformation matrix \textbf{T}). We write down its expanded form:
+
+\begin{equation}
+ s \begin{bmatrix} u_1 \\ v_1 \\ 1 \end{bmatrix}
+  =
+    \begin{bmatrix} t_1 & t_2 & t_3 & t_4 \\
+                    t_5 & t_6 & t_7 & t_8 \\
+                    t_9 & t_{10} & t_{11} & t_{12} \\ \end{bmatrix}                 
+    \begin{bmatrix} X \\ Y \\ Z \\ 1 \end{bmatrix}                  
+\end{equation}
+
+Use the last row of above equation to eliminate \textit{s}, we get 2 constraints:
+
+\begin{align}
+ u_1 &= \frac{t_1X + t_2Y + t_3Z + t_4}{t_9X + t_{10}Y + t_{11}Z + t_{12}}, & 
+ v_1 &= \frac{t_5X + t_6Y + t_7Z + t_8}{t_9X + t_{10}Y + t_{11}Z + t_{12}}              
+\end{align}
+
+We reform the formulas and get:
+
+\begin{align*}
+ \begin{bmatrix} t_1 & t_2 & t_3 & t_4 \end{bmatrix} P -
+ \begin{bmatrix} t_9 & t_{10} & t_{11} & t_{12} \end{bmatrix} u_1 &= 0,\\
+ \begin{bmatrix} t_5 & t_6 & t_7 & t_8 \end{bmatrix} P -
+ \begin{bmatrix} t_9 & t_{10} & t_{11} & t_{12} \end{bmatrix} v_1 &= 0.         
+\end{align*}
+
+We notice that \texttt{t} is the variable to be solved, we can find that each feature 
+point(\texttt{P} and $\boldsymbol{x_1}$) provide two linear constrains about \texttt{t}.
+Assume that we have N feature points all together, we can get following set of equations:
+
+\begin{align}\label{equ:dlt}
+ \begin{bmatrix} P_1^T & 0 & -u_1P_1^T\\
+                 0 & P_1^T & -v_1P_1^T\\
+                 \vdots & \vdots & \vdots\\
+                 P_N^T & 0 & -u_NP_N^T\\
+                 0 & P_N^T & -u_NP_N^T\\ \end{bmatrix} 
+ \begin{bmatrix} t_1 \\ t_2 \\ t_3 \\ t_4 \\
+                 t_5 \\ t_6 \\ t_7 \\ t_8 \\
+                 t_9 \\ t_{10} \\ t_{11} \\ t_{12} \\ \end{bmatrix} 
+ = 0.         
+\end{align}
+
+Because \texttt{t} has total 12 variables, so we need at least 6 pairs of feature points to solve this \texttt{t} responding to transformation matrix \texttt{T}. If we have more than 6 pairs of feature points, we can use \texttt{SVD} to solve overdetermined system of linear equations with least squares method.
+
+Normally, \texttt{DLT} is a useful method to solve \textbf{PnP} problem. Also in our case we used \texttt{DLT} to solve the condition number later.

@@ -1,0 +1,649 @@
+% $ biblatex auxiliary file $
+% $ biblatex version 2.6 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated as
+% required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+\entry{abawi2004accuracy}{inproceedings}{}
+  \name{author}{3}{}{%
+    {{}%
+     {Abawi}{A.}%
+     {Daniel~F}{D.~F.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Bienwald}{B.}%
+     {Joachim}{J.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Dorner}{D.}%
+     {Ralf}{R.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{organization}{1}{%
+    {IEEE Computer Society}%
+  }
+  \strng{namehash}{ADFBJDR1}
+  \strng{fullhash}{ADFBJDR1}
+  \field{sortinit}{A}
+  \field{booktitle}{Proceedings of the 3rd IEEE/ACM International Symposium on
+  Mixed and Augmented Reality}
+  \field{pages}{260\bibrangedash 261}
+  \field{title}{Accuracy in optical tracking with fiducial markers: an accuracy
+  function for ARToolKit}
+  \field{year}{2004}
+\endentry
+
+\entry{acuna2017moma}{article}{}
+  \name{author}{3}{}{%
+    {{}%
+     {Acuna}{A.}%
+     {Raul}{R.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Li}{L.}%
+     {Zaijuan}{Z.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Willert}{W.}%
+     {Volker}{V.}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{ARLZWV1}
+  \strng{fullhash}{ARLZWV1}
+  \field{sortinit}{A}
+  \field{title}{MOMA: Visual Mobile Marker Odometry}
+  \field{journaltitle}{arXiv preprint arXiv:1704.02222}
+  \field{year}{2017}
+\endentry
+
+\entry{bauer2007tracking}{thesis}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Bauer}{B.}%
+     {Martin}{M.}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{BM1}
+  \strng{fullhash}{BM1}
+  \field{sortinit}{B}
+  \field{title}{Tracking Errors in Augmented Reality}
+  \list{institution}{1}{%
+    {Technische Universit{\"a}t M{\"u}nchen}%
+  }
+  \field{type}{phdthesis}
+  \field{year}{2007}
+\endentry
+
+\entry{chen2009error}{article}{}
+  \name{author}{2}{}{%
+    {{}%
+     {Chen}{C.}%
+     {Pei}{P.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Suter}{S.}%
+     {David}{D.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {Springer}%
+  }
+  \strng{namehash}{CPSD1}
+  \strng{fullhash}{CPSD1}
+  \field{sortinit}{C}
+  \field{number}{3}
+  \field{pages}{281\bibrangedash 295}
+  \field{title}{Error analysis in homography estimation by first order
+  approximation tools: a general technique}
+  \field{volume}{33}
+  \field{journaltitle}{Journal of Mathematical Imaging and Vision}
+  \field{year}{2009}
+\endentry
+
+\entry{choset2010robotic}{article}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Choset}{C.}%
+     {Howie}{H.}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{CH1}
+  \strng{fullhash}{CH1}
+  \field{sortinit}{C}
+  \field{title}{Robotic Motion Planning: Potential Functions}
+  \field{journaltitle}{Robotics Institute, Carnegie Mellon University}
+  \field{year}{2010}
+\endentry
+
+\entry{collins2014infinitesimal}{article}{}
+  \name{author}{2}{}{%
+    {{}%
+     {Collins}{C.}%
+     {Toby}{T.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Bartoli}{B.}%
+     {Adrien}{A.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {Springer}%
+  }
+  \strng{namehash}{CTBA1}
+  \strng{fullhash}{CTBA1}
+  \field{sortinit}{C}
+  \field{number}{3}
+  \field{pages}{252\bibrangedash 286}
+  \field{title}{Infinitesimal plane-based pose estimation}
+  \field{volume}{109}
+  \field{journaltitle}{International journal of computer vision}
+  \field{year}{2014}
+\endentry
+
+\entry{darmanin2017review}{inproceedings}{}
+  \name{author}{2}{}{%
+    {{}%
+     {Darmanin}{D.}%
+     {Rachael~N}{R.~N.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Bugeja}{B.}%
+     {Marvin~K}{M.~K.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{organization}{1}{%
+    {IEEE}%
+  }
+  \strng{namehash}{DRNBMK1}
+  \strng{fullhash}{DRNBMK1}
+  \field{sortinit}{D}
+  \field{booktitle}{Control and Automation (MED), 2017 25th Mediterranean
+  Conference on}
+  \field{pages}{701\bibrangedash 706}
+  \field{title}{A review on multi-robot systems categorised by application
+  domain}
+  \field{year}{2017}
+\endentry
+
+\entry{hartley2000multiple}{article}{}
+  \name{author}{2}{}{%
+    {{}%
+     {Hartley}{H.}%
+     {Richard}{R.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Zisserman}{Z.}%
+     {Andrew}{A.}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{HRZA1}
+  \strng{fullhash}{HRZA1}
+  \field{sortinit}{H}
+  \field{pages}{106\bibrangedash 108}
+  \field{title}{Multiple View Geometry in Computer Vision Second Edition}
+  \field{journaltitle}{Cambridge University Press}
+  \field{year}{2000}
+\endentry
+
+\entry{kurazume1994cooperative}{inproceedings}{}
+  \name{author}{3}{}{%
+    {{}%
+     {Kurazume}{K.}%
+     {Ryo}{R.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Nagata}{N.}%
+     {Shigemi}{S.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Hirose}{H.}%
+     {Shigeo}{S.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{organization}{1}{%
+    {IEEE}%
+  }
+  \strng{namehash}{KRNSHS1}
+  \strng{fullhash}{KRNSHS1}
+  \field{sortinit}{K}
+  \field{booktitle}{Robotics and Automation, 1994. Proceedings., 1994 IEEE
+  International Conference on}
+  \field{pages}{1250\bibrangedash 1257}
+  \field{title}{Cooperative positioning with multiple robots}
+  \field{year}{1994}
+\endentry
+
+\entry{lepetit2009epnp}{article}{}
+  \name{author}{3}{}{%
+    {{}%
+     {Lepetit}{L.}%
+     {Vincent}{V.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Moreno-Noguer}{M.-N.}%
+     {Francesc}{F.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Fua}{F.}%
+     {Pascal}{P.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {Springer}%
+  }
+  \strng{namehash}{LVMNFFP1}
+  \strng{fullhash}{LVMNFFP1}
+  \field{sortinit}{L}
+  \field{number}{2}
+  \field{pages}{155}
+  \field{title}{Epnp: An accurate o (n) solution to the pnp problem}
+  \field{volume}{81}
+  \field{journaltitle}{International journal of computer vision}
+  \field{year}{2009}
+\endentry
+
+\entry{AHeuristic}{misc}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Patel}{P.}%
+     {Amit}{A.}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{PA1}
+  \strng{fullhash}{PA1}
+  \field{sortinit}{P}
+  \field{title}{{A*'s Use of the Heuristic}}
+  \verb{url}
+  \verb http://theory.stanford.edu/~amitp/GameProgramming/Heuristics.html#heuri
+  \verb stics-for-grid-maps
+  \endverb
+  \field{urlday}{11}
+  \field{urlmonth}{04}
+  \field{urlyear}{2018}
+\endentry
+
+\entry{pentenrieder2006analysis}{inproceedings}{}
+  \true{moreauthor}
+  \name{author}{3}{}{%
+    {{}%
+     {Pentenrieder}{P.}%
+     {Katharina}{K.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Meier}{M.}%
+     {Peter}{P.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Klinker}{K.}%
+     {Gudrun}{G.}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{PKMPKG+1}
+  \strng{fullhash}{PKMPKG+1}
+  \field{sortinit}{P}
+  \field{booktitle}{Proc. Dritter Workshop Virtuelle und Erweiterte Realitt der
+  GIFachgruppe VR/AR, Koblenz, Germany}
+  \field{title}{Analysis of tracking accuracy for single-camera
+  square-marker-based tracking}
+  \field{year}{2006}
+\endentry
+
+\entry{rangarajan2009estimating}{inproceedings}{}
+  \name{author}{2}{}{%
+    {{}%
+     {Rangarajan}{R.}%
+     {Prasanna}{P.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Papamichalis}{P.}%
+     {Panos}{P.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{organization}{1}{%
+    {IEEE}%
+  }
+  \strng{namehash}{RPPP1}
+  \strng{fullhash}{RPPP1}
+  \field{sortinit}{R}
+  \field{booktitle}{Image Processing (ICIP), 2009 16th IEEE International
+  Conference on}
+  \field{pages}{3517\bibrangedash 3520}
+  \field{title}{Estimating homographies without normalization}
+  \field{year}{2009}
+\endentry
+
+\entry{dynamic_markers}{inproceedings}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Raul~Acuna}{R.~A.}%
+     {Volker~Willer}{V.~W.}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{RAVW1}
+  \strng{fullhash}{RAVW1}
+  \field{sortinit}{R}
+  \field{title}{Dynamic Markers: Optimal control point configurations for
+  homography and pose estimation}
+\endentry
+
+\entry{RoboTemad2}{misc}{}
+  \name{author}{1}{}{%
+    {{}%
+     {RoboTemad2}{R.}%
+     {}{}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{R1}
+  \strng{fullhash}{R1}
+  \field{sortinit}{R}
+  \field{title}{{Artificial Potential Field Approach and its Problems}}
+  \verb{url}
+  \verb https://www.robotshop.com/letsmakerobots/artificial-potential-field-app
+  \verb roach-and-its-problems
+  \endverb
+  \field{urlday}{25}
+  \field{urlmonth}{10}
+  \field{urlyear}{2014}
+\endentry
+
+\entry{vincent_spruyt}{misc}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Spruyt}{S.}%
+     {Vincent}{V.}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{SV1}
+  \strng{fullhash}{SV1}
+  \field{sortinit}{S}
+  \field{title}{{How to draw a covariance error ellipse?}}
+  \verb{url}
+  \verb http://www.visiondummy.com/2014/04/draw-error-ellipse-representing-cova
+  \verb riance-matrix/
+  \endverb
+  \field{urlday}{03}
+  \field{urlmonth}{04}
+  \field{urlyear}{2014}
+\endentry
+
+\entry{SOLVEPNP_ITERATIVE}{misc}{}
+  \name{author}{1}{}{%
+    {{}%
+     {team}{t.}%
+     {}{}%
+     {opencv~dev}{o.~d.}%
+     {}{}}%
+  }
+  \strng{namehash}{tod1}
+  \strng{fullhash}{tod1}
+  \field{sortinit}{T}
+  \field{title}{{Camera Calibration and 3D Reconstruction}}
+  \verb{url}
+  \verb https://docs.opencv.org/2.4/modules/calib3d/doc/camera_calibration_and_
+  \verb 3d_reconstruction.html#solvepnp
+  \endverb
+  \field{urlday}{07}
+  \field{urlmonth}{05}
+  \field{urlyear}{2018}
+\endentry
+
+\entry{matplotlib}{misc}{}
+  \name{author}{1}{}{%
+    {{}%
+     {team.}{t.}%
+     {The~Matplotlib}{T.~M.}%
+     {development}{d.}%
+     {}{}}%
+  }
+  \strng{namehash}{tTMd1}
+  \strng{fullhash}{tTMd1}
+  \field{sortinit}{T}
+  \field{title}{{matplotlib}}
+  \verb{url}
+  \verb https://matplotlib.org/examples/color/colormaps_reference.html
+  \endverb
+  \field{urlday}{05}
+  \field{urlmonth}{10}
+  \field{urlyear}{2017}
+\endentry
+
+\entry{wang2014vision}{article}{}
+  \name{author}{3}{}{%
+    {{}%
+     {Wang}{W.}%
+     {Xiaoqin}{X.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {{\c{S}}ekercio{\u{g}}lu}{{\c{S}}.}%
+     {Y~Ahmet}{Y.~A.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Drummond}{D.}%
+     {Tom}{T.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {Multidisciplinary Digital Publishing Institute}%
+  }
+  \strng{namehash}{WXSYADT1}
+  \strng{fullhash}{WXSYADT1}
+  \field{sortinit}{W}
+  \field{number}{1}
+  \field{pages}{1\bibrangedash 22}
+  \field{title}{Vision-based cooperative pose estimation for localization in
+  multi-robot systems equipped with RGB-D cameras}
+  \field{volume}{4}
+  \field{journaltitle}{Robotics}
+  \field{year}{2014}
+\endentry
+
+\entry{wiki_A}{misc}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Wikipedia}{W.}%
+     {}{}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{W1}
+  \strng{fullhash}{W1}
+  \field{sortinit}{W}
+  \field{title}{{A* search algorithm}}
+  \verb{url}
+  \verb https://en.wikipedia.org/wiki/A*_search_algorithm
+  \endverb
+  \field{urlday}{28}
+  \field{urlmonth}{04}
+  \field{urlyear}{2018}
+\endentry
+
+\entry{wiki_cn}{misc}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Wikipedia}{W.}%
+     {}{}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{W1}
+  \strng{fullhash}{W1}
+  \field{sortinit}{W}
+  \field{title}{{Condition number}}
+  \verb{url}
+  \verb https://en.wikipedia.org/wiki/Condition_number
+  \endverb
+  \field{urlday}{28}
+  \field{urlmonth}{11}
+  \field{urlyear}{2017}
+\endentry
+
+\entry{wiki_do}{misc}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Wikipedia}{W.}%
+     {}{}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{W1}
+  \strng{fullhash}{W1}
+  \field{sortinit}{W}
+  \field{title}{{Distortion (optics)}}
+  \verb{url}
+  \verb https://en.wikipedia.org/wiki/Distortion_(optics)
+  \endverb
+  \field{urlday}{12}
+  \field{urlmonth}{03}
+  \field{urlyear}{2018}
+\endentry
+
+\entry{wiki_ea}{misc}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Wikipedia}{W.}%
+     {}{}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{W1}
+  \strng{fullhash}{W1}
+  \field{sortinit}{W}
+  \field{title}{{Euler angles}}
+  \verb{url}
+  \verb https://en.wikipedia.org/wiki/Euler_angles
+  \endverb
+  \field{urlday}{14}
+  \field{urlmonth}{03}
+  \field{urlyear}{2018}
+\endentry
+
+\entry{wiki_motion_planning}{misc}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Wikipedia}{W.}%
+     {}{}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{W1}
+  \strng{fullhash}{W1}
+  \field{sortinit}{W}
+  \field{title}{{Motion planning}}
+  \verb{url}
+  \verb https://en.wikipedia.org/wiki/Motion_planning
+  \endverb
+  \field{urlday}{14}
+  \field{urlmonth}{03}
+  \field{urlyear}{2018}
+\endentry
+
+\entry{wiki_ofaatm}{misc}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Wikipedia}{W.}%
+     {}{}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{W1}
+  \strng{fullhash}{W1}
+  \field{sortinit}{W}
+  \field{title}{{One-factor-at-a-time method}}
+  \verb{url}
+  \verb https://en.wikipedia.org/wiki/One-factor-at-a-time_method
+  \endverb
+  \field{urlday}{07}
+  \field{urlmonth}{09}
+  \field{urlyear}{2017}
+\endentry
+
+\entry{wiki_pnp}{misc}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Wikipedia}{W.}%
+     {}{}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{W1}
+  \strng{fullhash}{W1}
+  \field{sortinit}{W}
+  \field{title}{{Perspective-n-Point}}
+  \verb{url}
+  \verb https://en.wikipedia.org/wiki/Perspective-n-Point
+  \endverb
+  \field{urlday}{24}
+  \field{urlmonth}{09}
+  \field{urlyear}{2017}
+\endentry
+
+\entry{wiki_rt}{misc}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Wikipedia}{W.}%
+     {}{}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{W1}
+  \strng{fullhash}{W1}
+  \field{sortinit}{W}
+  \field{title}{{Rigid transformation}}
+  \verb{url}
+  \verb https://en.wikipedia.org/wiki/Rigid_transformation
+  \endverb
+  \field{urlday}{18}
+  \field{urlmonth}{10}
+  \field{urlyear}{2017}
+\endentry
+
+\lossort
+\endlossort
+
+\endinput

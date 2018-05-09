@@ -21,7 +21,7 @@ def plotPath(fix_path, measured_path):
     # ---------------------Fix path----------------------------------------
     x_fix = fix_path[0, :]
     y_fix = fix_path[1, :]
-    plt.plot(y_fix, x_fix, color='black', label='Fix path')  # x,y  exchange position
+    plt.plot(y_fix, x_fix, color='black', label='Desired path')  # x,y  exchange position
     plt.scatter(y_fix, x_fix, c="black", marker='o')
     # ---------------------Measured path----------------------------------------
     x_measured = measured_path[0, :]
@@ -124,14 +124,14 @@ def plotAllPaths(fix_path_list, measured_path_list, Rmat_error_list, tvec_error_
 
         y_R_error = Rmat_error
         ax_R_error.xaxis.set_ticks(np.arange(0, len(Rmat_error) + 1, 1))
-        ax_R_error.plot(x_R_error, y_R_error, color=colour, label='Fixed path R error')
+        ax_R_error.plot(x_R_error, y_R_error, color=colour, label='Desired path R error')
         ax_R_error.scatter(x_R_error, y_R_error, c="black", marker='o')
         # -------------------------r error ---------------------------------
         tvec_error = tvec_error_list[i]
         x_t_error = np.arange(1, len(tvec_error) + 1, 1)
         y_t_error = tvec_error
         ax_t_error.xaxis.set_ticks(np.arange(0, len(tvec_error) + 1, 1))
-        ax_t_error.plot(x_t_error, y_t_error, color=colour, label='Fixed path t error')
+        ax_t_error.plot(x_t_error, y_t_error, color=colour, label='Desired path t error')
         ax_t_error.scatter(x_t_error, y_t_error, c="black", marker='o')
 
     #---------------- Fix path ------------------------------
@@ -145,8 +145,8 @@ def plotAllPaths(fix_path_list, measured_path_list, Rmat_error_list, tvec_error_
     # ax.yaxis.set_ticks(np.arange(0, 3, 0.1)) # set y-ticks
     ax_fix.yaxis.tick_left()  # remove right y-Ticks
     # ax_fix.set_title("Compare different fix paths")
-    ax_fix.set_xlabel('Fixed path: Y_W')
-    ax_fix.set_ylabel('Fixed path: X_W')
+    ax_fix.set_xlabel('Desired path: Y_W')
+    ax_fix.set_ylabel('Desired path: X_W')
 
     #---------------- Measured path ------------------------------
     fontP = FontProperties()
@@ -268,9 +268,9 @@ def plotFixedMeasuredFillBetween(fix_path_list, disErrorMean_list):
     for i in range(0, path_num):
         #-------------------------------------------------------------
         if i ==0:
-            label = "Potential field pathfinding"
+            label = "Artificial potential fields pathfinding"
         if i ==1:
-            label = "A star pathfinding"
+            label = "A* pathfinding"
         color = colours[i] # only for two paths
 
         x_fix = fix_path_list[i][0, :]
@@ -293,7 +293,7 @@ def plotFixedMeasuredFillBetween(fix_path_list, disErrorMean_list):
 
     #---------------- Fix path ------------------------------
     fontP = FontProperties()
-    # fontP.set_size('small')
+    fontP.set_size('large')
     ax_fix.legend(prop=fontP, loc=9, bbox_to_anchor=(0.5, -0.1), ncol=3)  # Move legend outside of figure in matplotlib
     ax_fix.set_ylim(ax_fix.get_ylim()[::-1])  # invert the axis
     # ax.xaxis.set_ticks(np.arange(0, 6, 0.1)) # set x-ticks
@@ -301,8 +301,8 @@ def plotFixedMeasuredFillBetween(fix_path_list, disErrorMean_list):
     # ax.yaxis.set_ticks(np.arange(0, 3, 0.1)) # set y-ticks
     ax_fix.yaxis.tick_left()  # remove right y-Ticks
     # ax_fix.set_title("Compare different fix paths")
-    ax_fix.set_xlabel('Fixed path: Y_W')
-    ax_fix.set_ylabel('Fixed path: X_W')
+    ax_fix.set_xlabel('Y: World coordinate (m)')
+    ax_fix.set_ylabel('X: World coordinate (m)')
 
     plt.show() # Just use one plt.show in plotAll() method
 
@@ -339,9 +339,9 @@ def plotComparePaths(fix_path_list, disErrorMean_list, disErrorStd_list, Rmat_er
         color = colours[i] # only for two paths
         x_fix = fix_path_list[i][0, :]
         if i ==0:
-            label = "Potential field pathfinding"
+            label = "Artificial potential fields pathfinding"
         if i ==1:
-            label = "A star pathfinding"
+            label = "A* pathfinding"
         #-------------------------------------------------------------
         y_fix = fix_path_list[i][1, :]
         l = ax_fix.plot(y_fix, x_fix,color =color, label=label)
@@ -390,7 +390,7 @@ def plotComparePaths(fix_path_list, disErrorMean_list, disErrorStd_list, Rmat_er
 
     #---------------- Fix path ------------------------------
     fontP = FontProperties()
-    # fontP.set_size('small')
+    fontP.set_size('large')
     ax_fix.legend(prop=fontP, loc=9, bbox_to_anchor=(0.5, -0.1), ncol=3)  # Move legend outside of figure in matplotlib
 
     ax_fix.set_ylim(ax_fix.get_ylim()[::-1])  # invert the axis
@@ -399,16 +399,17 @@ def plotComparePaths(fix_path_list, disErrorMean_list, disErrorStd_list, Rmat_er
     # ax.yaxis.set_ticks(np.arange(0, 3, 0.1)) # set y-ticks
     ax_fix.yaxis.tick_left()  # remove right y-Ticks
     # ax_fix.set_title("Compare different fix paths")
-    ax_fix.set_xlabel('Fixed path: Y_W')
-    ax_fix.set_ylabel('Fixed path: X_W')
+    ax_fix.set_xlabel('Y: World coordinate (m)')
+    ax_fix.set_ylabel('X: World coordinate (m)')
 
     # ====================== Plot position error =========================================
     fontP = FontProperties()
-    # fontP.set_size('small')
+    fontP.set_size('large')
+    # ax_measured_distance.xaxis.set_ticks(np.arange(0, 20, 1)) # set x-ticks
     ax_measured_distance.legend(prop=fontP, loc=9, bbox_to_anchor=(0.5, -0.1), ncol=3)  # Move legend outside of figure in matplotlib
-    ax_measured_distance.set_title("Position error between fixed path and measured path(Euclidean distance)")
+    ax_measured_distance.set_title("Position error between desired path and measured path (Euclidean distance)")
     ax_measured_distance.set_xlabel('Step')
-    ax_measured_distance.set_ylabel('Error(m)')
+    ax_measured_distance.set_ylabel('Error (m)')
 
     # ====================== Plot R t error ============================
     plt.sca(ax_R_error)
@@ -417,11 +418,11 @@ def plotComparePaths(fix_path_list, disErrorMean_list, disErrorStd_list, Rmat_er
     # ax_R_error.legend(prop=fontP, loc=9, bbox_to_anchor=(0.5, -0.1), ncol=3)  # Move legend outside of figure in matplotlib
     ax_R_error.set_title("R error(" + u"\u00b0" + ")")
     ax_R_error.set_xlabel('Step')
-    ax_R_error.set_ylabel('Angle(degree)')
+    ax_R_error.set_ylabel('Angle (degree)')
 
     plt.sca(ax_t_error)
     fontP = FontProperties()
-    fontP.set_size('small')
+    fontP.set_size('large')
     ax_R_error.legend(prop=fontP, loc=9, bbox_to_anchor=(0.5, -0.1), ncol=3)  # Move legend outside of figure in matplotlib
     ax_t_error.set_title("t error(%)")
     ax_t_error.set_xlabel('Step')
@@ -477,7 +478,7 @@ def plotComparePaths_DisError_3DSurface(xyError_list_AllPaths, grid_reso = 0.1, 
     # ax.yaxis.tick_left()  # remove right y-Ticks
     ax.set_xlabel('Y: world coordinate')
     ax.set_ylabel('X: world coordinate')
-    ax.set_zlabel('Error between fixed path and measured path (Euclidean distance)')
+    ax.set_zlabel('Error between desired path and measured path (Euclidean distance)')
     plt.show()
 
 def plotComparePaths_R_error_3DSurface(fix_path_list, Rmat_error_mean_list_AllPaths, grid_reso = 0.1, width = 6, height = 3):

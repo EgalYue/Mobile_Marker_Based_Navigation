@@ -75,7 +75,7 @@ def cam_distribution_study():
 
     r_begin = 0.1 # we cant set this as 0.0 !!! avoid float error!!!
     r_end = 3.0
-    r_num = 2 #30 TODO need to set
+    r_num = 30 #30 TODO need to set
     # r_step = (r_end - r_begin) / (r_num - 1)
     r_params = (r_begin,r_end,r_num)
 
@@ -92,11 +92,19 @@ def cam_distribution_study():
     print "-----accuracy_mat_new---------\n",accuracy_mat_new
     smtf.saveMatToFile(accuracy_mat_new)
     # plot condition number distribution
-    dc.displayCondNumDistribution(display_mat)
+    # dc.displayCondNumDistribution(display_mat)
     # plot the Rt error
     # dc.displayError_YZ_plane_2D(inputY, inputZ, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t, input_pnp_R)
     # dc.displayError_YZ_plane_3D(inputY, inputZ, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t,
-    #                          input_pnp_R, input_transfer_error)
+    #                           input_pnp_R, input_transfer_error)
+    # dc.displayRTError3D_ippe12(inputY, inputZ, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t,
+    #                           input_pnp_R, input_transfer_error)
+    # dc.displayRTError3D_LM(inputY, inputZ, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t,
+    #                           input_pnp_R, input_transfer_error)
+    # dc.displayRTError3D_EPNP(inputY, inputZ, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t,
+    #                           input_pnp_R, input_transfer_error)
+    dc.displayRTError3D_DLS(inputY, inputZ, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t,
+                              input_pnp_R, input_transfer_error)
     print "----------------End-----------------------------"
 
 # ======================================Main ========================================================

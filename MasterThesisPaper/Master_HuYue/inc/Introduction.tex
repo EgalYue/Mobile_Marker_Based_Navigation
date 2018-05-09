@@ -1,0 +1,13 @@
+\chapter{Introduction}
+\label{chap:Introduction}
+
+Visual pose estimation and localization is a very important step for robotic applications e.g. navigation and mapping. If we know the amount of knowledge about the surrounding environment e.g. the structure and geometry, with the help of camera(s) configuration(monocular, stereoscope or multi-camera) we can get possible corresponding solutions.
+
+%-----------------------------
+Multi-Robot Systems(MRSs) were first proposed by researchers since the late 1980s, are becoming increasingly in many applications, such as surveillance, search and rescue, exploration, cooperative manipulation, and transportation of objects and so on\cite{darmanin2017review}. Compared to single robot systems, MRSs have several advantages on faster task completion, more time-efficient, less prone to single-points of failure, and higher estimation accuracy through sensor fusion\cite{darmanin2017review} \cite{wang2014vision}.
+
+Our work is an extension of visual mobile marker odometry based on marker-based method developed by Raul Acuna, Zaijuan Li and Volker Willert\cite{acuna2017moma}. A mobile two-robot caterpillar system is applied, one robot with marker called MOMA and the other one with camera called observer. The observer follows the movement of the MOMA continuously. In this case, it allows the robot system to localize itself in an unstructured environment lacking enough features and reduces the accumulated error.
+
+In many applications the tracking accuracy plays an important role, it is very important to know how accurate the results are for a given tracking system. Hence, in our two-robot caterpillar system the accuracy function is one thing worth to study. In some previously researches such as \cite{abawi2004accuracy} and \cite{pentenrieder2006analysis} the tracking accuracy function dependent on distance as well as angle between camera and marker, however their accuracy functions were derived from experimental data, which means it is just a distribution according to rotational error and translational error. To fill this gap in this field we propose a "real" function to describe the accuracy function.
+
+In this thesis we analyze the visual marker based tracking system and then we propose the accuracy function based on condition number used to describe the tracking system. Using this accuracy function we can find the most accurate path in the detection region of the observer in the two-robot caterpillar system. After that we identify the important factors which can influence the tracking accuracy funciton. Finally, we compare the accuracy of different paths computed with \texttt{A*} search algorithm and artificial potential fields method in this tracking system.  

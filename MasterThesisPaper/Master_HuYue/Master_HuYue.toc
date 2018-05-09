@@ -1,0 +1,55 @@
+\boolfalse {citerequest}\boolfalse {citetracker}\boolfalse {pagetracker}\boolfalse {backtracker}\relax 
+\select@language {english}
+\select@language {english}
+\contentsline {chapter}{\numberline {1}Abstract}{1}{chapter.1}
+\contentsline {chapter}{\numberline {2}Introduction}{2}{chapter.2}
+\contentsline {chapter}{\numberline {3}Error Representations and Three-dimensional Rigid Transformation}{3}{chapter.3}
+\contentsline {section}{\numberline {3.1}Error representations}{3}{section.3.1}
+\contentsline {subsection}{\numberline {3.1.1}Norms}{3}{subsection.3.1.1}
+\contentsline {subsection}{\numberline {3.1.2}SVD}{4}{subsection.3.1.2}
+\contentsline {subsection}{\numberline {3.1.3}Condition number}{5}{subsection.3.1.3}
+\contentsline {subsection}{\numberline {3.1.4}Root mean square error}{5}{subsection.3.1.4}
+\contentsline {section}{\numberline {3.2}Three-dimensional rigid transformation}{5}{section.3.2}
+\contentsline {subsection}{\numberline {3.2.1}Euclidean transformation between coordinate systems}{6}{subsection.3.2.1}
+\contentsline {subsection}{\numberline {3.2.2}Elemental rotation matrix}{7}{subsection.3.2.2}
+\contentsline {subsection}{\numberline {3.2.3}Euler angles}{8}{subsection.3.2.3}
+\contentsline {subsection}{\numberline {3.2.4}Transform matrix and homogeneous matrix representation}{9}{subsection.3.2.4}
+\contentsline {chapter}{\numberline {4}Camera Model}{11}{chapter.4}
+\contentsline {section}{\numberline {4.1}The relationship between pixel plane coordinate system and image plane coordinate system}{12}{section.4.1}
+\contentsline {section}{\numberline {4.2}The relationship between camera coordinate system and world coordinate system}{13}{section.4.2}
+\contentsline {section}{\numberline {4.3}The Relationship between camera coordinate system and image plane coordinate system}{13}{section.4.3}
+\contentsline {section}{\numberline {4.4}Camera distortion and image}{15}{section.4.4}
+\contentsline {chapter}{\numberline {5}Non-linear Optimization}{17}{chapter.5}
+\contentsline {section}{\numberline {5.1}Gradient descent method}{17}{section.5.1}
+\contentsline {section}{\numberline {5.2}Non-linear least squares}{19}{section.5.2}
+\contentsline {chapter}{\numberline {6}Pose Estimation Algorithm}{21}{chapter.6}
+\contentsline {section}{\numberline {6.1}3D-2D: PnP}{21}{section.6.1}
+\contentsline {subsection}{\numberline {6.1.1}Direct linear transformation}{21}{subsection.6.1.1}
+\contentsline {chapter}{\numberline {7}Visual Mobile Marker Odometry}{23}{chapter.7}
+\contentsline {chapter}{\numberline {8}Accuracy in Optical Tracking with Fiducial Markers using Condition Number}{25}{chapter.8}
+\contentsline {section}{\numberline {8.1}The Accuracy function}{25}{section.8.1}
+\contentsline {subsection}{\numberline {8.1.1}Accuracy function in past studies}{26}{subsection.8.1.1}
+\contentsline {subsection}{\numberline {8.1.2}The desired accuracy function}{28}{subsection.8.1.2}
+\contentsline {subsection}{\numberline {8.1.3}Homography estimation}{31}{subsection.8.1.3}
+\contentsline {subsection}{\numberline {8.1.4}Connect accuracy function with condition number}{33}{subsection.8.1.4}
+\contentsline {section}{\numberline {8.2}Simulation design}{35}{section.8.2}
+\contentsline {subsection}{\numberline {8.2.1}Simulation frame setup}{35}{subsection.8.2.1}
+\contentsline {subsubsection}{Marker}{35}{subsubsection*.40}
+\contentsline {subsubsection}{Camera}{36}{subsubsection*.42}
+\contentsline {subsection}{\numberline {8.2.2}Simulation approach}{39}{subsection.8.2.2}
+\contentsline {section}{\numberline {8.3}Results}{39}{section.8.3}
+\contentsline {chapter}{\numberline {9}Accuracy of Monocular Tracking using Error Covariance Matrix}{55}{chapter.9}
+\contentsline {section}{\numberline {9.1}Gaussian error distributions}{55}{section.9.1}
+\contentsline {subsection}{\numberline {9.1.1}Multi-dimensional Gaussian distributions}{55}{subsection.9.1.1}
+\contentsline {subsection}{\numberline {9.1.2}Confidence ellipse/ellipsoid}{56}{subsection.9.1.2}
+\contentsline {section}{\numberline {9.2}Error propagation for Gaussian distributions}{59}{section.9.2}
+\contentsline {section}{\numberline {9.3}Forward propagation}{59}{section.9.3}
+\contentsline {section}{\numberline {9.4}Backward propagation}{59}{section.9.4}
+\contentsline {section}{\numberline {9.5}Accuracy of monocular tracking}{60}{section.9.5}
+\contentsline {chapter}{\numberline {10}Motion Planning}{64}{chapter.10}
+\contentsline {section}{\numberline {10.1}The selected pose estimation algorithm}{65}{section.10.1}
+\contentsline {section}{\numberline {10.2}A* search algorithm}{67}{section.10.2}
+\contentsline {section}{\numberline {10.3}Artificial potential fields}{69}{section.10.3}
+\contentsline {section}{\numberline {10.4}Compare accuracy of paths calculated with A* and artificial potential fields method}{72}{section.10.4}
+\contentsline {chapter}{\numberline {11}Conclusion and Future Work}{76}{chapter.11}
+\contentsline {chapter}{\numberline {12}List of Abbreviations}{77}{chapter.12}

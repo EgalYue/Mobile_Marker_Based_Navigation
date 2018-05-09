@@ -261,6 +261,149 @@ def displayError_YZ_plane_2D(y, z, input_ippe1_t, input_ippe1_R, input_ippe2_t, 
     plt.savefig("R_Error_and_t_Error.png")
     plt.show()
 
+def displayRTError3D_ippe12(y, z, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t, input_pnp_R, input_transfer_error):
+    """
+     Display R_error and t_error for ippe and pnp method
+     cam dstribution only on YZ plane
+    """
+
+    fig1 = plt.figure("R_Error_and_t_Error_ippe")
+
+    ax1 = fig1.add_subplot(221, projection='3d')
+    ax1.scatter(y, z, input_ippe1_R, marker=".")
+    ax1.set_xlabel('Y')
+    ax1.set_ylabel('Z')
+    ax1.set_zlabel("R error(" + u"\u00b0" + ")")
+
+    ax2 = fig1.add_subplot(223, projection='3d')
+    ax2.scatter(y, z, input_ippe1_t, marker=".")
+    ax2.set_xlabel('Y')
+    ax2.set_ylabel('Z')
+    ax2.set_zlabel('t error(%)')
+
+    ax3 = fig1.add_subplot(222, projection='3d')
+    ax3.scatter(y, z, input_ippe2_R, marker=".")
+    ax3.set_xlabel('Y')
+    ax3.set_ylabel('Z')
+    ax3.set_zlabel("R error(" + u"\u00b0" + ")")
+
+    ax4 = fig1.add_subplot(224, projection='3d')
+    ax4.scatter(y, z, input_ippe2_t, marker=".")
+    ax4.set_xlabel('Y')
+    ax4.set_ylabel('Z')
+    ax4.set_zlabel('t error(%)')
+
+    ax1.set_title("IPPE1")
+    ax2.set_title("IPPE1")
+    ax3.set_title("IPPE2")
+    ax4.set_title("IPPE2")
+    plt.show()
+
+def displayRTError3D_LM(y, z, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t, input_pnp_R, input_transfer_error):
+    """
+     Display R_error and t_error for ippe and pnp method
+     cam dstribution only on YZ plane
+    """
+
+    fig1 = plt.figure("R_Error_and_t_Error_pnp")
+
+    ax1 = fig1.add_subplot(211, projection='3d')
+    ax1.scatter(y, z, input_pnp_R, marker=".")
+    ax1.set_xlabel('Y')
+    ax1.set_ylabel('Z')
+    ax1.set_zlabel("R error(" + u"\u00b0" + ")")
+
+    ax2 = fig1.add_subplot(212, projection='3d')
+    ax2.scatter(y, z, input_pnp_t, marker=".")
+    ax2.set_xlabel('Y')
+    ax2.set_ylabel('Z')
+    ax2.set_zlabel('t error(%)')
+
+
+    ax1.set_title("LM")
+    ax2.set_title("LM")
+
+    plt.show()
+
+def displayRTError3D_EPNP(y, z, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t, input_pnp_R, input_transfer_error):
+    """
+     Display R_error and t_error for ippe and pnp method
+     cam dstribution only on YZ plane
+    """
+
+    fig1 = plt.figure("R_Error_and_t_Error_pnp")
+
+    ax1 = fig1.add_subplot(221, projection='3d')
+    ax1.scatter(y, z, input_pnp_R, marker=".")
+    ax1.set_xlabel('Y')
+    ax1.set_ylabel('Z')
+    ax1.set_zlabel("R error(" + u"\u00b0" + ")")
+
+    ax2 = fig1.add_subplot(223, projection='3d')
+    ax2.scatter(y, z, input_pnp_t, marker=".")
+    ax2.set_xlabel('Y')
+    ax2.set_ylabel('Z')
+    ax2.set_zlabel('t error(%)')
+
+    ax3 = fig1.add_subplot(222, projection='3d')
+    ax3.scatter(y, z, input_pnp_R, marker=".")
+    ax3.set_xlabel('Y')
+    ax3.set_ylabel('Z')
+    ax3.set_zlabel("R error(" + u"\u00b0" + ")")
+
+    ax4 = fig1.add_subplot(224, projection='3d')
+    ax4.scatter(y, z, input_pnp_t, marker=".")
+    ax4.set_xlabel('Y')
+    ax4.set_ylabel('Z')
+    ax4.set_zlabel('t error(%)')
+
+
+    ax1.set_title("EPnP")
+    ax2.set_title("EPnP")
+    ax3.set_title("EPnP")
+    ax4.set_title("EPnP")
+
+    plt.show()
+
+def displayRTError3D_DLS(y, z, input_ippe1_t, input_ippe1_R, input_ippe2_t, input_ippe2_R, input_pnp_t, input_pnp_R, input_transfer_error):
+    """
+     Display R_error and t_error for ippe and pnp method
+     cam dstribution only on YZ plane
+    """
+
+    fig1 = plt.figure("R_Error_and_t_Error_pnp")
+
+    ax1 = fig1.add_subplot(221, projection='3d')
+    ax1.scatter(y, z, input_pnp_R, marker=".")
+    ax1.set_xlabel('Y')
+    ax1.set_ylabel('Z')
+    ax1.set_zlabel("R error(" + u"\u00b0" + ")")
+
+    ax2 = fig1.add_subplot(223, projection='3d')
+    ax2.scatter(y, z, input_pnp_t, marker=".")
+    ax2.set_xlabel('Y')
+    ax2.set_ylabel('Z')
+    ax2.set_zlabel('t error(%)')
+
+    ax3 = fig1.add_subplot(222, projection='3d')
+    ax3.scatter(y, z, input_pnp_R, marker=".")
+    ax3.set_xlabel('Y')
+    ax3.set_ylabel('Z')
+    ax3.set_zlabel("R error(" + u"\u00b0" + ")")
+
+    ax4 = fig1.add_subplot(224, projection='3d')
+    ax4.scatter(y, z, input_pnp_t, marker=".")
+    ax4.set_xlabel('Y')
+    ax4.set_ylabel('Z')
+    ax4.set_zlabel('t error(%)')
+
+
+    ax1.set_title("DLS")
+    ax2.set_title("DLS")
+    ax3.set_title("DLS")
+    ax4.set_title("DLS")
+
+    plt.show()
 #--------------------------------------------- Test--------------------------------------------------
 # Detectionplot()
 # anglePlot()

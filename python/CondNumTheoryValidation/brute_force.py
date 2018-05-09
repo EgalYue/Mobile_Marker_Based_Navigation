@@ -45,7 +45,7 @@ new_objectPoints = np.copy(objectPoints)
 # print "new_objectPoints",new_objectPoints
 # -------------------------------------------------------------------------------------------------
 normalized = True
-homography_iters = 1     # TODO homography_iters changed
+homography_iters = 1000     # TODO homography_iters changed
 
 def heightGetCondNum(cams, accuracy_mat, theta_params, r_params):
 
@@ -252,7 +252,7 @@ def computeError(cam, imagePoints, transfer_error_list, ippe_tvec_error_list1, i
         # Calculate the pose using solvepnp
         debug = False
         # TODO  cv2.SOLVEPNP_DLS, cv2.SOLVEPNP_EPNP, cv2.SOLVEPNP_ITERATIVE
-        pnp_tvec, pnp_rmat = pose_pnp(new_objectPoints, new_imagePoints_noisy, cam.K, debug, cv2.SOLVEPNP_EPNP, False)
+        pnp_tvec, pnp_rmat = pose_pnp(new_objectPoints, new_imagePoints_noisy, cam.K, debug, cv2.SOLVEPNP_DLS, False)
         pnpCam = cam.clone_withPose(pnp_tvec, pnp_rmat)
         # Calculate errors
         pnp_tvec_error, pnp_rmat_error = ef.calc_estimated_pose_error(cam.get_tvec(), cam.R, pnpCam.get_tvec(),
