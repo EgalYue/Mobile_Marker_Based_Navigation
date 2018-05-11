@@ -58,8 +58,6 @@ def calc_potential_field(gx, gy, ox, oy, grid_reso, rr, grid_width, grid_height)
             uo = calc_repulsive_potential(x, y, ox, oy, rr)
             # uf = ug + uo
             # pmap[ix][iy] = uf
-
-            # TODO
             u_condNum = calc_repulsive_potential_condNum(ix, iy)
             # print "u_condNum ",u_condNum
             uf = ug + uo + u_condNum
@@ -96,7 +94,6 @@ def calc_repulsive_potential(x, y, ox, oy, rr):
         return 0.0
 
 def calc_repulsive_potential_condNum(x, y):
-    # TODO
     return accuracy_mat[x,y]
 
 
@@ -220,7 +217,7 @@ def potentialField(sx = 2.15, sy = 2.05, gx = 2.15, gy = 3.05, ox = [], oy = [],
     # gy = 3.05  # goal y position [m]
     # grid_reso = 0.1  # potential grid size [m]
     # robot_radius = 0.5  # robot radius [m]
-    # TODO set the
+    # TODO set the obstacle
     # ox = []  # obstacle x position list [m]
     # oy = []  # obstacle y position list [m]
 
@@ -240,8 +237,8 @@ def potentialField(sx = 2.15, sy = 2.05, gx = 2.15, gy = 3.05, ox = [], oy = [],
     else:
         rx, ry = potential_field_planning(
             sx, sy, gx, gy, ox, oy, grid_reso, robot_radius, width, height)
-        print "X position:\n", rx
-        print "Y position:\n", ry
+        # print "X position:\n", rx
+        # print "Y position:\n", ry
 
         if show_animation:
             plt.xlabel('X')

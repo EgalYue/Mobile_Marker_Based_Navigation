@@ -1,14 +1,32 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
-@Time    : 05.03.18 18:30
-@File    : A_star.py
+@Time    : 11.05.18 14:32
+@File    : A_star_modified.py
 @author: Yue Hu
 
-A Star algorithm
+A Star algorithm with modified heuristic function based on condition number
+
 """
+
+import sys
+sys.path.append("..")
 import numpy as np
 import math
+import os  # Read matrix form file
+
+# Read accuracy matrix
+cur_path = os.path.dirname(__file__)
+new_path = os.path.relpath('../pathFinding/accuracyMatrix.txt', cur_path)
+f = open(new_path, 'r')
+l = [map(float, line.split(' ')) for line in f]
+accuracy_mat = np.asarray(l)  # convert to matrix : 30 x 60
+accuracyMax = np.amax(accuracy_mat)
+# type: list
+accuracy_mat_scale = map(lambda x: np.interp(x,[0.0,accuracyMax],[0.0,accuracyMax/10]), accuracy_mat)
+# type: np.array
+accuracy_mat_scale= np.asarray(accuracy_mat_scale)
+accuracy_mat_scale = np.where(accuracy_mat_scale == 0.0, 1.0, accuracy_mat_scale)
 
 class Node:
     """
@@ -25,8 +43,8 @@ class Node:
     def equal(self,other):
         """
         If the x,y equal, we assume that the both Nodes are same
-        :param other: 
-        :return: 
+        :param other:
+        :return:
         """
         if(self.x == other.x) and (self.y == other.y):
             return True
@@ -71,6 +89,31 @@ def heuristic_cost_estimate(start, goal,d_diagnoal,d_straight):
     h_diagonal = min(np.abs(start_x - goal_x),np.abs(start_y - goal_y))
     h_straight = np.abs(start_x - goal_x) + np.abs(start_y - goal_y)
     h = d_diagnoal * h_diagonal + d_straight * (h_straight - 2 * h_diagonal)
+    return h
+
+def heuristic_cost_estimate_modified(start, goal,d_diagnoal,d_straight):
+    """
+    Modified heuristic function
+    Adding condition number!
+
+    Diagonal distance
+    h_diagonal(n) = min(abs(n.x - goal.x), abs(n.y - goal.y))
+    h_straight(n) = (abs(n.x - goal.x) + abs(n.y - goal.y))
+    h(n) = D_diagnoal * h_diagonal(n) + D_straight * (h_straight(n) - 2*h_diagonal(n)))
+    :param start:
+    :param goal:
+    :return:
+    """
+    # TODO Adding condition number
+    start_x = start.x
+    start_y = start.y
+    goal_x = goal.x
+    goal_y = goal.y
+
+    h_diagonal = min(np.abs(start_x - goal_x),np.abs(start_y - goal_y))
+    h_straight = np.abs(start_x - goal_x) + np.abs(start_y - goal_y)
+    # h = d_diagnoal * h_diagonal + d_straight * (h_straight - 2 * h_diagonal)
+    h = d_diagnoal * h_diagonal + d_straight * (h_straight - 2 * h_diagonal) + accuracy_mat_scale[goal_x,goal_y]
     return h
 
 def dist_between(current, neighbor,d_diagnoal,d_straight):
@@ -234,8 +277,8 @@ def aStar(sx = 1.55, sy = 2.05, gx = 1.55, gy = 4.05, d_diagnoal = 14, d_straigh
     # For each node, the total cost of getting from the start node to the goal by passing by that node. That value is partly known, partly heuristic.
     fScore = create_fScore(width, height)
     # For the first node, that value is completely heuristic.
-    startNode.f_value = heuristic_cost_estimate(startNode, goalNode,d_diagnoal,d_straight)
-    fScore[start_x][start_y] = heuristic_cost_estimate(startNode, goalNode,d_diagnoal,d_straight)
+    startNode.f_value = heuristic_cost_estimate_modified(startNode, goalNode,d_diagnoal,d_straight)
+    fScore[start_x][start_y] = heuristic_cost_estimate_modified(startNode, goalNode,d_diagnoal,d_straight)
     while len(openSet) != 0:
         # current := the node in openSet having the lowest fScore[] value
         current = node_lowest_fScore(openSet)
@@ -272,7 +315,7 @@ def aStar(sx = 1.55, sy = 2.05, gx = 1.55, gy = 4.05, d_diagnoal = 14, d_straigh
             cameFrom.append(neighbor)
             gScore[neighbor_x][neighbor_y] = tentative_gScore
             neighbor.g_value = tentative_gScore
-            neighbor_f_value = gScore[neighbor_x][neighbor_y] + heuristic_cost_estimate(neighbor, goalNode,d_diagnoal,d_straight)
+            neighbor_f_value = gScore[neighbor_x][neighbor_y] + heuristic_cost_estimate_modified(neighbor, goalNode,d_diagnoal,d_straight)
             fScore[neighbor_x][neighbor_y] = neighbor_f_value
             neighbor.f_value = neighbor_f_value
     return False
@@ -296,4 +339,5 @@ def aStar(sx = 1.55, sy = 2.05, gx = 1.55, gy = 4.05, d_diagnoal = 14, d_straigh
 # d_straight = 10
 # startNode = Node(20,20,None,0,0,0)
 # goalNode = Node(20,30,None,0,0,0)
-# print aStar(sx = 1.25, sy = 2.05, gx = 1.25, gy = 4.05, d_diagnoal = 14, d_straight = 10, grid_reso = 0.1, grid_width = 6, grid_height = 3)
+# path = aStar(sx = 1.55, sy = 2.05, gx = 1.55, gy = 4.05, d_diagnoal = 1.4, d_straight = 1.0, grid_reso = 0.1, grid_width = 6, grid_height = 3)
+# print path
