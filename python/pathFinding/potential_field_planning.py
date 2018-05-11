@@ -24,7 +24,7 @@ import os  # Read matrix form file
 KP = 5.0  # attractive potential gain
 ETA = 100.0  # repulsive potential gain
 
-show_animation = False
+show_animation = False # TODO need to set
 
 # grid_width = 60
 # grid_height = 30
@@ -221,8 +221,8 @@ def potentialField(sx = 2.15, sy = 2.05, gx = 2.15, gy = 3.05, ox = [], oy = [],
     else:
         rx, ry = potential_field_planning(
             sx, sy, gx, gy, ox, oy, grid_reso, robot_radius, width, height)
-        # print "X position:\n", rx
-        # print "Y position:\n", ry
+        print "X position:\n", rx
+        print "Y position:\n", ry
 
         if show_animation:
             plt.xlabel('X')
@@ -236,6 +236,6 @@ def potentialField(sx = 2.15, sy = 2.05, gx = 2.15, gy = 3.05, ox = [], oy = [],
 if __name__ == '__main__':
     print(__file__ + "------------ Start!!-----------")
     #called in other class
-    potentialField(sx=1.55, sy=2.05, gx=1.55, gy=4.05, ox=[], oy=[], grid_reso=0.1,
+    potentialField(sx=1.25, sy=2.05, gx=1.25, gy=4.05, ox=[], oy=[], grid_reso=0.1,
                    robot_radius=0.5, grid_width=6, grid_height=3)
     print(__file__ + "------------ Done!!------------")
