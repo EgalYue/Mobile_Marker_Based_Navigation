@@ -20,45 +20,36 @@ import numpy as np
 import matplotlib.pyplot as plt
 import changeAccMatSize as changeAccMatSize
 import os  # Read matrix form file
-# Parameters
+import computeCondNum as ccn
+
+#-------------- Initialization --------------------------
 KP = 5.0  # attractive potential gain
 ETA = 100.0  # repulsive potential gain
-
 show_animation = False # TODO need to set
-
-# grid_width = 60
-# grid_height = 30
-# real_width = 6 # [m]
-# real_height = 3 # [m]
+#--------------------------------------------------------
 
 # Read accuracy matrix
-cur_path = os.path.dirname(__file__)
-new_path = os.path.relpath('../pathFinding/accuracyMatrix.txt', cur_path)
-f = open(new_path, 'r')
-l = [map(float, line.split(' ')) for line in f]
-accuracy_mat = np.asarray(l)  # convert to matrix : 30 x 60
-# TODO NEED TO SET
-# accuracy_mat = changeAccMatSize.changeAccMatSize(accuracy_mat,6,12)
+# cur_path = os.path.dirname(__file__)
+# new_path = os.path.relpath('../pathFinding/accuracyMatrix.txt', cur_path)
+# f = open(new_path, 'r')
+# l = [map(float, line.split(' ')) for line in f]
+# accuracy_mat = np.asarray(l)  # convert to matrix : 30 x 60
 
-
-def calc_potential_field(gx, gy, ox, oy, grid_reso, rr, grid_width, grid_height):
-    xw = grid_height
-    yw = grid_width
+def calc_potential_field(gx, gy, ox, oy, grid_reso, rr, width, height):
 
     # calc each potential
-    pmap = [[0.0 for i in range(grid_width)] for i in range(grid_height)]
+    pmap = [[0.0 for i in range(width)] for i in range(height)]
 
-    for ix in range(xw):
+    for ix in range(height):
         x = ix * grid_reso + grid_reso / 2
 
-        for iy in range(yw):
+        for iy in range(width):
             y = iy * grid_reso + grid_reso / 2
             ug = calc_attractive_potential(x, y, gx, gy)
             # print "ug ",ug
             uo = calc_repulsive_potential(x, y, ox, oy, rr)
-            # uf = ug + uo
-            # pmap[ix][iy] = uf
-            u_condNum = calc_repulsive_potential_condNum(ix, iy)
+            # u_condNum = calc_repulsive_potential_condNum(ix, iy)
+            u_condNum = calc_repulsive_potential_condNum(x, y, grid_reso, width, height)
             # print "u_condNum ",u_condNum
             uf = ug + uo + u_condNum
             pmap[ix][iy] = uf
@@ -93,8 +84,26 @@ def calc_repulsive_potential(x, y, ox, oy, rr):
     else:
         return 0.0
 
-def calc_repulsive_potential_condNum(x, y):
-    return accuracy_mat[x,y]
+# def calc_repulsive_potential_condNum(ix, iy):
+#     """
+#     Based on the accuracy distribution matrix (accuracyMatrix.txt  used for test)
+#     :param ix: grid coordinate
+#     :param iy: grid coordinate
+#     :return:
+#     """
+#     return accuracy_mat[ix,iy]
+
+def calc_repulsive_potential_condNum(x_w, y_w, grid_reso, width, height):
+    """
+
+    :param x_w: in real world coordinate
+    :param y_w: in real world coordinate
+    :param width: gird 60
+    :param height: grid 30
+    :return:
+    """
+    condNum = ccn.getCondNum_camPoseInRealWord(x_w, y_w, grid_reso, width, height)
+    return condNum
 
 
 def get_motion_model():
@@ -111,9 +120,9 @@ def get_motion_model():
     return motion
 
 
-def potential_field_planning(sx, sy, gx, gy, ox, oy, grid_reso, rr, grid_width, grid_height):
+def potential_field_planning(sx, sy, gx, gy, ox, oy, grid_reso, rr, width, height):
     # calc potential field
-    pmap= calc_potential_field(gx, gy, ox, oy, grid_reso, rr, grid_width, grid_height)
+    pmap= calc_potential_field(gx, gy, ox, oy, grid_reso, rr, width, height)
 
     # search path
     d = np.hypot(sx - gx, sy - gy)

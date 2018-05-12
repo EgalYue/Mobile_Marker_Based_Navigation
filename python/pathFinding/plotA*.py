@@ -26,11 +26,11 @@ d_straight = 10
 grid_width = 6
 grid_height = 3
 
-startX_real = 1.25
+startX_real = 1.55
 startY_real = 2.05
 startX_grid, startY_grid = realPosTogridPos(startX_real, startY_real, grid_reso=0.1)
 
-goalX_real = 1.25
+goalX_real = 1.55
 goalY_real = 4.05
 goalX_grid, goalY_grid = realPosTogridPos(goalX_real, goalY_real, grid_reso=0.1)
 
