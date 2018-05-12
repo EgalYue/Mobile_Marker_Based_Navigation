@@ -21,8 +21,8 @@ def realPosTogridPos(x_real, y_real, grid_reso = 0.1):
 
 #-----------------Initialization-------------------------------
 grid_reso = 0.1
-d_diagnoal = 1.4
-d_straight = 1.0
+d_diagnoal = 14
+d_straight = 10
 grid_width = 6
 grid_height = 3
 
@@ -53,6 +53,6 @@ for i in range(steps):
     # print ix
     # print iy
     plt.plot(ix, iy, ".r")
-    plt.pause(0.1)
+    plt.pause(0.01)
 
 plt.show()

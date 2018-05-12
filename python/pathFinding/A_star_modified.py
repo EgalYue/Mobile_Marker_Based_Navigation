@@ -8,12 +8,13 @@
 A Star algorithm with modified heuristic function based on condition number
 
 """
-
+# from __future__ import division # set / as float!!!!
 import sys
 sys.path.append("..")
 import numpy as np
 import math
 import os  # Read matrix form file
+import saveMatrixToFile as smtf
 
 # Read accuracy matrix
 cur_path = os.path.dirname(__file__)
@@ -23,7 +24,7 @@ l = [map(float, line.split(' ')) for line in f]
 accuracy_mat = np.asarray(l)  # convert to matrix : 30 x 60
 accuracyMax = np.amax(accuracy_mat)
 # type: list
-accuracy_mat_scale = map(lambda x: np.interp(x,[0.0,accuracyMax],[0.0,accuracyMax/10]), accuracy_mat)
+accuracy_mat_scale = map(lambda x: np.interp(x,[0.0,accuracyMax],[0.0,accuracyMax*50]), accuracy_mat)
 # type: np.array
 accuracy_mat_scale= np.asarray(accuracy_mat_scale)
 accuracy_mat_scale = np.where(accuracy_mat_scale == 0.0, 1.0, accuracy_mat_scale)
@@ -112,8 +113,10 @@ def heuristic_cost_estimate_modified(start, goal,d_diagnoal,d_straight):
 
     h_diagonal = min(np.abs(start_x - goal_x),np.abs(start_y - goal_y))
     h_straight = np.abs(start_x - goal_x) + np.abs(start_y - goal_y)
-    # h = d_diagnoal * h_diagonal + d_straight * (h_straight - 2 * h_diagonal)
-    h = d_diagnoal * h_diagonal + d_straight * (h_straight - 2 * h_diagonal) + accuracy_mat_scale[goal_x,goal_y]
+    h_normal = d_diagnoal * h_diagonal + d_straight * (h_straight - 2 * h_diagonal)
+    # print "h_normal",h_normal
+    # print accuracy_mat_scale[start_x,start_y]
+    h = h_normal + accuracy_mat_scale[start_x,start_y]
     return h
 
 def dist_between(current, neighbor,d_diagnoal,d_straight):
@@ -239,7 +242,7 @@ def realPosTogridPos(x_real, y_real, grid_reso = 0.1):
     iy = int(round((y_real - grid_reso/2) /grid_reso))
     return ix,iy
 
-def aStar(sx = 1.55, sy = 2.05, gx = 1.55, gy = 4.05, d_diagnoal = 14, d_straight = 10, grid_reso = 0.1, grid_width = 6, grid_height = 3):
+def aStar(sx = 1.25, sy = 2.05, gx = 1.25, gy = 4.05, d_diagnoal = 14, d_straight = 10, grid_reso = 0.1, grid_width = 6, grid_height = 3):
     """
     A* algorithm
     A square 6m x 3m region
@@ -287,6 +290,13 @@ def aStar(sx = 1.55, sy = 2.05, gx = 1.55, gy = 4.05, d_diagnoal = 14, d_straigh
             path = reconstruct_path(cameFrom, current) # path in real
             # print "path",path
             pathInReal = convertGridPathToReal(path, sx, sy, gx, gy, grid_reso = grid_reso) # path in grid
+            # TODO------------------------------------------------
+            Gmat = np.asarray(gScore)
+            Fmat = np.asarray(fScore)
+            smtf.saveMatToFile_G(Gmat)
+            smtf.saveMatToFile_F(Fmat)
+            smtf. saveMatToFile_cond(accuracy_mat_scale)
+            # TODO------------------------------------------------
             return pathInReal
 
         openSet.remove(current)
@@ -306,8 +316,10 @@ def aStar(sx = 1.55, sy = 2.05, gx = 1.55, gy = 4.05, d_diagnoal = 14, d_straigh
             current_x = current.x
             current_y = current.y
             tentative_gScore = gScore[current_x][current_y] + dist_between(current, neighbor,d_diagnoal,d_straight)
-            neighbor_x = neighbor.x
-            neighbor_y = neighbor.y
+            # print "[neighbor_x,neighbor_y]",neighbor_x,neighbor_y
+            # print "tentative_gScore",tentative_gScore
+            # neighbor_x = neighbor.x
+            # neighbor_y = neighbor.y
             if tentative_gScore >= gScore[neighbor_x][neighbor_y]:
                 continue		# This is not a better path.
 
@@ -339,5 +351,5 @@ def aStar(sx = 1.55, sy = 2.05, gx = 1.55, gy = 4.05, d_diagnoal = 14, d_straigh
 # d_straight = 10
 # startNode = Node(20,20,None,0,0,0)
 # goalNode = Node(20,30,None,0,0,0)
-# path = aStar(sx = 1.55, sy = 2.05, gx = 1.55, gy = 4.05, d_diagnoal = 1.4, d_straight = 1.0, grid_reso = 0.1, grid_width = 6, grid_height = 3)
+# path = aStar(sx = 1.25, sy = 2.05, gx = 1.25, gy = 4.05, d_diagnoal = 14, d_straight = 10, grid_reso = 0.1, grid_width = 6, grid_height = 3)
 # print path
