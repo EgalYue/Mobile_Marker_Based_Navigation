@@ -18,21 +18,21 @@ import saveMatrixToFile as smtf
 import computeCondNum as ccn
 
 # Read accuracy matrix
-cur_path = os.path.dirname(__file__)
-new_path = os.path.relpath('../pathFinding/accuracyMatrix.txt', cur_path)
-f = open(new_path, 'r')
-l = [map(float, line.split(' ')) for line in f]
-accuracy_mat = np.asarray(l)  # convert to matrix : 30 x 60
-accuracyMax = np.amax(accuracy_mat)
-# type: list
-# TODO Need to set
-# enlarge or  the condition number distribution
-accuracy_mat_scale = map(lambda x: np.interp(x,[0.0,accuracyMax],[0.0,accuracyMax*50]), accuracy_mat)
-# type: np.array
-accuracy_mat_scale= np.asarray(accuracy_mat_scale)
-# TODO Need to set
-# convert the undetected region as np.inf
-accuracy_mat_scale = np.where(accuracy_mat_scale == 0.0, np.inf, accuracy_mat_scale)
+# cur_path = os.path.dirname(__file__)
+# new_path = os.path.relpath('../pathFinding/accuracyMatrix.txt', cur_path)
+# f = open(new_path, 'r')
+# l = [map(float, line.split(' ')) for line in f]
+# accuracy_mat = np.asarray(l)  # convert to matrix : 30 x 60
+# accuracyMax = np.amax(accuracy_mat)
+# # type: list
+# # TODO Need to set
+# # enlarge or  the condition number distribution
+# accuracy_mat_scale = map(lambda x: np.interp(x,[0.0,accuracyMax],[0.0,accuracyMax*50]), accuracy_mat)
+# # type: np.array
+# accuracy_mat_scale= np.asarray(accuracy_mat_scale)
+# # TODO Need to set
+# # convert the undetected region as np.inf
+# accuracy_mat_scale = np.where(accuracy_mat_scale == 0.0, np.inf, accuracy_mat_scale)
 
 class Node:
     """
@@ -97,32 +97,7 @@ def heuristic_cost_estimate(start, goal,d_diagnoal,d_straight):
     h = d_diagnoal * h_diagonal + d_straight * (h_straight - 2 * h_diagonal)
     return h
 
-def heuristic_cost_estimate_modified(start, goal,d_diagnoal,d_straight):
-    """
-    Modified heuristic function
-    Adding condition number!
-
-    Diagonal distance
-    h_diagonal(n) = min(abs(n.x - goal.x), abs(n.y - goal.y))
-    h_straight(n) = (abs(n.x - goal.x) + abs(n.y - goal.y))
-    h(n) = D_diagnoal * h_diagonal(n) + D_straight * (h_straight(n) - 2*h_diagonal(n)))
-    :param start:
-    :param goal:
-    :return:
-    """
-    # TODO Adding condition number
-    start_x = start.x
-    start_y = start.y
-    goal_x = goal.x
-    goal_y = goal.y
-
-    h_diagonal = min(np.abs(start_x - goal_x),np.abs(start_y - goal_y))
-    h_straight = np.abs(start_x - goal_x) + np.abs(start_y - goal_y)
-    h_normal = d_diagnoal * h_diagonal + d_straight * (h_straight - 2 * h_diagonal)
-    h = h_normal + accuracy_mat_scale[start_x,start_y]
-    return h
-
-# def heuristic_cost_estimate_modified(start, goal,d_diagnoal,d_straight, grid_reso, width, height):
+# def heuristic_cost_estimate_modified(start, goal,d_diagnoal,d_straight):
 #     """
 #     Modified heuristic function
 #     Adding condition number!
@@ -133,29 +108,56 @@ def heuristic_cost_estimate_modified(start, goal,d_diagnoal,d_straight):
 #     h(n) = D_diagnoal * h_diagonal(n) + D_straight * (h_straight(n) - 2*h_diagonal(n)))
 #     :param start:
 #     :param goal:
-#     :param d_diagnoal:
-#     :param d_straight:
-#     :param grid_reso:
-#     :param width: 60
-#     :param height: 30
 #     :return:
 #     """
 #     # TODO Adding condition number
-#     # In grid coordinate
 #     start_x = start.x
 #     start_y = start.y
 #     goal_x = goal.x
 #     goal_y = goal.y
-#     # In real coordinate
-#     x_w, y_w = gridPosToRealPos(start_x, start_y, grid_reso = 0.1)
 #
 #     h_diagonal = min(np.abs(start_x - goal_x),np.abs(start_y - goal_y))
 #     h_straight = np.abs(start_x - goal_x) + np.abs(start_y - goal_y)
 #     h_normal = d_diagnoal * h_diagonal + d_straight * (h_straight - 2 * h_diagonal)
-#     # h = h_normal + accuracy_mat_scale[start_x,start_y]
-#     # TODO enlarge
-#     h = h_normal + ccn.getCondNum_camPoseInRealWord(x_w, y_w, grid_reso, width, height) * 50
+#     h = h_normal + accuracy_mat_scale[start_x,start_y]
 #     return h
+
+def heuristic_cost_estimate_modified(start, goal,d_diagnoal,d_straight, grid_reso, width, height):
+    """
+    Modified heuristic function
+    Adding condition number!
+
+    Diagonal distance
+    h_diagonal(n) = min(abs(n.x - goal.x), abs(n.y - goal.y))
+    h_straight(n) = (abs(n.x - goal.x) + abs(n.y - goal.y))
+    h(n) = D_diagnoal * h_diagonal(n) + D_straight * (h_straight(n) - 2*h_diagonal(n)))
+    :param start:
+    :param goal:
+    :param d_diagnoal:
+    :param d_straight:
+    :param grid_reso:
+    :param width: 60
+    :param height: 30
+    :return:
+    """
+    # TODO Adding condition number
+    # In grid coordinate
+    start_x = start.x
+    start_y = start.y
+    goal_x = goal.x
+    goal_y = goal.y
+    # In real coordinate
+    x_w, y_w = gridPosToRealPos(start_x, start_y, grid_reso = 0.1)
+
+    h_diagonal = min(np.abs(start_x - goal_x),np.abs(start_y - goal_y))
+    h_straight = np.abs(start_x - goal_x) + np.abs(start_y - goal_y)
+    h_normal = d_diagnoal * h_diagonal + d_straight * (h_straight - 2 * h_diagonal)
+    # h = h_normal + accuracy_mat_scale[start_x,start_y]
+    # TODO enlarge
+    condNum = ccn.getCondNum_camPoseInRealWord(x_w, y_w, grid_reso, width, height) * 50
+    print condNum
+    h = h_normal + condNum
+    return h
 
 def dist_between(current, neighbor,d_diagnoal,d_straight):
     """
@@ -323,11 +325,10 @@ def aStar(sx = 1.25, sy = 2.05, gx = 1.25, gy = 4.05, d_diagnoal = 14, d_straigh
     # For each node, the total cost of getting from the start node to the goal by passing by that node. That value is partly known, partly heuristic.
     fScore = create_fScore(width, height)
     # For the first node, that value is completely heuristic.
-    startNode.f_value = heuristic_cost_estimate_modified(startNode, goalNode,d_diagnoal,d_straight)
-    fScore[start_x][start_y] = heuristic_cost_estimate_modified(startNode, goalNode,d_diagnoal,d_straight)
-    # TODO
-    # startNode.f_value = heuristic_cost_estimate_modified(startNode, goalNode, d_diagnoal, d_straight, grid_reso, width, height)
-    # fScore[start_x][start_y] = heuristic_cost_estimate_modified(startNode, goalNode, d_diagnoal, d_straight, grid_reso, width, height)
+    # hStart = heuristic_cost_estimate_modified(startNode, goalNode, d_diagnoal, d_straight)
+    hStart = heuristic_cost_estimate_modified(startNode, goalNode, d_diagnoal, d_straight, grid_reso, width, height)
+    startNode.f_value = hStart
+    fScore[start_x][start_y] = hStart
 
     while len(openSet) != 0:
         # current := the node in openSet having the lowest fScore[] value
@@ -374,9 +375,9 @@ def aStar(sx = 1.25, sy = 2.05, gx = 1.25, gy = 4.05, d_diagnoal = 14, d_straigh
             cameFrom.append(neighbor)
             gScore[neighbor_x][neighbor_y] = tentative_gScore
             neighbor.g_value = tentative_gScore
-            neighbor_f_value = gScore[neighbor_x][neighbor_y] + heuristic_cost_estimate_modified(neighbor, goalNode,d_diagnoal,d_straight)
+            # neighbor_f_value = gScore[neighbor_x][neighbor_y] + heuristic_cost_estimate_modified(neighbor, goalNode,d_diagnoal,d_straight)
             # TODO
-            # neighbor_f_value = gScore[neighbor_x][neighbor_y] + heuristic_cost_estimate_modified(startNode, goalNode, d_diagnoal, d_straight, grid_reso, width, height)
+            neighbor_f_value = gScore[neighbor_x][neighbor_y] + heuristic_cost_estimate_modified(neighbor, goalNode, d_diagnoal, d_straight, grid_reso, width, height)
             fScore[neighbor_x][neighbor_y] = neighbor_f_value
             neighbor.f_value = neighbor_f_value
     return False

@@ -188,7 +188,7 @@ def getCondNum_camPoseInRealWord(x_w, y_w, grid_reso, width, height):
     objectPoints = np.copy(new_objectPoints)
     imagePoints = np.array(cam.project(objectPoints, False))
 
-    condNum = 0 # undetected region set as 0
+    condNum = np.inf # undetected region set as 0
     if ((imagePoints[0, :] < cam.img_width) & (imagePoints[0, :] > 0) & (imagePoints[1, :] < cam.img_height) & (
             imagePoints[1, :] > 0)).all():
         input_list = gd.extract_objectpoints_vars(objectPoints)
