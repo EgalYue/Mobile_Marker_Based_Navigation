@@ -22,8 +22,8 @@ import plotPath_mayavi as plotPath_mayavi
 import computeCondNum as ccn
 
 # ----------------------- Basic Infos ---------------------------------------------------
-homography_iters = 1000 # TODO iterative for cam pose of each step
-error_iters = 100       # TODO iterative for distance error
+homography_iters = 1 # TODO iterative for cam pose of each step
+error_iters = 1       # TODO iterative for distance error
 
 grid_reso = 0.1  # The length of each cell is 0.1m. Each cell of matrix is 0.1m x 0.1m.
 robot_radius = 0.5 # [m]
@@ -160,13 +160,13 @@ def main():
     gy_real = 4.05
 
     paths_pfp = pfp.potentialField(sx = sx_real, sy = sy_real, gx = gx_real, gy = gy_real, ox = [], oy = [], grid_reso = grid_reso, robot_radius = robot_radius, grid_width = grid_width, grid_height = grid_height)
-    # paths_Astar = Astar.aStar(sx = sx_real, sy = sy_real, gx = gx_real, gy = gy_real, d_diagnoal = 14, d_straight = 10, grid_reso = grid_reso, grid_width = grid_width, grid_height = grid_height)
+    paths_Astar = Astar.aStar(sx = sx_real, sy = sy_real, gx = gx_real, gy = gy_real, d_diagnoal = 14, d_straight = 10, grid_reso = grid_reso, grid_width = grid_width, grid_height = grid_height)
     paths_Astar_modified = Astar_modified.aStar(sx = sx_real, sy = sy_real, gx = gx_real, gy = gy_real, d_diagnoal = 14, d_straight = 10, grid_reso = grid_reso, grid_width = grid_width, grid_height = grid_height)
 
 
     fix_path_list = [] # first is pfp, second is A*
     fix_path_list.append(paths_pfp)
-    # fix_path_list.append(paths_Astar)
+    fix_path_list.append(paths_Astar)
     fix_path_list.append(paths_Astar_modified)
     #---------------------------------------------------------------------------------------------------------
     measured_path_list = []

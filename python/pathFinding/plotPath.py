@@ -333,7 +333,7 @@ def plotComparePaths(fix_path_list, disErrorMean_list, disErrorStd_list, Rmat_er
     ax_R_error = fig3.add_subplot(121)
     ax_t_error = fig3.add_subplot(122)
 
-    colours = ['r','b'] # Now we only compare 2 paths, just use 2 colors
+    colours = ['r','b', 'g'] # Now we only compare 2 paths, just use 2 colors
     for i in range(0, path_num):
         #-------------------------------------------------------------
         color = colours[i] # only for two paths
@@ -341,7 +341,10 @@ def plotComparePaths(fix_path_list, disErrorMean_list, disErrorStd_list, Rmat_er
         if i ==0:
             label = "Artificial potential fields pathfinding"
         if i ==1:
-            label = "A* pathfinding"
+            label = "Regular A* pathfinding"
+        if i ==2:
+            label = "Modified A* pathfinding"
+
         #-------------------------------------------------------------
         y_fix = fix_path_list[i][1, :]
         l = ax_fix.plot(y_fix, x_fix,color =color, label=label)
