@@ -155,7 +155,6 @@ def heuristic_cost_estimate_modified(start, goal,d_diagnoal,d_straight, grid_res
     # h = h_normal + accuracy_mat_scale[start_x,start_y]
     # TODO enlarge
     condNum = ccn.getCondNum_camPoseInRealWord(x_w, y_w, grid_reso, width, height) * 50
-    print condNum
     h = h_normal + condNum
     return h
 
