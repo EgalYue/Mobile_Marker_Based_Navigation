@@ -147,7 +147,7 @@ def heuristic_cost_estimate_modified(start, goal,d_diagnoal,d_straight, grid_res
     goal_x = goal.x
     goal_y = goal.y
     # In real coordinate
-    x_w, y_w = gridPosToRealPos(start_x, start_y, grid_reso = 0.1)
+    x_w, y_w = gridPosToRealPos(start_x, start_y, grid_reso = grid_reso)
 
     h_diagonal = min(np.abs(start_x - goal_x),np.abs(start_y - goal_y))
     h_straight = np.abs(start_x - goal_x) + np.abs(start_y - goal_y)
