@@ -5,16 +5,20 @@
 @File    : pfTest.py
 @author: Yue Hu
 """
+# --------------!!! important!!!----------
+from traits.etsconfig.api import ETSConfig
+ETSConfig.toolkit = 'wx'
+#-----------------------------------------
 from pylab import *
 import matplotlib.pyplot as plt
-# from mayavi import mlab
+from mayavi import mlab
 
 x_min = 0
 y_min = 0
 x_max = 100
 y_max = 100
 X, Y = mgrid[x_min:x_max + 1:1, y_min: y_max + 1:1]
-
+print X.shape
 
 def gaussian_obstacle(X, Y, x_obs, y_obs, size_robot, size_obstacle):
     # We extend the size of the obstacle with the size of the robot (border expansion)
